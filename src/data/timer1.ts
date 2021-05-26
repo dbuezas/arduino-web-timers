@@ -1,4 +1,5 @@
 import { tsv, tsvRegisters } from './timers'
+import { TimerConfig } from './types'
 
 export const registers = tsvRegisters(`
 TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR
@@ -10,8 +11,8 @@ COM1B0	WGM13	DOC1A	DSX14	-		-	TC2XF0
 -	CS12	-	-	OCIE1A		OCF1B	AFCKS
 WGM11	CS11	-	DSX11	OCIE1B		OCF1A	TC2XS1
 WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0`)
-export const config = {
-  workingModes: tsv(`
+export const configs: TimerConfig = [
+  tsv(`
 WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	Immediately	MAX
 1	0	0	0	1	PCPWM	0x00FF	TOP	BOTTOM
@@ -30,7 +31,7 @@ WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 14	1	1	1	0	FPWM	ICR1	TOP	TOP
 15	1	1	1	1	FPWM	OCR1A	TOP	TOP
 `),
-  compareOutputModeA: tsv(`
+  tsv(`
 COM1A	COM1A1	COM0A0	timerMode	CompareOutputModeA	WGM1
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
@@ -42,8 +43,8 @@ COM1A	COM1A1	COM0A0	timerMode	CompareOutputModeA	WGM1
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	toggle	15
-2	1	0	FPWM	clear
-3	1	1	FPWM	set
+2	1	0	FPWM	clear, set-at-max
+3	1	1	FPWM	set, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	toggle	11
 2	1	0	PCPWM	clear-up, set-down
@@ -53,7 +54,7 @@ COM1A	COM1A1	COM0A0	timerMode	CompareOutputModeA	WGM1
 2	1	0	PFCPWM	clear-up, set-down
 3	1	1	PFCPWM	set-up, clear-down
 `),
-  compareOutputModeB: tsv(`
+  tsv(`
 COM1B	COM1B2	COM1B1	COM0B0	timerMode	CompareOutputModeB	topValue
 0	0	0	0	Normal	disconnect
 1	1	0	1	Normal	toggle
@@ -65,8 +66,8 @@ COM1B	COM1B2	COM1B1	COM0B0	timerMode	CompareOutputModeB	topValue
 3	3	1	1	CTC	set
 0	0	0	0	FPWM	disconnect
 1	1	0	1	FPWM	disconnect
-2	2	1	0	FPWM	clear
-3	3	1	1	FPWM	set
+2	2	1	0	FPWM	clear, set-at-max
+3	3	1	1	FPWM	set, clear-at-max
 0	0	0	0	PCPWM	disconnect
 1	1	0	1	PCPWM	disconnect
 2	2	1	0	PCPWM	clear-up, set-down
@@ -76,7 +77,7 @@ COM1B	COM1B2	COM1B1	COM0B0	timerMode	CompareOutputModeB	topValue
 2	2	1	0	PFCPWM	clear-up, set-down
 3	3	1	1	PFCPWM	set-up, clear-down
 `),
-  clockSource: tsv(`
+  tsv(`
 CS1	CS12	CS11	CS10	clockSource
 0	0	0	0	0
 1	0	0	1	1
@@ -87,17 +88,32 @@ CS1	CS12	CS11	CS10	clockSource
 6	1	1	0	external_clock_falling_edge
 7	1	1	1	external_clock_rising_edge
 `),
-  interruptMask: tsv(`
-TIMSK1	interrupt vector code
-OCIE1A	ISR(TIMER1_COMPA_vect) { /* on OCR1A match */ }
-OCIE1B	ISR(TIMER1_COMPB_vect) { /* on OCR1B match */ }
-TOIE1	ISR(TIMER1_OVF_vect) { /* on overflow*/ }
-ICIE1	ISR(TIMER1_CAPT_vect) { /* on input capture/ }
+  tsv(`
+OCIE1A	OCIE1A_text	interruptVectorCodeA
+0	no
+1	yes	ISR(TIMER1_COMPA_vect) { /* on OCR0A match */ }
 `),
-  frequencyDoubler: tsv(`
+  tsv(`
+OCIE1B	OCIE1B_text interruptVectorCodeB
+0	no
+1	yes	ISR(TIMER1_COMPB_vect) { /* on OCR0B match */ }
+    
+`),
+  tsv(`
+TOIE1	TOIE1_text	interruptVectorCodeOVF
+0	no
+1	yes	ISR(TIMER1_OVF_vect) { /* on overflow*/ }
+`),
+  tsv(`
+ICIE1	ICIE1_text	interruptVectorCodeCapture
+0	no
+1	yes	ISR(TIMER1_CAPT_vect) { /* on input capture/ }
+`),
+
+  tsv(`
 F2XEN	TC2XS1	clockDoubler
 0	0	off
 1	0	off
 1	1	on
 `)
-}
+]

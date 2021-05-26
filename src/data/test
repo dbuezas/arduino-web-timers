@@ -1,0 +1,162 @@
+[
+  {
+    "COM1A": "0",
+    "COM1A1": "0",
+    "COM0A0": "0",
+    "timerMode": "Normal",
+    "CompareOutputModeA": "disconnect",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "1",
+    "COM1A1": "0",
+    "COM0A0": "1",
+    "timerMode": "Normal",
+    "CompareOutputModeA": "toggle",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "2",
+    "COM1A1": "1",
+    "COM0A0": "0",
+    "timerMode": "Normal",
+    "CompareOutputModeA": "clear",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "3",
+    "COM1A1": "1",
+    "COM0A0": "1",
+    "timerMode": "Normal",
+    "CompareOutputModeA": "set",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "0",
+    "COM1A1": "0",
+    "COM0A0": "0",
+    "timerMode": "CTC",
+    "CompareOutputModeA": "disconnect",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "1",
+    "COM1A1": "0",
+    "COM0A0": "1",
+    "timerMode": "CTC",
+    "CompareOutputModeA": "toggle",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "2",
+    "COM1A1": "1",
+    "COM0A0": "0",
+    "timerMode": "CTC",
+    "CompareOutputModeA": "clear",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "3",
+    "COM1A1": "1",
+    "COM0A0": "1",
+    "timerMode": "CTC",
+    "CompareOutputModeA": "set",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "0",
+    "COM1A1": "0",
+    "COM0A0": "0",
+    "timerMode": "FPWM",
+    "CompareOutputModeA": "disconnect",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "1",
+    "COM1A1": "0",
+    "COM0A0": "1",
+    "timerMode": "FPWM",
+    "CompareOutputModeA": "toggle",
+    "WGM1": "15"
+  },
+  {
+    "COM1A": "2",
+    "COM1A1": "1",
+    "COM0A0": "0",
+    "timerMode": "FPWM",
+    "CompareOutputModeA": "clear, set-at-max",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "3",
+    "COM1A1": "1",
+    "COM0A0": "1",
+    "timerMode": "FPWM",
+    "CompareOutputModeA": "set, clear-at-max",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "0",
+    "COM1A1": "0",
+    "COM0A0": "0",
+    "timerMode": "PCPWM",
+    "CompareOutputModeA": "disconnect",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "1",
+    "COM1A1": "0",
+    "COM0A0": "1",
+    "timerMode": "PCPWM",
+    "CompareOutputModeA": "toggle",
+    "WGM1": "11"
+  },
+  {
+    "COM1A": "2",
+    "COM1A1": "1",
+    "COM0A0": "0",
+    "timerMode": "PCPWM",
+    "CompareOutputModeA": "clear-up, set-down",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "3",
+    "COM1A1": "1",
+    "COM0A0": "1",
+    "timerMode": "PCPWM",
+    "CompareOutputModeA": "set-up, clear-down",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "0",
+    "COM1A1": "0",
+    "COM0A0": "0",
+    "timerMode": "PFCPWM",
+    "CompareOutputModeA": "disconnect",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "1",
+    "COM1A1": "0",
+    "COM0A0": "1",
+    "timerMode": "PFCPWM",
+    "CompareOutputModeA": "toggle",
+    "WGM1": "9"
+  },
+  {
+    "COM1A": "2",
+    "COM1A1": "1",
+    "COM0A0": "0",
+    "timerMode": "PFCPWM",
+    "CompareOutputModeA": "clear-up, set-down",
+    "WGM1": ""
+  },
+  {
+    "COM1A": "3",
+    "COM1A1": "1",
+    "COM0A0": "1",
+    "timerMode": "PFCPWM",
+    "CompareOutputModeA": "set-up, clear-down",
+    "WGM1": ""
+  }
+]

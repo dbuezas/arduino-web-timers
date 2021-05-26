@@ -12,8 +12,7 @@ DOC0A	CS02	-	OCIE0B	DTR02	OCF0B	AFCKS	-
 WGM01	CS01	DSX01	OCIE0A	DTR01	OCF0A	TC2XS1	-
 WGM00	CS00	DSX00	TOIE0	DTR00	TOV0	TC2XS0	-
 `)
-export const configs: TimerConfig[] = []
-configs.push([
+export const configs: TimerConfig = [
   tsv(`
 WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	Normal	0xFF	immediate	MAX
@@ -37,8 +36,8 @@ COM0A	COM0A0	COM0A1	timerMode	CompareOutputModeA	WGM02
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	toggle	1
-2	1	0	FPWM	clear-set-at-max
-3	1	1	FPWM	set-clear-at-max
+2	1	0	FPWM	clear, set-at-max
+3	1	1	FPWM	set, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	toggle	1
 2	1	0	PCPWM	clear-up, set-down
@@ -56,16 +55,13 @@ COM0B	COM0B0	COM0B1	timerMode	CompareOutputModeB
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	reserved
-2	1	0	FPWM	clear-set-at-max
-3	1	1	FPWM	set-clear-at-max
+2	1	0	FPWM	clear, set-at-max
+3	1	1	FPWM	set, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	reserved
 2	1	0	PCPWM	clear-up, set-down
 3	1	1	PCPWM	set-up, clear-down
-`)
-])
-
-configs.push([
+`),
   tsv(`
 CS0	CS02	CS01	CS00	clockPrescalerOrSource
 0	0	0	0	0
@@ -76,33 +72,27 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource
 5	1	0	1	1024
 6	1	1	0	external_clock_falling_edge
 7	1	1	1	external_clock_rising_edge
-`)
-])
-
-configs.push([
-  tsv(`
-OCIE0A	interruptVectorCodeA
-0	
-1	ISR(TIMER0_COMPA_vect) { /* on OCR0A match */ }
 `),
   tsv(`
-OCIE0B	interruptVectorCodeB
-0	
-1	ISR(TIMER0_COMPB_vect) { /* on OCR0B match */ }
+OCIE0A	OCIE0A_text	interruptVectorCodeA
+0	no
+1	yes ISR(TIMER0_COMPA_vect) { /* on OCR0A match */ }
+`),
+  tsv(`
+OCIE0B	OCIE0B_text interruptVectorCodeB
+0	no
+1	yes	ISR(TIMER0_COMPB_vect) { /* on OCR0B match */ }
     
 `),
   tsv(`
-TOIE0	interruptVectorCodeOVF
-0	
-1	ISR(TIMER0_OVF_vect) { /* on overflow*/ }
-`)
-])
-
-configs.push([
+TOIE0	TOIE0_text	interruptVectorCodeOVF
+0	no
+1	yes	ISR(TIMER0_OVF_vect) { /* on overflow*/ }
+`),
   tsv(`
 F2XEN	TC2XS0	clockDoubler
 0	0	off
 1	0	off
 1	1	on
 `)
-])
+]

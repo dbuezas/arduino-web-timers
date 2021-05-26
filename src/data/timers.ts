@@ -18,10 +18,14 @@ export const tsv = (str: string) => {
   const [header, ...rows] = table
   return rows
     .map((row) =>
-      Object.fromEntries(row.map((cell, col) => [header[col], cell.trim()]))
+      Object.fromEntries(
+        header.map((colName, i) => [colName, (row[i] || '').trim()])
+        //row.map((cell, col) => [header[col], cell.trim()])
+      )
     )
     .filter((row) => !Object.values(row).includes('reserved'))
 }
+
 export const tsvRegisters = (str: string) => {
   const table = str
     .trim()
@@ -42,6 +46,7 @@ export const joinTables = ([left_, right, ...tables]: Table[]): Table => {
       const keep = every(rightRow, (rightVal, key) => {
         const leftVal = leftRow[key]
         if (!leftVal) row[key] = rightVal
+        else if (!rightVal) row[key] = leftVal
         else if (leftVal !== rightVal) return false
         return true
       })
@@ -50,21 +55,6 @@ export const joinTables = ([left_, right, ...tables]: Table[]): Table => {
     })
   )
   return joinTables([joined, ...tables])
-}
-
-export const getConsistentTimerConfigs = (
-  timerConfig: TimerConfig,
-  selected: DefaultState
-) => {
-  const joined = joinTables([[selected], ...Object.values(timerConfig)])
-
-  return timerConfig.map((table) =>
-    table.filter((row) =>
-      every(row, (val, key) =>
-        joined.some((joinedRow) => !joinedRow[key] || joinedRow[key] === val)
-      )
-    )
-  )
 }
 
 export const generateCode = (
@@ -91,24 +81,41 @@ export const generateCode = (
         //@ts-ignore
         ({ bitValue, bitName }) => `${bitValue} << ${bitName}`
       )
-      return `\t${regName} = \n\t\t${bitAssignments.join(' |\n\t\t')};`
+      return `  ${regName} = \n    ${bitAssignments.join(' |\n    ')};`
     })
   }).flat()
+  const interrupts: string[] = []
+  forEach(selected, (value, bitSetName) => {
+    if (value && bitSetName.startsWith('interruptVectorCode')) {
+      interrupts.push(value)
+    }
+  })
 
-  return `${code.join('\t\n\n')}`
+  return `
+void setup(){
+  noInterrupts();
+${code.join('\t\n\n')}
+  interrupts();
+}
+${interrupts.join('\n')}`
 }
 
 export const descriptions: Record<string, string> = {
-  timerMode: 'timerMode',
-  topValue: 'topValue',
-  updateOcrMoment: 'updateOcrMoment',
-  setTovMoment: 'setTovMoment',
-  CompareOutputModeA: 'CompareOutputModeA',
-  CompareOutputModeB: 'CompareOutputModeB',
-  clockPrescalerOrSource: 'clockPrescalerOrSource',
-  OCIE0A: 'Call interrupt routine on Compare Output A',
-  OCIE0B: 'OCIE0B',
-  OCIE0C: 'OCIE0C',
-  TOIE0: 'TOIE0',
-  clockDoubler: 'clockDoubler'
+  timerMode: 'Timer Mode',
+  topValue: 'Top value of timer',
+  updateOcrMoment: 'When are the OCR registers updated (e.g OCR1A)',
+  setTovMoment: 'When overflow interrupt is triggered',
+  CompareOutputModeA: 'What does output compare A produce in the output A',
+  CompareOutputModeB: 'What does output compare B produce in the output A',
+  clockPrescalerOrSource: 'Clock prescaler or external source',
+  OCIE0A_text: 'Interrupt on Compare Output A',
+  OCIE0B_text: 'Interrupt on Compare Output B',
+  OCIE0C_text: 'Interrupt on Compare Output C',
+  TOIE0_text: 'Interrupt on Timer Overflow',
+  OCIE1A_text: 'Interrupt on Compare Output A',
+  OCIE1B_text: 'Interrupt on Compare Output B',
+  OCIE1C_text: 'Interrupt on Compare Output C',
+  TOIE1_text: 'Interrupt on Timer Overflow',
+  ICIE1_text: 'Interrupt on Input Capture',
+  clockDoubler: 'Double timer clock speed'
 }
