@@ -1,16 +1,17 @@
 import { tsv, tsvRegisters } from './timers'
-import { TimerConfig } from './types'
+import { TimerConfig } from '../helpers/types'
 
 export const registers = tsvRegisters(`
-TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR
-COM1A1	ICNC1	FOC1A	DSX17	-		-	-
-COM1A0	ICES1	FOC1B	DSX16	-		-	F2XEN
-COM1B1	-	DOC1B	DSX15	ICIE1		ICF1	TC2XF1
-COM1B0	WGM13	DOC1A	DSX14	-		-	TC2XF0
--	WGM12	DTEN1	-	-		-	-
--	CS12	-	-	OCIE1A		OCF1B	AFCKS
-WGM11	CS11	-	DSX11	OCIE1B		OCF1A	TC2XS1
-WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0`)
+TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR	PMX0	HDR
+COM1A1	ICNC1	FOC1A	DSX17	-		-	-	WCE	-
+COM1A0	ICES1	FOC1B	DSX16	-		-	F2XEN	C1BF4	-
+COM1B1	-	DOC1B	DSX15	ICIE1		ICF1	TC2XF1	C1AF5	HDR5
+COM1B0	WGM13	DOC1A	DSX14	-		-	TC2XF0	C0BF3	HDR4
+-	WGM12	DTEN1	-	-		-	-	C0AC0	HDR3
+-	CS12	-	-	OCIE1A		OCF1B	AFCKS	SSB1	HDR2
+WGM11	CS11	-	DSX11	OCIE1B		OCF1A	TC2XS1	TXD6	HDR1
+WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0	RXD5	HDR0
+`)
 export const configs: TimerConfig = [
   tsv(`
 WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
@@ -32,7 +33,7 @@ WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 15	1	1	1	1	FPWM	OCR1A	TOP	TOP
 `),
   tsv(`
-COM1A	COM1A1	COM0A0	timerMode	CompareOutputModeA	WGM1
+COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
@@ -55,38 +56,38 @@ COM1A	COM1A1	COM0A0	timerMode	CompareOutputModeA	WGM1
 3	1	1	PFCPWM	set-up, clear-down
 `),
   tsv(`
-COM1B	COM1B2	COM1B1	COM0B0	timerMode	CompareOutputModeB	topValue
-0	0	0	0	Normal	disconnect
-1	1	0	1	Normal	toggle
-2	2	1	0	Normal	clear
-3	3	1	1	Normal	set
-0	0	0	0	CTC	disconnect
-1	1	0	1	CTC	toggle
-2	2	1	0	CTC	clear
-3	3	1	1	CTC	set
-0	0	0	0	FPWM	disconnect
-1	1	0	1	FPWM	disconnect
-2	2	1	0	FPWM	clear, set-at-max
-3	3	1	1	FPWM	set, clear-at-max
-0	0	0	0	PCPWM	disconnect
-1	1	0	1	PCPWM	disconnect
-2	2	1	0	PCPWM	clear-up, set-down
-3	3	1	1	PCPWM	set-up, clear-down
-0	0	0	0	PFCPWM	disconnect
-1	1	0	1	PFCPWM	disconnect
-2	2	1	0	PFCPWM	clear-up, set-down
-3	3	1	1	PFCPWM	set-up, clear-down
+COM1B	COM1B1	COM1B0	timerMode	CompareOutputModeB	topValue
+0	0	0	Normal	disconnect
+1	0	1	Normal	toggle
+2	1	0	Normal	clear
+3	1	1	Normal	set
+0	0	0	CTC	disconnect
+1	0	1	CTC	toggle
+2	1	0	CTC	clear
+3	1	1	CTC	set
+0	0	0	FPWM	disconnect
+1	0	1	FPWM	disconnect
+2	1	0	FPWM	clear, set-at-max
+3	1	1	FPWM	set, clear-at-max
+0	0	0	PCPWM	disconnect
+1	0	1	PCPWM	disconnect
+2	1	0	PCPWM	clear-up, set-down
+3	1	1	PCPWM	set-up, clear-down
+0	0	0	PFCPWM	disconnect
+1	0	1	PFCPWM	disconnect
+2	1	0	PFCPWM	clear-up, set-down
+3	1	1	PFCPWM	set-up, clear-down
 `),
   tsv(`
-CS1	CS12	CS11	CS10	clockSource
-0	0	0	0	0
-1	0	0	1	1
-2	0	1	0	8
-3	0	1	1	64
-4	1	0	0	256
-5	1	0	1	1024
-6	1	1	0	external_clock_falling_edge
-7	1	1	1	external_clock_rising_edge
+CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
+0	0	0	0	0	N/A
+1	0	0	1	1	N/A
+2	0	1	0	8	N/A
+3	0	1	1	64	N/A
+4	1	0	0	256	N/A
+5	1	0	1	1024	N/A
+6	1	1	0	external_clock_falling_edge	PD5
+7	1	1	1	external_clock_rising_edge	PD5
 `),
   tsv(`
 OCIE1A	OCIE1A_text	interruptVectorCodeA
@@ -94,7 +95,7 @@ OCIE1A	OCIE1A_text	interruptVectorCodeA
 1	yes	ISR(TIMER1_COMPA_vect) { /* on OCR0A match */ }
 `),
   tsv(`
-OCIE1B	OCIE1B_text interruptVectorCodeB
+OCIE1B	OCIE1B_text	interruptVectorCodeB
 0	no
 1	yes	ISR(TIMER1_COMPB_vect) { /* on OCR0B match */ }
     
@@ -115,5 +116,27 @@ F2XEN	TC2XS1	clockDoubler
 0	0	off
 1	0	off
 1	1	on
+`),
+  tsv(`
+C1BF4	WCE	OC1B_OutputPort
+0	0	PB2
+0	1	PB2
+1	1	PF4
+`),
+  tsv(`
+C1AF5	WCE	OC1A_OutputPort
+0	0	PB1
+0	1	PB1
+1	1	PF5
+`),
+  tsv(`
+HDR4	OC1B_OutputPort	OC1B_OutputCurrent
+0		12mA
+1	PF4	80mA
+`),
+  tsv(`
+HDR5	OC1A_OutputPort	OC1A_OutputCurrent
+0		12mA
+1	PF5	80mA
 `)
 ]

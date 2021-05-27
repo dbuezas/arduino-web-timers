@@ -1,53 +1,72 @@
 import React, { useEffect, useState } from 'react'
-//import './App.css';
-import * as timer0 from './data/timer0'
-import * as timer1 from './data/timer1'
 import { Checkbox, CheckboxGroup } from 'rsuite'
+import { Radio, RadioGroup } from 'rsuite'
+
 import 'rsuite/dist/styles/rsuite-default.css'
 import uniq from 'lodash/uniq'
+import omit from 'lodash/omit'
 import keys from 'lodash/keys'
 import mapValues from 'lodash/mapValues'
-import intersection from 'lodash/intersection'
-import { generateCode, joinTables, descriptions } from './data/timers'
-import { Table } from './data/types'
-import { table } from 'console'
-import { pickBy } from 'lodash'
+import { descriptions } from './data/timers'
+import { Table } from './helpers/types'
+import { omitBy, pickBy } from 'lodash'
+//import './App.css';
+import {
+  generateCode,
+  getValuesPerBitName,
+  joinTables,
+  splitTables
+} from './helpers/helpers'
 
-const timer = timer1
+import * as timer0 from './data/timer0'
+import * as timer1 from './data/timer1'
+import * as timer2 from './data/timer2'
+import * as timer3 from './data/timer3'
+
+const timers = [timer0, timer1, timer2, timer3]
 
 type ConfigState = {
   [k: string]: string | null
 }
 type SetConfigState = (c: ConfigState) => void
 function renderConfig(
-  combinations: Table,
+  combinationsPerTableset: Table,
   selected: ConfigState,
-  setSelected: SetConfigState,
-  allBitnamesAndValues: Record<string, string[]>
+  setUserBitSelection: SetConfigState,
+  valuesPerBitName: Record<string, string[]>,
+  tableSet: Table[]
 ) {
   return (
     <div className="App">
-      {keys(combinations[0]).map((colName) => {
-        const regDescription = descriptions[colName]
+      {keys(combinationsPerTableset[0]).map((bitName) => {
+        const regDescription = descriptions[bitName]
         if (!regDescription) return ''
-        const allOptions = allBitnamesAndValues[colName]
-        const enabledOptions = uniq(combinations.map((col) => col[colName]))
+        const allOptions = valuesPerBitName[bitName]
+        console.time('enabledOptions:' + bitName)
+        const selectedWithout = omit(selected, bitName)
+        const enabledOptions = uniq(
+          joinTables([[selectedWithout], ...tableSet]).map(
+            (col) => col[bitName]
+          )
+        )
+        console.timeEnd('enabledOptions:' + bitName)
+
         const forcedOption =
-          !selected[colName] && enabledOptions.length === 1
+          !selected[bitName] && enabledOptions.length === 1
             ? enabledOptions[0]
             : null
         const suggestedOption =
-          !selected[colName] && enabledOptions.length > 1
+          !selected[bitName] && enabledOptions.length > 1
             ? enabledOptions[0]
             : null
         return (
-          <div key={colName}>
-            {regDescription || colName}
+          <div key={bitName}>
+            {regDescription || bitName}
             <CheckboxGroup
               inline
-              value={[selected[colName] || forcedOption]}
+              value={[selected[bitName] || forcedOption]}
               onChange={(val) =>
-                setSelected({ ...selected, [colName]: val[1] })
+                setUserBitSelection({ ...selected, [bitName]: val[1] })
               }
             >
               {allOptions.map((value, i) => (
@@ -67,82 +86,65 @@ function renderConfig(
     </div>
   )
 }
-
-console.time('allBitnamesAndValues')
-
-let allBitnamesAndValues: Record<string, string[]> = {}
-for (const table of timer.configs) {
-  for (const row of table) {
-    for (const col in row) {
-      const val = row[col]
-      allBitnamesAndValues[col] = allBitnamesAndValues[col] || []
-      if (val) allBitnamesAndValues[col].push(val)
-    }
-  }
+type DefaultState = {
+  [x: string]: string | null
 }
-allBitnamesAndValues = mapValues(allBitnamesAndValues, uniq)
 
-const splitTables = ([left, ...tables]: Table[]): Table[][] => {
-  if (!left) return []
-  const cluster = [left]
-  let remaining: Table[] = []
-  let colsLeft = Object.keys(left[0])
-  let changed
-  do {
-    changed = false
-    remaining = []
-
-    for (const table of tables) {
-      const colsRight = Object.keys(table[0])
-      const match = intersection(colsLeft, colsRight).length > 0
-      if (match) {
-        cluster.push(table)
-        colsLeft = uniq([...colsLeft, ...colsRight])
-        changed = true
-      } else {
-        remaining.push(table)
-      }
-    }
-    tables = remaining
-  } while (changed)
-
-  return [cluster, ...splitTables(remaining)]
-}
-console.time('splitTables')
-const tableSets = splitTables(timer.configs)
-console.log('splitTables', tableSets)
-console.timeEnd('splitTables')
-
-const defaultState = mapValues(
-  allBitnamesAndValues,
-  () => null as null | string
-)
-console.timeEnd('allBitnamesAndValues')
 function App() {
-  const [selected, setSelected] = useState(defaultState)
-  const [combinationsSet, setCombinationsSet] = useState<Table[]>([[{}]])
+  const [timerIndex, setTimerIndex] = useState(0)
+  const timer = timers[timerIndex]
+  const [userBitSelection, setUserBitSelection] = useState<DefaultState>({})
   useEffect(() => {
-    console.time('join')
-    const newCombinations = tableSets.map((tableSet) => {
-      const relevantSelected = pickBy(selected, (_, key) =>
-        tableSet.some((table) => keys(table[0]).includes(key))
-      )
-      return joinTables([[relevantSelected], ...tableSet])
-    })
-    console.log('newCombinations.length', newCombinations.length)
-    setCombinationsSet(newCombinations)
-    console.timeEnd('join')
-  }, [selected])
+    const valuesPerBitName = getValuesPerBitName(timer.configs)
+    const defaultState = mapValues(
+      valuesPerBitName,
+      () => null as null | string
+    )
+    setUserBitSelection(defaultState)
+  }, [timer])
+  const tableSets = splitTables(timer.configs)
 
+  let valuesPerBitName = getValuesPerBitName(timer.configs)
+
+  console.time('combinationsSet')
+  const combinationsSet = tableSets.map((tableSet) => {
+    const relevantSelected = pickBy(userBitSelection, (_, key) =>
+      tableSet.some((table) => keys(table[0]).includes(key))
+    )
+    return joinTables([[relevantSelected], ...tableSet])
+  })
+  console.timeEnd('combinationsSet')
+
+  console.time('fullTimerConfiguration')
   const fullTimerConfiguration = Object.assign(
     {},
-    ...combinationsSet.map((combinations) => combinations[0])
+    ...combinationsSet.map(
+      (combinationsPerTableset) => combinationsPerTableset[0]
+    )
   )
+  console.timeEnd('fullTimerConfiguration')
 
   return (
     <div className="App">
-      {combinationsSet.map((combinations) =>
-        renderConfig(combinations, selected, setSelected, allBitnamesAndValues)
+      <RadioGroup
+        name="radioList"
+        inline
+        appearance="picker"
+        value={timerIndex}
+        onChange={setTimerIndex}
+      >
+        {timers.map((timer, i) => (
+          <Radio value={i}>Timer {i}</Radio>
+        ))}
+      </RadioGroup>
+      {combinationsSet.map((combinationsPerTableset, i) =>
+        renderConfig(
+          combinationsPerTableset,
+          userBitSelection,
+          setUserBitSelection,
+          valuesPerBitName,
+          tableSets[i]
+        )
       )}
       <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
     </div>
