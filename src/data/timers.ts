@@ -54,10 +54,18 @@ export const descriptions: Record<string, string> = {
   OC0B_OutputPort: 'OC0B_OutputPort',
   OC1A_OutputPort: 'OC1A_OutputPort',
   OC1B_OutputPort: 'OC1B_OutputPort',
+  OC2A_OutputPort: 'OC2A_OutputPort',
+  OC2B_OutputPort: 'OC2B_OutputPort',
+  OC3A_OutputPort: 'OC3A_OutputPort',
+  OC3B_OutputPort: 'OC3B_OutputPort',
+  OC3C_OutputPort: 'OC3C_OutputPort',
   OC0A_OutputCurrent: 'OC0A_OutputCurrent',
   OC0B_OutputCurrent: 'OC0B_OutputCurrent',
   'PF1(PD1)Current': 'PF1(PD1)Current',
   'PF2(PD2)Current': 'PF2(PD2)Current',
   OC1A_OutputCurrent: 'OC1A_OutputCurrent',
-  OC1B_OutputCurrent: 'OC1B_OutputCurrent'
+  OC1B_OutputCurrent: 'OC1B_OutputCurrent',
+  OC3A_OutputCurrent: 'OC3A_OutputCurrent',
+  OC3B_OutputCurrent: 'OC3B_OutputCurrent',
+  OC3C_OutputCurrent: 'OC3C_OutputCurrent'
 }

@@ -1,0 +1,16 @@
+.TimerSetup {
+  font-size: smaller;
+}
+.TimerSetup .rs-panel-heading {
+  padding: 12px;
+  padding-bottom: 5px;
+  font-size: 13px;
+}
+
+.rs-col {
+  margin-bottom: 10px;
+}
+.rs-checkbox-checker {
+  padding-left: 34px;
+  min-height: 33px;
+}

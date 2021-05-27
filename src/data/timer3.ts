@@ -1,7 +1,7 @@
 import { tsv, tsvRegisters } from './timers'
-import { TimerConfig } from '../helpers/types'
+import { TTimerConfig } from '../helpers/types'
 
-export const registers = tsvRegisters(`
+const registers = tsvRegisters(`
 TCCR3A	TCCR3B	TCCR3C	TCCR3D	DTR3	TIMSK3	TIFR3	PMX0	PMX1	PMX2	HDR
 COM3A1	ICNC3	FOC3A	DSX37		-	-	WCE	-	-	-
 COM3A0	ICES3	FOC3B	DSX36		-	-	C1BF4	-		-
@@ -12,7 +12,7 @@ COM3C0	CS32	-	-		OCIE3B	OCF3B	SSB1	C3AC		HDR2
 WGM31	CS31	DOC3C	DSX31		OCIE3A	OCF3A	TXD6	C2BF7		HDR1
 WGM30	CS30	FOC3C	DSX30		TOIE3	TOV3	RXD5	C2AF6		HDR0
 `)
-export const configs: TimerConfig = [
+const configs: TTimerConfig = [
   tsv(`
 WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	Immediately	MAX
@@ -33,7 +33,7 @@ WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
 15	1	1	1	1	FPWM	OCR3A	TOP	TOP
 `),
   tsv(`
-COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3
+COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3	CompareOutputModeB	CompareOutputModeC
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
@@ -43,15 +43,15 @@ COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3
 2	1	0	CTC	clear
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
-1	0	1	FPWM	toggle	15
+1	0	1	FPWM	toggle	15	disconnect	disconnect
 2	1	0	FPWM	clear, set-at-max
 3	1	1	FPWM	set, clear-at-max
 0	0	0	PCPWM	disconnect
-1	0	1	PCPWM	toggle	11
+1	0	1	PCPWM	toggle	11	disconnect	disconnect
 2	1	0	PCPWM	clear-up, set-down
 3	1	1	PCPWM	set-up, clear-down
 0	0	0	PFCPWM	disconnect
-1	0	1	PFCPWM	toggle	9
+1	0	1	PFCPWM	toggle	9	disconnect	disconnect
 2	1	0	PFCPWM	clear-up, set-down
 3	1	1	PFCPWM	set-up, clear-down
 `),
@@ -115,48 +115,54 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
   tsv(`
 OCIE3A	OCIE3A_text	interruptVectorCodeA
 0	no
-1	yes	ISR(TIMER3_vect) {\n  if (TIFR3 & (1 << OCF3A)) {\n    TIFR3 = 1 << OCF3A;\n    // [... your code]\n  }\n}
+1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
 OCIE3B	OCIE3B_text	interruptVectorCodeB
 0	no
-1	yes	ISR(TIMER3_vect) {\n  if (TIFR3 & (1 << OCF3B)) {\n    TIFR3 = 1 << OCF3B;\n    // [... your code]\n  }\n}
+1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-OCIE3C	OCIE3C_text	interruptVectorCodeB
+OCIE3C	OCIE3C_text	interruptVectorCodeC
 0	no
-1	yes	ISR(TIMER3_vect) {\n  if (TIFR3 & (1 << OCF3C)) {\n    TIFR3 = 1 << OCF3C;\n    // [... your code]\n  }\n}
+1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-TOIE3	TOIE3_text	interruptVectorCodeB
+TOIE3	TOIE3_text	interruptVectorCodeD
 0	no
-1	yes	ISR(TIMER3_vect) {\n  if (TIFR3 & (1 << TOV3)) {\n    TIFR3 = 1 << TOV3;\n    // [... your code]\n  }\n}
+1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
 ICIE3	ICIE3_text	interruptVectorCodeCapture
 0	no
-1	yes	ISR(TIMER3_vect) {\n  if (TIFR3 & (1 << ICF3)) {\n    TIFR3 = 1 << ICF3;\n    // [... your code]\n  }\n}
+1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-C1BF4	WCE	OC1B_OutputPort
-0	0	PB2
-0	1	PB2
-1	1	PF4
+C3AC	WCE	OC3A_OutputPort
+0	0	PF1 (wired to PD1 in QFP32)
+0	1	PF1 (wired to PD1 in QFP32)
+1	1	AC0P (wired to PD6 in QFP32 and SSOP20)
 `),
   tsv(`
-C1AF5	WCE	OC1A_OutputPort
-0	0	PB1
-0	1	PB1
-1	1	PF5
+OC3B_OutputPort
+PF2 (wired to PD2 in QFP32 and SSOP20)
+PF3 (can't find the way in the datasheet)
 `),
   tsv(`
-HDR2	PF1(PD1)Current
-0	12mA
-1	80mA
+OC3C_OutputPort
+PF3
 `),
   tsv(`
-HDR3	PF2(PD2)Current
-0	12mA
-1	80mA
+HDR2	OC3A_OutputPort	OC3A_OutputCurrent
+0		12mA
+1	PF1 (wired to PD1 in QFP32)	80mA
+`),
+  tsv(`
+HDR3	OC3B_OutputPort	OC3B_OutputCurrent
+0		12mA
+1	PF2 (wired to PD2 in QFP32 and SSOP20)	80mA
 `)
 ]
+
+const timer = { registers, configs }
+export default timer

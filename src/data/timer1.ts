@@ -1,7 +1,7 @@
 import { tsv, tsvRegisters } from './timers'
-import { TimerConfig } from '../helpers/types'
+import { TTimerConfig } from '../helpers/types'
 
-export const registers = tsvRegisters(`
+const registers = tsvRegisters(`
 TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR	PMX0	HDR
 COM1A1	ICNC1	FOC1A	DSX17	-		-	-	WCE	-
 COM1A0	ICES1	FOC1B	DSX16	-		-	F2XEN	C1BF4	-
@@ -12,7 +12,7 @@ COM1B0	WGM13	DOC1A	DSX14	-		-	TC2XF0	C0BF3	HDR4
 WGM11	CS11	-	DSX11	OCIE1B		OCF1A	TC2XS1	TXD6	HDR1
 WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0	RXD5	HDR0
 `)
-export const configs: TimerConfig = [
+const configs: TTimerConfig = [
   tsv(`
 WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	Immediately	MAX
@@ -33,7 +33,7 @@ WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 15	1	1	1	1	FPWM	OCR1A	TOP	TOP
 `),
   tsv(`
-COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1
+COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1	CompareOutputModeB
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
@@ -43,15 +43,15 @@ COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1
 2	1	0	CTC	clear
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
-1	0	1	FPWM	toggle	15
+1	0	1	FPWM	toggle	15	disconnect
 2	1	0	FPWM	clear, set-at-max
 3	1	1	FPWM	set, clear-at-max
 0	0	0	PCPWM	disconnect
-1	0	1	PCPWM	toggle	11
+1	0	1	PCPWM	toggle	11	disconnect
 2	1	0	PCPWM	clear-up, set-down
 3	1	1	PCPWM	set-up, clear-down
 0	0	0	PFCPWM	disconnect
-1	0	1	PFCPWM	toggle	9
+1	0	1	PFCPWM	toggle	9	disconnect
 2	1	0	PFCPWM	clear-up, set-down
 3	1	1	PFCPWM	set-up, clear-down
 `),
@@ -140,3 +140,5 @@ HDR5	OC1A_OutputPort	OC1A_OutputCurrent
 1	PF5	80mA
 `)
 ]
+const timer = { registers, configs }
+export default timer

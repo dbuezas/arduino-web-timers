@@ -1,17 +1,21 @@
-export type TableNames = string
+export type TTableNames = string
 
-export type Table = {
+export type TRow = {
   [k: string]: string | null
-}[]
-export type TimerConfig = Table[]
+}
+export type TTable = TRow[]
+export type TTimerConfig = TTable[]
 
-export type TimerRegisters = {
+export type TTimerRegisters = {
   [k: string]: string[]
 }
-export type Descriptions = {
+export type TDescriptions = {
   [k: string]: string
 }
 
-export type DefaultState = {
-  [k: string]: string | null
+export type TDefaultState = TRow
+
+export type TTimer = {
+  configs: TTimerConfig
+  registers: TTimerRegisters
 }

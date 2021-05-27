@@ -1,7 +1,7 @@
 import { tsv, tsvRegisters } from './timers'
-import { TimerConfig } from '../helpers/types'
+import { TTimerConfig } from '../helpers/types'
 
-export const registers = tsvRegisters(`
+const registers = tsvRegisters(`
 TCCR2A	TCCR2B	TIMSK2	TIFR2	PMX1	HDR
 COM2A1	FOC2A	-	-	-	-
 COM2A0	FOC2B	-	-	-	-
@@ -12,7 +12,7 @@ COM2B0	-	-	-	-	HDR4
 WGM21	CS21	OCIE2A	OCF2A	C2BF7	HDR1
 WGM20	CS20	TOIE2	TOV2	C2AF6	HDR0
 `)
-export const configs: TimerConfig = [
+const configs: TTimerConfig = [
   tsv(`
 WGM2	WGM22	WGM21	WGM20	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	Normal	0xFF	immediate	MAX
@@ -100,3 +100,5 @@ C2BF7	OC2B_OutputPort
 1	PF7
 `)
 ]
+const timer = { registers, configs }
+export default timer
