@@ -12,12 +12,6 @@ import TimerSetup from './TimerSetup'
 
 const timers = [timer0, timer1, timer2, timer3]
 
-const styles = {
-  width: 250,
-  display: 'inline-table',
-  marginRight: 10
-}
-
 const App = () => {
   const [timerIndex, setTimerIndex] = useState(0)
   const timer = timers[timerIndex]

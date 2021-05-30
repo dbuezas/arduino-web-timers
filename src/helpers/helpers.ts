@@ -7,7 +7,7 @@ import uniq from 'lodash/uniq'
 import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
-import { pickBy, without } from 'lodash'
+import { pickBy } from 'lodash'
 
 export const getValuesPerBitName = (configs: TTable[]) => {
   let valuesPerBitName: Record<string, string[]> = {}
@@ -99,7 +99,7 @@ export const generateCode = (
     )
     const regNames = uniq(map(assignments, 'regName'))
     return regNames.map((regName) => {
-      let regAssignments = assignments.filter(({ regName: r }) => r == regName)
+      let regAssignments = assignments.filter(({ regName: r }) => r === regName)
       regAssignments = sortBy(regAssignments, 'bitName')
       const omitZeros = true
       if (omitZeros) {

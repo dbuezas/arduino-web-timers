@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, CheckboxGroup, Col, Grid, Panel, Row } from 'rsuite'
+import { Checkbox, CheckboxGroup, FlexboxGrid, Panel } from 'rsuite'
 
 import uniq from 'lodash/uniq'
 import keys from 'lodash/keys'
@@ -90,30 +90,23 @@ function TableConfig({
   options
 }: input) {
   return (
-    <Panel
-      header={bitName}
-      bordered
-      key={bitName}
-      bodyFill
-      // style={{ width: 200 }}
+    <CheckboxGroup
+      inline
+      value={[selectedOption || forcedOption]}
+      onChange={setOption}
     >
-      <CheckboxGroup
-        inline
-        value={[selectedOption || forcedOption]}
-        onChange={setOption}
-      >
-        {options.map(({ value, isSuggested, isDisabled }, i) => (
-          <Checkbox
-            indeterminate={isSuggested}
-            key={i}
-            value={value}
-            disabled={isDisabled}
-          >
-            {value}
-          </Checkbox>
-        ))}
-      </CheckboxGroup>
-    </Panel>
+      <p>{bitName}</p>
+      {options.map(({ value, isSuggested, isDisabled }, i) => (
+        <Checkbox
+          indeterminate={isSuggested}
+          key={i}
+          value={value}
+          disabled={isDisabled}
+        >
+          {value}
+        </Checkbox>
+      ))}
+    </CheckboxGroup>
   )
 }
 
@@ -147,28 +140,40 @@ function TimerSetup({ timer }: { timer: TTimer }) {
   const data = tableSets.flatMap((tableSet, i) =>
     getGroupData({ userBitSelection, setUserBitSelection, tableSet })
   )
-  let columns = mapValues(descriptions, (description, groupName) =>
-    data.filter(({ bitName }) => !!description[bitName])
+  let columns = mapValues(descriptions, (description) =>
+    data
+      .map(({ bitName, ...rest }) => ({
+        ...rest,
+        bitName: description[bitName]
+      }))
+      .filter(({ bitName }) => bitName)
   )
   columns = pickBy(columns, (panelData) => panelData.length)
   return (
     <div className="TimerSetup">
-      <Grid fluid>
-        <Row className="show-grid">
-          {map(columns, (panelsData, groupName) => {
-            return (
-              <>
-                <Col xs={Math.floor(24 / panelsData.length)}>
-                  {groupName}
-                  {panelsData.map((panelData, i) => (
-                    <TableConfig key={i} {...panelData} />
-                  ))}
-                </Col>
-              </>
-            )
-          })}
-        </Row>
-      </Grid>
+      <FlexboxGrid>
+        {map(columns, (panelsData, groupName) => {
+          return (
+            <FlexboxGrid.Item
+              style={{
+                width: 100 / Object.keys(columns).length + '%'
+              }}
+            >
+              <Panel
+                header={groupName}
+                bordered
+                key={groupName}
+                // bodyFill
+                // style={{ width: 200 }}
+              >
+                {panelsData.map((panelData, i) => (
+                  <TableConfig key={i} {...panelData} />
+                ))}
+              </Panel>
+            </FlexboxGrid.Item>
+          )
+        })}
+      </FlexboxGrid>
       <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
     </div>
   )

@@ -27,29 +27,29 @@ export const tsvRegisters = (str: string) => {
 
 export const descriptions: Record<string, Record<string, string>> = {
   Timer: {
-    timerMode: 'Timer Mode',
+    timerMode: 'Timer mode',
     topValue: 'Top value of timer',
     clockPrescalerOrSource: 'Clock prescaler or external source',
     clockDoubler: 'Double timer clock speed',
-    ExternalClockInput: 'ExternalClockInput'
+    ExternalClockInput: 'External clock input port'
   },
   'Output A': {
-    CompareOutputModeA: 'What does output compare A produce in the output A',
-    OCIEnA_text: 'Interrupt on Compare Output A',
-    OCnA_OutputPort: 'OCnA_OutputPort',
-    OCnA_OutputCurrent: 'OCnA_OutputCurrent'
+    CompareOutputModeA: 'Behaviour',
+    OCIEnA_text: 'Interrupt',
+    OCnA_OutputPort: 'Output port',
+    OCnA_OutputCurrent: 'Output current'
   },
   'Output B': {
-    CompareOutputModeB: 'What does output compare B produce in the output B',
-    OCIEnB_text: 'Interrupt on Compare Output B',
-    OCnB_OutputPort: 'OCnB_OutputPort',
-    OCnB_OutputCurrent: 'OCnB_OutputCurrent'
+    CompareOutputModeB: 'Behaviour',
+    OCIEnB_text: 'Interrupt',
+    OCnB_OutputPort: 'Output port',
+    OCnB_OutputCurrent: 'Output current'
   },
   'Output C': {
-    CompareOutputModeC: 'What does output compare C produce in the output C',
-    OCIEnC_text: 'Interrupt on Compare Output C',
-    OCnC_OutputPort: 'OCnC_OutputPort',
-    OCnC_OutputCurrent: 'OCnC_OutputCurrent'
+    CompareOutputModeC: 'Behaviour',
+    OCIEnC_text: 'Interrupt',
+    OCnC_OutputPort: 'Output port',
+    OCnC_OutputCurrent: 'Output current'
   },
   Extras: {
     updateOcrMoment: 'When are the OCR registers updated (e.g OCR1A)',
