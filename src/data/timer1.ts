@@ -15,11 +15,11 @@ WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0	RXD5	HDR0
 const configs: TTimerConfig = [
   tsv(`
 WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
-0	0	0	0	0	Normal	0xFFFF	Immediately	MAX
+0	0	0	0	0	Normal	0xFFFF	immediate	MAX
 1	0	0	0	1	PCPWM	0x00FF	TOP	BOTTOM
 2	0	0	1	0	PCPWM	0x01FF	TOP	BOTTOM
 3	0	0	1	1	PCPWM	0x03FF	TOP	BOTTOM
-4	0	1	0	0	CTC	OCR1A	Immediately	MAX
+4	0	1	0	0	CTC	OCR1A	immediate	MAX
 5	0	1	0	1	FPWM	0x00FF	BOTTOM	TOP
 6	0	1	1	0	FPWM	0x01FF	BOTTOM	TOP
 7	0	1	1	1	FPWM	0x03FF	BOTTOM	TOP
@@ -27,7 +27,7 @@ WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 9	1	0	0	1	PFCPWM	OCR1A	BOTTOM	BOTTOM
 10	1	0	1	0	PCPWM	ICR1	TOP	BOTTOM
 11	1	0	1	1	PCPWM	OCR1A	TOP	BOTTOM
-12	1	1	0	0	CTC	ICR1	Immediately	MAX
+12	1	1	0	0	CTC	ICR1	immediate	MAX
 13	1	1	0	1	reserved	-	-	-
 14	1	1	1	0	FPWM	ICR1	TOP	TOP
 15	1	1	1	1	FPWM	OCR1A	TOP	TOP
@@ -90,23 +90,23 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 7	1	1	1	external_clock_rising_edge	PD5
 `),
   tsv(`
-OCIE1A	OCIE1A_text	interruptVectorCodeA
+OCIE1A	OCIEnA_text	interruptVectorCodeA
 0	no
 1	yes	ISR(TIMER1_COMPA_vect) { /* on OCR0A match */ }
 `),
   tsv(`
-OCIE1B	OCIE1B_text	interruptVectorCodeB
+OCIE1B	OCIEnB_text	interruptVectorCodeB
 0	no
 1	yes	ISR(TIMER1_COMPB_vect) { /* on OCR0B match */ }
     
 `),
   tsv(`
-TOIE1	TOIE1_text	interruptVectorCodeOVF
+TOIE1	TOIEn_text	interruptVectorCodeOVF
 0	no
 1	yes	ISR(TIMER1_OVF_vect) { /* on overflow*/ }
 `),
   tsv(`
-ICIE1	ICIE1_text	interruptVectorCodeCapture
+ICIE1	ICIEn_text	interruptVectorCodeCapture
 0	no
 1	yes	ISR(TIMER1_CAPT_vect) { /* on input capture/ }
 `),
@@ -118,24 +118,24 @@ F2XEN	TC2XS1	clockDoubler
 1	1	on
 `),
   tsv(`
-C1BF4	WCE	OC1B_OutputPort
+C1BF4	WCE	OCnB_OutputPort
 0	0	PB2
 0	1	PB2
 1	1	PF4
 `),
   tsv(`
-C1AF5	WCE	OC1A_OutputPort
+C1AF5	WCE	OCnA_OutputPort
 0	0	PB1
 0	1	PB1
 1	1	PF5
 `),
   tsv(`
-HDR4	OC1B_OutputPort	OC1B_OutputCurrent
+HDR4	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
 1	PF4	80mA
 `),
   tsv(`
-HDR5	OC1A_OutputPort	OC1A_OutputCurrent
+HDR5	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PF5	80mA
 `)

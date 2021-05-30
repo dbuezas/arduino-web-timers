@@ -74,18 +74,18 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 7	1	1	1	external_clock_rising_edge	PD4
 `),
   tsv(`
-OCIE0A	OCIE0A_text	interruptVectorCodeA
+OCIE0A	OCIEnA_text	interruptVectorCodeA
 0	no
 1	yes	ISR(TIMER0_COMPA_vect) { /* on OCR0A match */ }
 `),
   tsv(`
-OCIE0B	OCIE0B_text	interruptVectorCodeB
+OCIE0B	OCIEnB_text	interruptVectorCodeB
 0	no
 1	yes	ISR(TIMER0_COMPB_vect) { /* on OCR0B match */ }
     
 `),
   tsv(`
-TOIE0	TOIE0_text	interruptVectorCodeOVF
+TOIE0	TOIEn_text	interruptVectorCodeOVF
 0	no
 1	yes	ISR(TIMER0_OVF_vect) { /* on overflow*/ }
 `),
@@ -96,7 +96,7 @@ F2XEN	TC2XS0	clockDoubler
 1	1	on
 `),
   tsv(`
-C0AC0	OC0AS	WCE	OC0A_OutputPort
+C0AC0	OC0AS	WCE	OCnA_OutputPort
 0	0	0	PD6
 0	0	1	PD6
 0	1	1	PE4
@@ -104,18 +104,18 @@ C0AC0	OC0AS	WCE	OC0A_OutputPort
 1	1	1	PE4+PC0
 `),
   tsv(`
-C0BF3	WCE	OC0B_OutputPort
+C0BF3	WCE	OCnB_OutputPort
 0	0	PD5
 0	1	PD5
 1	1	PF3
 `),
   tsv(`
-HDR0	OC0B_OutputPort	OC0B_OutputCurrent
+HDR0	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
 1	PD5	80mA
 `),
   tsv(`
-HDR1	OC0A_OutputPort	OC0A_OutputCurrent
+HDR1	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PD6	80mA
 `)

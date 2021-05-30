@@ -113,54 +113,58 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 7	1	1	1	external_clock_rising_edge	PF6
 `),
   tsv(`
-OCIE3A	OCIE3A_text	interruptVectorCodeA
+OCIE3A	OCIEnA_text	interruptVectorCodeA
 0	no
 1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-OCIE3B	OCIE3B_text	interruptVectorCodeB
+OCIE3B	OCIEnB_text	interruptVectorCodeB
 0	no
 1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-OCIE3C	OCIE3C_text	interruptVectorCodeC
+OCIE3C	OCIEnC_text	interruptVectorCodeC
 0	no
 1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-TOIE3	TOIE3_text	interruptVectorCodeD
+TOIE3	TOIEn_text	interruptVectorCodeD
 0	no
 1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-ICIE3	ICIE3_text	interruptVectorCodeCapture
+ICIE3	ICIEn_text	interruptVectorCodeCapture
 0	no
 1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    // [... your code]\\n  }\\n}
 `),
   tsv(`
-C3AC	WCE	OC3A_OutputPort
+C3AC	WCE	OCnA_OutputPort
 0	0	PF1 (wired to PD1 in QFP32)
 0	1	PF1 (wired to PD1 in QFP32)
 1	1	AC0P (wired to PD6 in QFP32 and SSOP20)
 `),
   tsv(`
-OC3B_OutputPort
+OCnB_OutputPort
 PF2 (wired to PD2 in QFP32 and SSOP20)
 PF3 (can't find the way in the datasheet)
 `),
   tsv(`
-OC3C_OutputPort
+OCnC_OutputPort
 PF3
 `),
   tsv(`
-HDR2	OC3A_OutputPort	OC3A_OutputCurrent
+HDR2	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PF1 (wired to PD1 in QFP32)	80mA
 `),
   tsv(`
-HDR3	OC3B_OutputPort	OC3B_OutputCurrent
+HDR3	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
 1	PF2 (wired to PD2 in QFP32 and SSOP20)	80mA
+`),
+  tsv(`
+OCnC_OutputCurrent
+12mA
 `)
 ]
 

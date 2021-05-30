@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Checkbox, CheckboxGroup, Col, Grid, Panel, Row } from 'rsuite'
+import Masonry from 'react-masonry-component'
 
 import uniq from 'lodash/uniq'
 import keys from 'lodash/keys'
@@ -32,74 +33,70 @@ function TableConfig({
   tableSet: TTable[]
 }) {
   const tableSetEnabled = joinTables([[userBitSelection], ...tableSet])
-  return (
-    <div key={key}>
-      {map(getValuesPerBitName(tableSet), (allOptions, bitName) => {
-        const regDescription = descriptions[bitName]
-        if (!regDescription) return ''
-        const selectedWithout = { ...userBitSelection, [bitName]: null }
-        let joined: TRow[]
-        if (userBitSelection[bitName]) {
-          joined = joinTables([[selectedWithout], ...tableSet])
-        } else {
-          // optimization
-          joined = tableSetEnabled
-        }
-        const enabledOptions = uniq(
-          joined.map((col) => col[bitName]).filter(isTruthy)
-        )
+  return map(getValuesPerBitName(tableSet), (allOptions, bitName) => {
+    const regDescription = descriptions[bitName]
+    if (!regDescription) return ''
+    const selectedWithout = { ...userBitSelection, [bitName]: null }
+    let joined: TRow[]
+    if (userBitSelection[bitName]) {
+      joined = joinTables([[selectedWithout], ...tableSet])
+    } else {
+      // optimization
+      joined = tableSetEnabled
+    }
+    const enabledOptions = uniq(
+      joined.map((col) => col[bitName]).filter(isTruthy)
+    )
 
-        const forcedOption =
-          !userBitSelection[bitName] && enabledOptions.length === 1
-            ? enabledOptions[0]
-            : null
-        const suggestedOption =
-          !userBitSelection[bitName] && enabledOptions.length > 1
-            ? enabledOptions[0]
-            : null
-        return (
-          <Col lg={4} md={8} sm={12}>
-            <Panel
-              header={regDescription || bitName}
-              bordered
-              key={bitName}
-              bodyFill
+    const forcedOption =
+      !userBitSelection[bitName] && enabledOptions.length === 1
+        ? enabledOptions[0]
+        : null
+    const suggestedOption =
+      !userBitSelection[bitName] && enabledOptions.length > 1
+        ? enabledOptions[0]
+        : null
+    return (
+      <Panel
+        header={regDescription || bitName}
+        bordered
+        key={bitName}
+        bodyFill
+        style={{ width: 200 }}
+      >
+        <CheckboxGroup
+          inline
+          value={[userBitSelection[bitName] || forcedOption]}
+          onChange={(val) =>
+            setUserBitSelection({
+              ...userBitSelection,
+              [bitName]: val[1]
+            })
+          }
+        >
+          {allOptions.map((value, i) => (
+            <Checkbox
+              indeterminate={value === suggestedOption}
+              key={i}
+              value={value}
+              disabled={!enabledOptions.includes(value) || !!forcedOption}
             >
-              <CheckboxGroup
-                inline
-                value={[userBitSelection[bitName] || forcedOption]}
-                onChange={(val) =>
-                  setUserBitSelection({
-                    ...userBitSelection,
-                    [bitName]: val[1]
-                  })
-                }
-              >
-                {allOptions.map((value, i) => (
-                  <Checkbox
-                    indeterminate={value === suggestedOption}
-                    key={i}
-                    value={value}
-                    disabled={!enabledOptions.includes(value) || !!forcedOption}
-                  >
-                    {value}
-                  </Checkbox>
-                ))}
-              </CheckboxGroup>
-            </Panel>
-          </Col>
-        )
-      })}
-    </div>
-  )
+              {value}
+            </Checkbox>
+          ))}
+        </CheckboxGroup>
+      </Panel>
+    )
+  })
 }
 
 function TimerSetup({ timer }: { timer: TTimer }) {
-  const [userBitSelection, setUserBitSelection] = useState(() => {
+  const [userBitSelection, setUserBitSelection] = useState<TRow>({})
+  useEffect(() => {
     const valuesPerBitName = getValuesPerBitName(timer.configs)
-    return mapValues(valuesPerBitName, () => null as null | string)
-  })
-  useEffect(() => {}, [timer])
+    const defaultState = mapValues(valuesPerBitName, () => null)
+    setUserBitSelection(defaultState)
+  }, [timer])
   const tableSets = splitTables(timer.configs)
 
   console.time('combinationsSet')
@@ -122,18 +119,18 @@ function TimerSetup({ timer }: { timer: TTimer }) {
 
   return (
     <div className="TimerSetup">
-      <Grid fluid>
-        <Row>
-          {tableSets.map((tableSet, i) => (
-            <TableConfig
-              key={i}
-              userBitSelection={userBitSelection}
-              setUserBitSelection={setUserBitSelection}
-              tableSet={tableSet}
-            />
-          ))}
-        </Row>
-      </Grid>
+      <Masonry className="my-masonry-grid" options={{}}>
+        {/* array of JSX items */}
+        {tableSets.flatMap((tableSet, i) =>
+          TableConfig({
+            key: i,
+            userBitSelection: userBitSelection,
+            setUserBitSelection: setUserBitSelection,
+            tableSet: tableSet
+          })
+        )}
+      </Masonry>
+
       <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
     </div>
   )

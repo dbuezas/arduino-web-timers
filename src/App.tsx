@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Container, Content, Footer, Header, Icon, Nav, Navbar } from 'rsuite'
-
 import 'rsuite/dist/styles/rsuite-default.css'
 // import 'rsuite/dist/styles/rsuite-dark.css'
 
@@ -71,7 +70,8 @@ const App = () => {
               background: '#fff'
             }}
           >
-            <TimerSetup key={timerIndex} timer={timer} />
+            <TimerSetup timer={timer} />
+            {/* <TimerSetup key={timerIndex} timer={timer} /> */}
           </Content>
           <Footer>Footer</Footer>
         </Container>

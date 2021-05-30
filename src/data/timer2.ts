@@ -17,12 +17,12 @@ const configs: TTimerConfig = [
 WGM2	WGM22	WGM21	WGM20	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	Normal	0xFF	immediate	MAX
 1	0	0	1	PCPWM	0xFF	TOP	BOTTOM
-2	0	1	0	CTC	OCR0A	immediate	MAX
+2	0	1	0	CTC	OCR2A	immediate	MAX
 3	0	1	1	FPWM	0xFF	TOP	MAX
 4	1	0	0	-	-	-	-
-5	1	0	1	PCPWM	OCR0A	TOP	BOTTOM
+5	1	0	1	PCPWM	OCR2A	TOP	BOTTOM
 6	1	1	0	-	-	-	-
-7	1	1	1	FPWM	OCR0A	TOP	TOP
+7	1	1	1	FPWM	OCR2A	TOP	TOP
   `),
   tsv(`
 COM2A	COM2A0	COM2A1	timerMode	CompareOutputModeA
@@ -74,28 +74,28 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
 7	1	1	1	1024
 `),
   tsv(`
-OCIE2A	OCIE2A_text	interruptVectorCodeA
+OCIE2A	OCIEnA_text	interruptVectorCodeA
 0	no
 1	yes	ISR(TIMER2_COMPA_vect) { /* on OCR2A match */ }
 `),
   tsv(`
-OCIE2B	OCIE2B_text	interruptVectorCodeB
+OCIE2B	OCIEnB_text	interruptVectorCodeB
 0	no
 1	yes	ISR(TIMER2_COMPB_vect) { /* on OCR2B match */ }
     
 `),
   tsv(`
-TOIE2	TOIE2_text	interruptVectorCodeOVF
+TOIE2	TOIEn_text	interruptVectorCodeOVF
 0	no
 1	yes	ISR(TIMER2_OVF_vect) { /* on overflow*/ }
 `),
   tsv(`
-C2AF6	OC2A_OutputPort
+C2AF6	OCnA_OutputPort
 0	PB3
 1	PF6
 `),
   tsv(`
-C2BF7	OC2B_OutputPort
+C2BF7	OCnB_OutputPort
 0	PD3
 1	PF7
 `)

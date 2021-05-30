@@ -15,6 +15,8 @@
     "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-masonry-component": "^6.2.1",
+    "react-masonry-css": "^1.0.16",
     "react-scripts": "4.0.3",
     "rsuite": "^4.10.1",
     "typescript": "^4.2.4",
