@@ -25,26 +25,36 @@ export const tsvRegisters = (str: string) => {
   )
 }
 
-export const descriptions: Record<string, string> = {
-  timerMode: 'Timer Mode',
-  topValue: 'Top value of timer',
-  updateOcrMoment: 'When are the OCR registers updated (e.g OCR1A)',
-  setTovMoment: 'When overflow interrupt is triggered',
-  CompareOutputModeA: 'What does output compare A produce in the output A',
-  CompareOutputModeB: 'What does output compare B produce in the output B',
-  CompareOutputModeC: 'What does output compare C produce in the output C',
-  clockPrescalerOrSource: 'Clock prescaler or external source',
-  OCIEnA_text: 'Interrupt on Compare Output A',
-  OCIEnB_text: 'Interrupt on Compare Output B',
-  OCIEnC_text: 'Interrupt on Compare Output C',
-  TOIEn_text: 'Interrupt on Timer Overflow',
-  ICIEn_text: 'Interrupt on Input Capture',
-  clockDoubler: 'Double timer clock speed',
-  ExternalClockInput: 'ExternalClockInput',
-  OCnA_OutputPort: 'OCnA_OutputPort',
-  OCnB_OutputPort: 'OCnB_OutputPort',
-  OCnC_OutputPort: 'OCnC_OutputPort',
-  OCnA_OutputCurrent: 'OCnA_OutputCurrent',
-  OCnB_OutputCurrent: 'OCnB_OutputCurrent',
-  OCnC_OutputCurrent: 'OCnC_OutputCurrent'
+export const descriptions: Record<string, Record<string, string>> = {
+  Timer: {
+    timerMode: 'Timer Mode',
+    topValue: 'Top value of timer',
+    clockPrescalerOrSource: 'Clock prescaler or external source',
+    clockDoubler: 'Double timer clock speed',
+    ExternalClockInput: 'ExternalClockInput'
+  },
+  'Output A': {
+    CompareOutputModeA: 'What does output compare A produce in the output A',
+    OCIEnA_text: 'Interrupt on Compare Output A',
+    OCnA_OutputPort: 'OCnA_OutputPort',
+    OCnA_OutputCurrent: 'OCnA_OutputCurrent'
+  },
+  'Output B': {
+    CompareOutputModeB: 'What does output compare B produce in the output B',
+    OCIEnB_text: 'Interrupt on Compare Output B',
+    OCnB_OutputPort: 'OCnB_OutputPort',
+    OCnB_OutputCurrent: 'OCnB_OutputCurrent'
+  },
+  'Output C': {
+    CompareOutputModeC: 'What does output compare C produce in the output C',
+    OCIEnC_text: 'Interrupt on Compare Output C',
+    OCnC_OutputPort: 'OCnC_OutputPort',
+    OCnC_OutputCurrent: 'OCnC_OutputCurrent'
+  },
+  Extras: {
+    updateOcrMoment: 'When are the OCR registers updated (e.g OCR1A)',
+    setTovMoment: 'When overflow interrupt is triggered',
+    TOIEn_text: 'Interrupt on Timer Overflow',
+    ICIEn_text: 'Interrupt on Input Capture'
+  }
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Checkbox, CheckboxGroup, Col, Grid, Panel, Row } from 'rsuite'
-import Masonry from 'react-masonry-component'
 
 import uniq from 'lodash/uniq'
 import keys from 'lodash/keys'
@@ -21,21 +20,18 @@ type ConfigState = {
   [k: string]: string | null
 }
 type SetConfigState = (c: ConfigState) => void
-function TableConfig({
-  key,
+
+function getGroupData({
   userBitSelection,
   setUserBitSelection,
   tableSet
 }: {
-  key: any
   userBitSelection: ConfigState
   setUserBitSelection: SetConfigState
   tableSet: TTable[]
 }) {
   const tableSetEnabled = joinTables([[userBitSelection], ...tableSet])
   return map(getValuesPerBitName(tableSet), (allOptions, bitName) => {
-    const regDescription = descriptions[bitName]
-    if (!regDescription) return ''
     const selectedWithout = { ...userBitSelection, [bitName]: null }
     let joined: TRow[]
     if (userBitSelection[bitName]) {
@@ -56,38 +52,69 @@ function TableConfig({
       !userBitSelection[bitName] && enabledOptions.length > 1
         ? enabledOptions[0]
         : null
-    return (
-      <Panel
-        header={regDescription || bitName}
-        bordered
-        key={bitName}
-        bodyFill
-        style={{ width: 200 }}
-      >
-        <CheckboxGroup
-          inline
-          value={[userBitSelection[bitName] || forcedOption]}
-          onChange={(val) =>
-            setUserBitSelection({
-              ...userBitSelection,
-              [bitName]: val[1]
-            })
-          }
-        >
-          {allOptions.map((value, i) => (
-            <Checkbox
-              indeterminate={value === suggestedOption}
-              key={i}
-              value={value}
-              disabled={!enabledOptions.includes(value) || !!forcedOption}
-            >
-              {value}
-            </Checkbox>
-          ))}
-        </CheckboxGroup>
-      </Panel>
-    )
+    return {
+      bitName,
+      selectedOption: userBitSelection[bitName],
+      forcedOption: forcedOption,
+      setOption: (val: string[]) =>
+        setUserBitSelection({
+          ...userBitSelection,
+          [bitName]: val[1]
+        }),
+      options: allOptions.map((value, i) => ({
+        isSuggested: value === suggestedOption,
+        value,
+        isDisabled: !enabledOptions.includes(value) || !!forcedOption
+      }))
+    }
   })
+}
+
+type input = {
+  bitName: string
+  selectedOption: string | null
+  forcedOption: string | null
+  setOption: (val: string[]) => void
+  options: {
+    isSuggested: boolean
+    value: string
+    isDisabled: boolean
+  }[]
+}
+
+function TableConfig({
+  bitName,
+  selectedOption,
+  forcedOption,
+  setOption,
+  options
+}: input) {
+  return (
+    <Panel
+      header={bitName}
+      bordered
+      key={bitName}
+      bodyFill
+      // style={{ width: 200 }}
+    >
+      <CheckboxGroup
+        inline
+        value={[selectedOption || forcedOption]}
+        onChange={setOption}
+      >
+        {options.map(({ value, isSuggested, isDisabled }, i) => (
+          <Checkbox
+            indeterminate={isSuggested}
+            key={i}
+            value={value}
+            disabled={isDisabled}
+          >
+            {value}
+          </Checkbox>
+        ))}
+      </CheckboxGroup>
+    </Panel>
+  )
 }
 
 function TimerSetup({ timer }: { timer: TTimer }) {
@@ -117,20 +144,31 @@ function TimerSetup({ timer }: { timer: TTimer }) {
   )
   console.timeEnd('fullTimerConfiguration')
 
+  const data = tableSets.flatMap((tableSet, i) =>
+    getGroupData({ userBitSelection, setUserBitSelection, tableSet })
+  )
+  let columns = mapValues(descriptions, (description, groupName) =>
+    data.filter(({ bitName }) => !!description[bitName])
+  )
+  columns = pickBy(columns, (panelData) => panelData.length)
   return (
     <div className="TimerSetup">
-      <Masonry className="my-masonry-grid" options={{}}>
-        {/* array of JSX items */}
-        {tableSets.flatMap((tableSet, i) =>
-          TableConfig({
-            key: i,
-            userBitSelection: userBitSelection,
-            setUserBitSelection: setUserBitSelection,
-            tableSet: tableSet
-          })
-        )}
-      </Masonry>
-
+      <Grid fluid>
+        <Row className="show-grid">
+          {map(columns, (panelsData, groupName) => {
+            return (
+              <>
+                <Col xs={Math.floor(24 / panelsData.length)}>
+                  {groupName}
+                  {panelsData.map((panelData, i) => (
+                    <TableConfig key={i} {...panelData} />
+                  ))}
+                </Col>
+              </>
+            )
+          })}
+        </Row>
+      </Grid>
       <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
     </div>
   )

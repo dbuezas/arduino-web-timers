@@ -112,10 +112,10 @@ ICIE1	ICIEn_text	interruptVectorCodeCapture
 `),
 
   tsv(`
-F2XEN	TC2XS1	clockDoubler
+F2XEN	TC2XS1	clockDoubler	ExternalClockInput
 0	0	off
 1	0	off
-1	1	on
+1	1	on	N/A
 `),
   tsv(`
 C1BF4	WCE	OCnB_OutputPort

@@ -90,10 +90,10 @@ TOIE0	TOIEn_text	interruptVectorCodeOVF
 1	yes	ISR(TIMER0_OVF_vect) { /* on overflow*/ }
 `),
   tsv(`
-F2XEN	TC2XS0	clockDoubler
+F2XEN	TC2XS0	clockDoubler	ExternalClockInput
 0	0	off
 1	0	off
-1	1	on
+1	1	on	N/A
 `),
   tsv(`
 C0AC0	OC0AS	WCE	OCnA_OutputPort
