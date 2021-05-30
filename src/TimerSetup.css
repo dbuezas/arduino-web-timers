@@ -30,3 +30,6 @@
 .TimerSetup .rs-panel-body {
   padding: 10px;
 }
+.TimerSetup p {
+  font-weight: bold;
+}

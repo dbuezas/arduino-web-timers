@@ -155,17 +155,12 @@ function TimerSetup({ timer }: { timer: TTimer }) {
         {map(columns, (panelsData, groupName) => {
           return (
             <FlexboxGrid.Item
+              key={groupName}
               style={{
                 width: 100 / Object.keys(columns).length + '%'
               }}
             >
-              <Panel
-                header={groupName}
-                bordered
-                key={groupName}
-                // bodyFill
-                // style={{ width: 200 }}
-              >
+              <Panel header={groupName} bordered key={groupName} shaded>
                 {panelsData.map((panelData, i) => (
                   <TableConfig key={i} {...panelData} />
                 ))}

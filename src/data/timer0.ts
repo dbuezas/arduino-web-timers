@@ -70,8 +70,8 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 3	0	1	1	64	N/A
 4	1	0	0	256	N/A
 5	1	0	1	1024	N/A
-6	1	1	0	external_clock_falling_edge	PD4
-7	1	1	1	external_clock_rising_edge	PD4
+6	1	1	0	external clock falling edge	PD4
+7	1	1	1	external clock rising edge	PD4
 `),
   tsv(`
 OCIE0A	OCIEnA_text	interruptVectorCodeA
