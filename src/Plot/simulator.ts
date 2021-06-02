@@ -1,7 +1,10 @@
+import { parseCommandLine } from 'typescript'
+
 type Props = {
   timerMode: 'Normal' | 'PCPWM' | 'CTC' | 'FPWM' | 'PFCPWM'
   maxCpuTicks: number
   prescaler: number
+  cpuHz: number
   top: number
   tovTime: 'BOTTOM' | 'TOP'
   OCRnXs: number[]
@@ -21,6 +24,7 @@ export default function simTimer({
   timerMode,
   maxCpuTicks,
   prescaler,
+  cpuHz,
   top,
   tovTime,
   OCRnXs,
@@ -28,6 +32,7 @@ export default function simTimer({
   ICRn
 }: Props) {
   const results = {
+    t: [] as number[],
     cpu: [] as number[],
     TCNT: [] as number[],
     OCnXs: OCRnXs.map(() => [] as number[]),
@@ -35,18 +40,40 @@ export default function simTimer({
     OVF: [] as number[],
     CAPT: [] as number[]
   }
-  let TCNT = 0
+  let TCNT = -1
   let dir = 1
   let OCnXs = OCRnXs.map(() => 0)
   OCRnXs_behaviour.forEach((behaviour, x) => {
     if (behaviour === 'clear') OCnXs[x] = 1
   })
   let MATCH_Xs = OCRnXs.map(() => 0)
+  let cpu = -1
+  const eventTimes = [
+    // only when TCNT equals these values, something can happen
+    // values surounding the events are added to ensure the plot
+    // keeps the lines at their values until a change happens
+    top + 1,
+    0,
+    top,
+    ...OCRnXs,
+    top,
+    ICRn,
+    maxCpuTicks - 1
+  ].flatMap((n) => [n, n - 1, n + 1])
 
-  for (let cpu = 0; cpu < maxCpuTicks; cpu += prescaler) {
+  while (cpu < maxCpuTicks) {
+    cpu += prescaler
+    TCNT += dir
+    let distToNext
+    const nextEvents = eventTimes
+      .map((n) => (n - TCNT) * dir)
+      .filter((n) => n >= 0)
+    distToNext = Math.min(...nextEvents)
+
     let OVF = 0
     let CAPT = 0
-    TCNT += dir
+    cpu += distToNext * prescaler
+    TCNT += dir * distToNext
     if (TCNT === top + 1) TCNT = 0
     if (TCNT === 0) {
       if (timerMode === 'PCPWM') dir = 1
@@ -81,6 +108,7 @@ export default function simTimer({
       }
     }
     if (TCNT === ICRn) CAPT = 1 //CAPT
+    results.t.push(cpu / cpuHz)
     results.cpu.push(cpu)
     results.TCNT.push(TCNT)
     results.OVF.push(OVF)
@@ -90,6 +118,7 @@ export default function simTimer({
       results.MATCH_Xs[i].push(MATCH_Xs[i])
     }
   }
+  console.log(results)
   return results
 }
 

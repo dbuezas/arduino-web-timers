@@ -21,16 +21,15 @@ type CurvesProps = {
 function Curve({ xScale, yScale, data, idx }: CurvesProps) {
   const line = d3
     .line<[number, number]>()
-    .x(([cpu, datum]) => xScale(cpu)!)
-    .y(([cpu, datum]) => yScale(datum)!)
+    .x(([t, datum]) => xScale(t)!)
+    .y(([t, datum]) => yScale(datum)!)
   const area = d3
     .area<[number, number]>()
-    .x(([cpu, datum]) => xScale(cpu)!)
+    .x(([t, datum]) => xScale(t)!)
     .y0(yScale(0)!)
-    .y1(([cpu, datum]) => yScale(datum)!)
+    .y1(([t, datum]) => yScale(datum)!)
 
   const d = line(data)
-  // const d = area(data)
   return (
     <path key={idx} className={`plot-area-${idx}`} d={d || undefined}></path>
   )
@@ -42,6 +41,7 @@ export default function Plot({ bitValues }: Props) {
     timerMode: bitValues.timerMode as any,
     maxCpuTicks: 0,
     prescaler: parseInt(bitValues.clockPrescalerOrSource as any),
+    cpuHz: bitValues.clockDoubler == 'on' ? 32000000 * 2 : 32000000,
     top: parseInt(bitValues.topValue as any),
     tovTime: 'BOTTOM' as any,
     OCRnXs: [15, 15, 15],
@@ -52,7 +52,7 @@ export default function Plot({ bitValues }: Props) {
     ],
     ICRn: 10
   }
-  param.maxCpuTicks = param.top * param.prescaler * 5
+  param.maxCpuTicks = param.top * param.prescaler * 4
   const simulation = simTimer(param)
   const nodeRef = useRef<SVGSVGElement>(null)
   // const triggerVoltageRef = useRef<TriggerVoltageRef>(null)
@@ -61,9 +61,10 @@ export default function Plot({ bitValues }: Props) {
   const height_ouputCompare = 30
   const margin_ouputCompare = 10
   const height_timer = height_ - height_ouputCompare * param.OCRnXs.length
+  console.log(simulation, d3.extent(simulation.t))
   const xScale = d3
     .scaleLinear()
-    .domain([0, param.maxCpuTicks])
+    .domain(d3.extent(simulation.t) as [number, number])
     .range([margin.left, width - margin.right])
   const yScale = d3
     .scaleLinear()
@@ -99,7 +100,7 @@ export default function Plot({ bitValues }: Props) {
             yScale,
             width,
             height: height_timer,
-            data: simulation.cpu.map((cpu, i) => [cpu, simulation.TCNT[i]]),
+            data: simulation.t.map((t, i) => [t, simulation.TCNT[i]]),
             idx: 'TCNT'
           }}
         />
@@ -116,7 +117,7 @@ export default function Plot({ bitValues }: Props) {
                   height_timer + height_ouputCompare * i + margin_ouputCompare
                 ]),
               // .rangeRound([height - margin.bottom, margin.top]),
-              data: simulation.cpu.map((cpu, i) => [cpu, OCx[i]])
+              data: simulation.t.map((t, i) => [t, OCx[i]])
             }}
           />
         ))}

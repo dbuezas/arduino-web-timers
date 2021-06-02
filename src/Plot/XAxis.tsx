@@ -13,6 +13,7 @@ const toFixed = (float: number, digits = 0) => {
 export function formatTime(s: ohNoItIsAny) {
   s = Number(s)
   if (!Number.isFinite(s)) return '--'
+  if (s == 0) return '0'
 
   const m = s / 60
   const h = s / 60 / 60
@@ -40,6 +41,10 @@ export default function XAxis({ height, xScale, data }: Props) {
   useLayoutEffect(() => {
     if (!gEl) return
     const xTicks = d3.ticks(xScale.domain()[0], xScale.domain()[1], 10)
+    // const xTicks = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(
+    //   (n) =>
+    //     xScale.domain()[0] + ((xScale.domain()[1] - xScale.domain()[0]) / 8) * n
+    // )
     d3.select(gEl).call((g) =>
       g
         .attr('transform', `translate(0,${height - margin.bottom})`)
@@ -49,7 +54,7 @@ export default function XAxis({ height, xScale, data }: Props) {
             .tickValues(xTicks)
             .tickPadding(10)
             .tickSize(-height + margin.top + margin.bottom)
-            .tickFormat((_, i) => formatTime(data.cpu[i] / 32000000))
+            .tickFormat((t) => formatTime(t as any))
             .tickSizeOuter(0)
         )
         .call((g) => g.select('.domain').remove())
