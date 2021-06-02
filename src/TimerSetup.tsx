@@ -15,6 +15,7 @@ import {
   joinTables,
   splitTables
 } from './helpers/helpers'
+import Plot from './Plot/Plot'
 
 type ConfigState = {
   [k: string]: string | null
@@ -149,17 +150,13 @@ function TimerSetup({ timer }: { timer: TTimer }) {
       .filter(({ bitName }) => bitName)
   )
   columns = pickBy(columns, (panelData) => panelData.length)
+  const style = { width: 100 / (Object.keys(columns).length + 1) + '%' }
   return (
     <div className="TimerSetup">
       <FlexboxGrid>
         {map(columns, (panelsData, groupName) => {
           return (
-            <FlexboxGrid.Item
-              key={groupName}
-              style={{
-                width: 100 / Object.keys(columns).length + '%'
-              }}
-            >
+            <FlexboxGrid.Item key={groupName} style={style}>
               <Panel header={groupName} bordered key={groupName} shaded>
                 {panelsData.map((panelData, i) => (
                   <TableConfig key={i} {...panelData} />
@@ -168,8 +165,17 @@ function TimerSetup({ timer }: { timer: TTimer }) {
             </FlexboxGrid.Item>
           )
         })}
+        <FlexboxGrid.Item key="code" style={style}>
+          <Panel header="Code" bordered shaded>
+            <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
+          </Panel>
+        </FlexboxGrid.Item>
       </FlexboxGrid>
-      <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
+      <FlexboxGrid.Item key="plot" style={{ width: '100%' }}>
+        <Panel header="Plot" bordered shaded>
+          <Plot bitValues={fullTimerConfiguration} />
+        </Panel>
+      </FlexboxGrid.Item>
     </div>
   )
 }

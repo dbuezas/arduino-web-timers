@@ -59,13 +59,12 @@ const App = () => {
           </Header>
           <Content
             style={{
-              padding: 20,
-              margin: 20,
+              padding: 10,
+              // margin: 20,
               background: '#fff'
             }}
           >
             <TimerSetup timer={timer} />
-            {/* <TimerSetup key={timerIndex} timer={timer} /> */}
           </Content>
           <Footer>Footer</Footer>
         </Container>

@@ -120,7 +120,7 @@ export const generateCode = (
   const interrupts: string[] = []
   forEach(selected, (value, bitSetName) => {
     if (value && bitSetName.startsWith('interruptVectorCode')) {
-      interrupts.push(value.replace(/\\n/g, '\n'))
+      interrupts.push(value.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
     }
   })
 

@@ -64,7 +64,6 @@ COM0B	COM0B0	COM0B1	timerMode	CompareOutputModeB
 `),
   tsv(`
 CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
-0	0	0	0	0	N/A
 1	0	0	1	1	N/A
 2	0	1	0	8	N/A
 3	0	1	1	64	N/A
@@ -72,22 +71,23 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 5	1	0	1	1024	N/A
 6	1	1	0	external clock falling edge	PD4
 7	1	1	1	external clock rising edge	PD4
+0	0	0	0	disconnect	N/A
 `),
   tsv(`
 OCIE0A	OCIEnA_text	interruptVectorCodeA
 0	no
-1	yes	ISR(TIMER0_COMPA_vect) { /* on OCR0A match */ }
+1	yes	ISR(TIMER0_COMPA_vect) {\\n/* on OCR0A match */\\n}
 `),
   tsv(`
 OCIE0B	OCIEnB_text	interruptVectorCodeB
 0	no
-1	yes	ISR(TIMER0_COMPB_vect) { /* on OCR0B match */ }
+1	yes	ISR(TIMER0_COMPB_vect) {\\n/* on OCR0B match */\\n}
     
 `),
   tsv(`
 TOIE0	TOIEn_text	interruptVectorCodeOVF
 0	no
-1	yes	ISR(TIMER0_OVF_vect) { /* on overflow*/ }
+1	yes	ISR(TIMER0_OVF_vect) {\\n/* on overflow*/\\n}
 `),
   tsv(`
 F2XEN	TC2XS0	clockDoubler	ExternalClockInput

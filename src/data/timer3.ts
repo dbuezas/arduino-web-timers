@@ -103,7 +103,6 @@ COM3C	COM3C1	COM3C0	timerMode	CompareOutputModeC
 `),
   tsv(`
 CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
-0	0	0	0	0	N/A
 1	0	0	1	1	N/A
 2	0	1	0	8	N/A
 3	0	1	1	64	N/A
@@ -111,6 +110,7 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 5	1	0	1	1024	N/A
 6	1	1	0	external clock falling edge	PF6
 7	1	1	1	external clock rising edge	PF6
+0	0	0	0	disconnect	N/A
 `),
   tsv(`
 OCIE3A	OCIEnA_text	interruptVectorCodeA

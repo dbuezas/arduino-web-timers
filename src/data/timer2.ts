@@ -64,7 +64,6 @@ COM2B	COM2B0	COM2B1	timerMode	CompareOutputModeB
 `),
   tsv(`
 CS2	CS22	CS21	CS20	clockPrescalerOrSource
-0	0	0	0	0
 1	0	0	1	1
 2	0	1	0	8
 3	0	1	1	32
@@ -72,6 +71,7 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
 5	1	0	1	128
 6	1	1	0	256
 7	1	1	1	1024
+0	0	0	0	disconnect
 `),
   tsv(`
 OCIE2A	OCIEnA_text	interruptVectorCodeA
