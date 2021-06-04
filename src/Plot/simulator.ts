@@ -118,7 +118,6 @@ export default function simTimer({
       results.MATCH_Xs[i].push(MATCH_Xs[i])
     }
   }
-  console.log(results)
   return results
 }
 

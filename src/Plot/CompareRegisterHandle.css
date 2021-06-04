@@ -1,0 +1,43 @@
+.plotContainer text.OCRText,
+.plotContainer line.OCRHandle {
+  cursor: row-resize;
+}
+
+.plotContainer line.OCRHandle {
+  stroke-width: 40;
+  stroke: white;
+  opacity: 0.03;
+}
+
+.plotContainer line.OCR {
+  fill: none;
+  stroke-dasharray: 10;
+  stroke-width: 1;
+  opacity: 0.7;
+}
+
+.plotContainer line.OCR0A,
+.plotContainer line.OCR1A,
+.plotContainer line.OCR2A,
+.plotContainer line.OCR3A {
+  stroke: darkred;
+}
+
+.plotContainer line.OCR0B,
+.plotContainer line.OCR1B,
+.plotContainer line.OCR2B,
+.plotContainer line.OCR3B {
+  stroke: darkolivegreen;
+}
+.plotContainer line.OCR0C,
+.plotContainer line.OCR1C,
+.plotContainer line.OCR2C,
+.plotContainer line.OCR3C {
+  stroke: darkslategray;
+}
+.plotContainer line.ICR0,
+.plotContainer line.ICR1,
+.plotContainer line.ICR2,
+.plotContainer line.ICR3 {
+  stroke: darkorange;
+}

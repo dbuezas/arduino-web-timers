@@ -14,6 +14,10 @@ WGM30	CS30	FOC3C	DSX30		TOIE3	TOV3	RXD5	C2AF6		HDR0
 `)
 const configs: TTimerConfig = [
   tsv(`
+timerNr	timerBits	counterMax
+3	16	65355
+`),
+  tsv(`
 WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	Immediately	MAX
 1	0	0	0	1	PCPWM	0x00FF	TOP	BOTTOM

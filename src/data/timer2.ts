@@ -14,6 +14,10 @@ WGM20	CS20	TOIE2	TOV2	C2AF6	HDR0
 `)
 const configs: TTimerConfig = [
   tsv(`
+timerNr	timerBits	counterMax
+2	8	255
+  `),
+  tsv(`
 WGM2	WGM22	WGM21	WGM20	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	Normal	0xFF	immediate	MAX
 1	0	0	1	PCPWM	0xFF	TOP	BOTTOM

@@ -173,7 +173,10 @@ function TimerSetup({ timer }: { timer: TTimer }) {
       </FlexboxGrid>
       <FlexboxGrid.Item key="plot" style={{ width: '100%' }}>
         <Panel header="Plot" bordered shaded>
-          <Plot bitValues={fullTimerConfiguration} />
+          <Plot
+            key={fullTimerConfiguration.timerNr}
+            bitValues={fullTimerConfiguration}
+          />
         </Panel>
       </FlexboxGrid.Item>
     </div>
