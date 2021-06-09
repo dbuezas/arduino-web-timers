@@ -106,7 +106,7 @@ COM3C	COM3C1	COM3C0	timerMode	CompareOutputModeC
 3	1	1	PFCPWM	set-up, clear-down
 `),
   tsv(`
-CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
+CS3	CS32	CS31	CS30	clockPrescalerOrSource	ExternalClockInput
 1	0	0	1	1	N/A
 2	0	1	0	8	N/A
 3	0	1	1	64	N/A

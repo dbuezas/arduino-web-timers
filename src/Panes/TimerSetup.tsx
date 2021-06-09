@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Checkbox, CheckboxGroup, FlexboxGrid, Panel } from 'rsuite'
 
 import uniq from 'lodash/uniq'
 import keys from 'lodash/keys'
 import mapValues from 'lodash/mapValues'
-import { descriptions } from './data/timers'
-import { TRow, TTable, TTimer } from './helpers/types'
+import { descriptions } from '../data/timers'
+import { TRow, TTable, TTimer } from '../helpers/types'
 import { map, pickBy } from 'lodash'
 import './TimerSetup.css'
 import {
-  generateCode,
   getValuesPerBitName,
   isTruthy,
   joinTables,
   splitTables
-} from './helpers/helpers'
-import Plot from './Plot/Plot'
+} from '../helpers/helpers'
+import Plot from '../Plot/Plot'
+import Code from './Code'
 
 type ConfigState = {
   [k: string]: string | null
@@ -120,23 +120,19 @@ function TimerSetup({ timer }: { timer: TTimer }) {
   }, [timer])
   const tableSets = splitTables(timer.configs)
 
-  console.time('combinationsSet')
   const combinationsSet = tableSets.map((tableSet) => {
     const relevantSelected = pickBy(userBitSelection, (_, key) =>
       tableSet.some((table) => keys(table[0]).includes(key))
     )
     return joinTables([[relevantSelected], ...tableSet])
   })
-  console.timeEnd('combinationsSet')
 
-  console.time('fullTimerConfiguration')
   const fullTimerConfiguration = Object.assign(
     {},
     ...combinationsSet.map(
       (combinationsPerTableset) => combinationsPerTableset[0]
     )
   )
-  console.timeEnd('fullTimerConfiguration')
 
   const data = tableSets.flatMap((tableSet, i) =>
     getGroupData({ userBitSelection, setUserBitSelection, tableSet })
@@ -153,11 +149,18 @@ function TimerSetup({ timer }: { timer: TTimer }) {
   const style = { width: 100 / (Object.keys(columns).length + 1) + '%' }
   return (
     <div className="TimerSetup">
-      <FlexboxGrid>
+      <FlexboxGrid style={{ flexGrow: 1, overflow: 'scroll' }}>
         {map(columns, (panelsData, groupName) => {
           return (
             <FlexboxGrid.Item key={groupName} style={style}>
-              <Panel header={groupName} bordered key={groupName} shaded>
+              <Panel
+                header={groupName}
+                bordered
+                shaded
+                collapsible
+                defaultExpanded
+                key={groupName}
+              >
                 {panelsData.map((panelData, i) => (
                   <TableConfig key={i} {...panelData} />
                 ))}
@@ -166,19 +169,28 @@ function TimerSetup({ timer }: { timer: TTimer }) {
           )
         })}
         <FlexboxGrid.Item key="code" style={style}>
-          <Panel header="Code" bordered shaded>
-            <pre>{generateCode(fullTimerConfiguration, timer.registers)}</pre>
+          <Panel header="Code" bordered shaded collapsible defaultExpanded>
+            <Code
+              fullTimerConfiguration={fullTimerConfiguration}
+              registers={timer.registers}
+            />
           </Panel>
         </FlexboxGrid.Item>
       </FlexboxGrid>
-      <FlexboxGrid.Item key="plot" style={{ width: '100%' }}>
-        <Panel header="Plot" bordered shaded>
+      <div
+        style={{
+          width: '100%',
+          bottom: 0,
+          flexGrow: 0
+        }}
+      >
+        <Panel header="Plot" bordered shaded collapsible defaultExpanded>
           <Plot
             key={fullTimerConfiguration.timerNr}
             bitValues={fullTimerConfiguration}
           />
         </Panel>
-      </FlexboxGrid.Item>
+      </div>
     </div>
   )
 }

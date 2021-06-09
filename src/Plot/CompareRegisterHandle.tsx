@@ -1,4 +1,4 @@
-import React, {
+import {
   forwardRef,
   MouseEventHandler,
   useImperativeHandle,
@@ -19,6 +19,8 @@ type Props = {
   compareRegisterValue: number
   name: string
 }
+const constrain = (n: number, min: number, max: number) =>
+  Math.min(Math.max(n, min), max)
 const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
   (
     {
@@ -39,15 +41,13 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
       onMouseMove(e) {
         if (draggingTV) {
           let scaled = yScale.invert(e.nativeEvent.offsetY)
-          scaled = Math.round(scaled)
-          scaled = Math.min(scaled, yExtent[1])
-          scaled = Math.max(scaled, yExtent[0])
-
+          scaled = constrain(Math.round(scaled), ...yExtent)
           setCompareRegisterValue(scaled)
         }
       }
     }))
-    const scaledY = yScale(compareRegisterValue)
+    let scaledY = yScale(constrain(compareRegisterValue, ...yExtent))
+
     return (
       <>
         <line

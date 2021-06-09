@@ -1,7 +1,6 @@
 .plotContainer {
   width: 100%;
-  /* height: 200px; */
-  height: 500px;
+  height: 40vh;
 }
 .plotContainer svg.plot {
   width: 100%;
@@ -15,30 +14,6 @@
   stroke-width: 2px;
   stroke-linecap: butt;
   stroke-linejoin: miter;
-}
-
-.plotContainer path {
-  stroke-width: 1;
-  fill: none;
-}
-.plotContainer path.plot-area-TCNT {
-  stroke: steelblue;
-  /* stroke-width: 3; */
-}
-
-.plotContainer path.plot-area-0 {
-  stroke: darkred;
-  /* fill: lightcoral; */
-}
-
-.plotContainer path.plot-area-1 {
-  stroke: darkgreen;
-  /* fill: lightgreen; */
-}
-
-.plotContainer path.plot-area-2 {
-  stroke: darkblue;
-  /* fill: lightblue; */
 }
 
 .axis.domain {

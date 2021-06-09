@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import React, { useRef, useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
 import { Simulation } from './simulator'
 
@@ -13,7 +13,7 @@ const toFixed = (float: number, digits = 0) => {
 export function formatTime(s: ohNoItIsAny) {
   s = Number(s)
   if (!Number.isFinite(s)) return '--'
-  if (s == 0) return '0'
+  if (s === 0) return '0'
 
   const m = s / 60
   const h = s / 60 / 60

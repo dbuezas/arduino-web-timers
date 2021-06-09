@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Container, Content, Footer, Header, Icon, Nav, Navbar } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 // import 'rsuite/dist/styles/rsuite-dark.css'
 
-//import './App.css';
+import './App.css'
 import timer0 from './data/timer0'
 import timer1 from './data/timer1'
 import timer2 from './data/timer2'
 import timer3 from './data/timer3'
-import TimerSetup from './TimerSetup'
+import TimerSetup from './Panes/TimerSetup'
 
 const timers = [timer0, timer1, timer2, timer3]
 
@@ -18,11 +18,8 @@ const App = () => {
 
   return (
     <>
-      <div
-        className="show-fake-browser navbar-page"
-        style={{ background: '#f7f7fa' }}
-      >
-        <Container>
+      <div>
+        <Container className="App">
           <Header>
             <Navbar appearance="inverse">
               <Navbar.Header>
@@ -61,12 +58,12 @@ const App = () => {
             style={{
               padding: 10,
               // margin: 20,
-              background: '#fff'
+              background: '#fff',
+              position: 'relative'
             }}
           >
             <TimerSetup timer={timer} />
           </Content>
-          <Footer>Footer</Footer>
         </Container>
       </div>
     </>

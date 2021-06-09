@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import React, { useRef, useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect } from 'react'
 
 import { margin } from './margin'
 

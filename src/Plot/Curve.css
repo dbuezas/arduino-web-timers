@@ -1,0 +1,20 @@
+.plotContainer path {
+  stroke-width: 1;
+  fill: none;
+  stroke: black;
+}
+.plotContainer path.curve-TCNT {
+  stroke: steelblue;
+}
+
+.plotContainer path.curve-0 {
+  stroke: darkred;
+}
+
+.plotContainer path.curve-1 {
+  stroke: darkgreen;
+}
+
+.plotContainer path.curve-2 {
+  stroke: darkblue;
+}

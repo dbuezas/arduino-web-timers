@@ -1,4 +1,8 @@
-import { parseCommandLine } from 'typescript'
+/*
+PCPWM == updates at top
+PFCPWM == updates at bottom
+but this should be passed from update OCRnX upate time bit value
+*/
 
 type Props = {
   timerMode: 'Normal' | 'PCPWM' | 'CTC' | 'FPWM' | 'PFCPWM'
@@ -6,7 +10,7 @@ type Props = {
   prescaler: number
   cpuHz: number
   top: number
-  tovTime: 'BOTTOM' | 'TOP'
+  tovTime: 'BOTTOM' | 'TOP' | 'MAX'
   OCRnXs: number[]
   OCRnXs_behaviour: (
     | 'clear'
@@ -46,7 +50,6 @@ export default function simTimer({
   OCRnXs_behaviour.forEach((behaviour, x) => {
     if (behaviour === 'clear') OCnXs[x] = 1
   })
-  let MATCH_Xs = OCRnXs.map(() => 0)
   let cpu = -1
   const eventTimes = [
     // only when TCNT equals these values, something can happen
@@ -58,7 +61,8 @@ export default function simTimer({
     ...OCRnXs,
     top,
     ICRn,
-    maxCpuTicks - 1
+    maxCpuTicks - 1,
+    maxCpuTicks
   ].flatMap((n) => [n, n - 1, n + 1])
 
   while (cpu < maxCpuTicks) {
@@ -66,22 +70,27 @@ export default function simTimer({
     TCNT += dir
     let distToNext
     const nextEvents = eventTimes
+      // eslint-disable-next-line no-loop-func
       .map((n) => (n - TCNT) * dir)
       .filter((n) => n >= 0)
     distToNext = Math.min(...nextEvents)
 
+    let MATCH_Xs = OCRnXs.map(() => 0)
     let OVF = 0
     let CAPT = 0
     cpu += distToNext * prescaler
     TCNT += dir * distToNext
-    if (TCNT === top + 1) TCNT = 0
+    if (TCNT === top + 1) {
+      if (tovTime === 'MAX') OVF = 1 // like bottom but skips first
+      TCNT = 0
+    }
     if (TCNT === 0) {
-      if (timerMode === 'PCPWM') dir = 1
-      if (tovTime === 'BOTTOM') OVF = 1 //OVF
+      if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = 1
+      if (tovTime === 'BOTTOM') OVF = 1
     }
     if (TCNT === top) {
-      if (timerMode === 'PCPWM') dir = -1
-      if (tovTime === 'TOP') OVF = 1 //OVF
+      if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = -1
+      if (tovTime === 'TOP') OVF = 1
     }
     for (const i in OCRnXs_behaviour) {
       const behaviour = OCRnXs_behaviour[i]

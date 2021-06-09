@@ -1,6 +1,14 @@
 .TimerSetup {
   font-size: smaller;
+  bottom: 0;
+  position: absolute;
+  top: 0;
+  display: flex;
+  left: 0;
+  right: 0;
+  flex-direction: column;
 }
+
 .TimerSetup .rs-panel-heading {
   padding: 12px;
   padding-bottom: 5px;
@@ -9,14 +17,24 @@
   border-bottom: 1px solid #e5e5ea;
 }
 
+.TimerSetup .rs-panel-collapsible > .rs-panel-heading::before {
+  top: 10px;
+}
 .TimerSetup .rs-col {
   margin-bottom: 10px;
 }
 .TimerSetup .rs-checkbox-checker {
+  padding-bottom: 5px;
+  padding-top: 5px;
   padding-left: 34px;
-  min-height: 33px;
+  min-height: 2em;
 }
-
+.rs-checkbox-wrapper::before,
+.rs-checkbox-wrapper::after,
+.rs-checkbox-wrapper .rs-checkbox-inner::before,
+.rs-checkbox-wrapper .rs-checkbox-inner::after {
+  top: -5px;
+}
 .TimerSetup .rs-panel {
   margin: 5px;
 }
@@ -26,6 +44,7 @@
 }
 .TimerSetup .rs-checkbox-group-inline {
   margin-left: 0;
+  padding-bottom: 10px;
 }
 .TimerSetup .rs-panel-body {
   padding: 10px;
