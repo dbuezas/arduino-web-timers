@@ -18,8 +18,9 @@ import { Curve } from './Curve'
 
 type Props = {
   bitValues: TDefaultState
+  style: Object
 }
-export default function Plot({ bitValues }: Props) {
+export default function Plot({ bitValues, style }: Props) {
   const counterMax = parseInt(bitValues.counterMax as any)
   const param = {
     timerNr: bitValues.timerNr as string,
@@ -48,7 +49,8 @@ export default function Plot({ bitValues }: Props) {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     state: useState((counterMax / 5) * (i + 1)),
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    ref: useRef<CompareRegisterHandleRef>(null)
+    ref: useRef<CompareRegisterHandleRef>(null),
+    i
   }))
   param.OCRnXs = OCR_states.map(({ state }) => state[0])
   const ICR_state = {
@@ -76,8 +78,9 @@ export default function Plot({ bitValues }: Props) {
   const [width, height_] = useSize(containerRef)
   const height_ouputCompare = 30
   const margin_ouputCompare = 10
+  const activeOCnXs = OCR_states.filter(({ isActiveOutput }) => isActiveOutput)
   const height_timer =
-    height_ - height_ouputCompare * (param.OCRnXs.length + 0.5)
+    height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
   const xScale = d3
     .scaleLinear()
     .domain(d3.extent(simulation.t) as [number, number])
@@ -96,7 +99,7 @@ export default function Plot({ bitValues }: Props) {
   }, [IOCR_states])
 
   return (
-    <div className="plotContainer" ref={containerRef}>
+    <div className="plotContainer" ref={containerRef} style={style}>
       <svg
         className="plot"
         onMouseMove={(e) => {
@@ -120,8 +123,8 @@ export default function Plot({ bitValues }: Props) {
             idx: 'TCNT'
           }}
         />
-        {simulation.OCnXs.map(
-          (OCx, i) =>
+        {activeOCnXs.map(
+          ({ isActiveOutput, i }, k) =>
             OCR_states[i].isActiveOutput && (
               <Curve
                 {...{
@@ -133,12 +136,12 @@ export default function Plot({ bitValues }: Props) {
                     .scaleLinear()
                     .domain([0, 1])
                     .rangeRound([
-                      height_timer + height_ouputCompare * (i + 1),
+                      height_timer + height_ouputCompare * (k + 1),
                       height_timer +
-                        height_ouputCompare * i +
+                        height_ouputCompare * k +
                         margin_ouputCompare
                     ]),
-                  data: simulation.t.map((t, i) => [t, OCx[i]])
+                  data: simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])
                 }}
               />
             )

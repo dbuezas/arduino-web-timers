@@ -16,6 +16,7 @@ import {
 } from '../helpers/helpers'
 import Plot from '../Plot/Plot'
 import Code from './Code'
+import ResizePanel from 'react-resize-panel-ts'
 
 type ConfigState = {
   [k: string]: string | null
@@ -177,20 +178,22 @@ function TimerSetup({ timer }: { timer: TTimer }) {
           </Panel>
         </FlexboxGrid.Item>
       </FlexboxGrid>
-      <div
+      <ResizePanel
+        direction="n"
         style={{
           width: '100%',
           bottom: 0,
-          flexGrow: 0
+          flexGrow: 0,
+          borderTop: '1px solid lightgrey',
+          height: 200
         }}
       >
-        <Panel header="Plot" bordered shaded collapsible defaultExpanded>
-          <Plot
-            key={fullTimerConfiguration.timerNr}
-            bitValues={fullTimerConfiguration}
-          />
-        </Panel>
-      </div>
+        <Plot
+          key={fullTimerConfiguration.timerNr}
+          bitValues={fullTimerConfiguration}
+          style={{ minHeight: 300 }}
+        />
+      </ResizePanel>
     </div>
   )
 }

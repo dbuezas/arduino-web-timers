@@ -1,6 +1,6 @@
 .plotContainer {
   width: 100%;
-  height: 40vh;
+  height: 100%;
 }
 .plotContainer svg.plot {
   width: 100%;
