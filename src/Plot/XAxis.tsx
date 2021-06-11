@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
-import { Simulation } from './simulator'
+import { Simulation } from '../helpers/simulator'
 
 type ohNoItIsAny = any
 

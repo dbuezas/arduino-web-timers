@@ -55,6 +55,19 @@ export function isTruthy<TValue>(
   return !!value
 }
 
+const negatedMatch = (a: string, b: string) => {
+  const [, negA] = a.match(/\!(.*)/) || []
+  const [, negB] = b.match(/\!(.*)/) || []
+  if (negA) {
+    if (!b) return a
+    if (negA !== b) return b
+  }
+  if (negB) {
+    if (!a) return b
+    if (negB !== a) return a
+  }
+  return false
+}
 const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
   if (!right) return left
   const joined = left.flatMap((leftRow) =>
@@ -63,9 +76,11 @@ const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
         const row = { ...leftRow }
         const keep = every(rightRow, (rightVal, key) => {
           const leftVal = leftRow[key]
+          const negMatch = negatedMatch(leftVal || '', rightVal || '')
           if (!leftVal && !rightVal) return true
           else if (!leftVal) row[key] = rightVal
           else if (!rightVal) row[key] = leftVal
+          else if (negMatch !== false) row[key] = negMatch
           else if (leftVal !== rightVal) return false
           return true
         })

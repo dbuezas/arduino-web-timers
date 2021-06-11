@@ -1,17 +1,25 @@
 import { forEach, map, sortBy, uniq } from 'lodash'
-import { TDefaultState, TRow, TTimerRegisters } from '../helpers/types'
+import { useRecoilValue } from 'recoil'
+import { TRow, TTimerRegisters } from '../helpers/types'
+import { ICRState, OCRnAState, OCRnBState, OCRnCState } from '../state/ocr'
 
-export const generateCode = (
-  selected: TDefaultState,
-  timerRegisters: TTimerRegisters
-) => {
-  const code = map(timerRegisters, (bitNames, regName) => {
+type Props = {
+  fullTimerConfiguration: TRow
+  registers: TTimerRegisters
+}
+export default function Code({ fullTimerConfiguration, registers }: Props) {
+  const OCRnA = useRecoilValue(OCRnAState)
+  const OCRnB = useRecoilValue(OCRnBState)
+  const OCRnC = useRecoilValue(OCRnCState)
+  const ICR = useRecoilValue(ICRState)
+  const timerNr = fullTimerConfiguration.timerNr
+  const code = map(registers, (bitNames, regName) => {
     const assignments: {
       regName: string
       bitValue: string
       bitName: string
     }[] = []
-    forEach(selected, (value, bitSetName) =>
+    forEach(fullTimerConfiguration, (value, bitSetName) =>
       forEach(bitNames, (bitName) => {
         if (bitSetName === bitName)
           assignments.push({ regName, bitValue: value || '0', bitName })
@@ -38,30 +46,27 @@ export const generateCode = (
     })
   }).flat()
   const interrupts: string[] = []
-  forEach(selected, (value, bitSetName) => {
+  forEach(fullTimerConfiguration, (value, bitSetName) => {
     if (value && bitSetName.startsWith('interruptVectorCode')) {
       interrupts.push(value.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
     }
   })
 
-  return `\
+  return (
+    <pre style={{ margin: 0 }}>
+      {`\
 void setup(){
   noInterrupts();
 ${code.join('\t\n\n')}
+
+  OCR${timerNr}A = ${OCRnA};
+  OCR${timerNr}B = ${OCRnB};
+  OCR${timerNr}C = ${OCRnC};
+  ICR${timerNr} = ${ICR};
   interrupts();
 }
 ${interrupts.join('\n')}
-OCRA=${selected.OCRA}`
-}
-
-type Props = {
-  fullTimerConfiguration: TRow
-  registers: TTimerRegisters
-}
-export default function Code({ fullTimerConfiguration, registers }: Props) {
-  return (
-    <pre style={{ margin: 0 }}>
-      {generateCode(fullTimerConfiguration, registers)}
+}`}
     </pre>
   )
 }

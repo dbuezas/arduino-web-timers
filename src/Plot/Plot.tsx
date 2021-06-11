@@ -7,7 +7,7 @@ import YAxis from './YAxis'
 import { TDefaultState } from '../helpers/types'
 import * as d3 from 'd3'
 import { margin } from './margin'
-import simTimer from './simulator'
+import simTimer from '../helpers/simulator'
 
 import './Plot.css'
 import CompareRegisterHandle, {
@@ -15,6 +15,8 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
+import { useRecoilState } from 'recoil'
+import { ICRState, OCRnStates } from '../state/ocr'
 
 type Props = {
   bitValues: TDefaultState
@@ -46,8 +48,9 @@ export default function Plot({ bitValues, style }: Props) {
     isActiveOutput:
       bitValues['CompareOutputMode' + ABC] &&
       bitValues['CompareOutputMode' + ABC] !== 'disconnect',
+    // state: useState((counterMax / 5) * (i + 1)),
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    state: useState((counterMax / 5) * (i + 1)),
+    state: useRecoilState(OCRnStates[i]),
     // eslint-disable-next-line react-hooks/rules-of-hooks
     ref: useRef<CompareRegisterHandleRef>(null),
     i
@@ -58,7 +61,8 @@ export default function Plot({ bitValues, style }: Props) {
     isTop: bitValues.topValue === 'ICR' + param.timerNr,
     isInterrupt: bitValues.ICIEn_text === 'yes',
     isActiveOutput: false,
-    state: useState((counterMax / 5) * 4),
+    // state: useState((counterMax / 5) * 4),
+    state: useRecoilState(ICRState),
     // eslint-disable-next-line react-hooks/rules-of-hooks
     ref: useRef<CompareRegisterHandleRef>(null)
   }
