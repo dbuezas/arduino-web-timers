@@ -1,17 +1,12 @@
 import { forEach, map, sortBy, uniq } from 'lodash'
-import { useRecoilValue } from 'recoil'
+import { isTruthy } from '../helpers/helpers'
 import { TRow, TTimerRegisters } from '../helpers/types'
-import { ICRState, OCRnAState, OCRnBState, OCRnCState } from '../state/ocr'
 
 type Props = {
   fullTimerConfiguration: TRow
   registers: TTimerRegisters
 }
 export default function Code({ fullTimerConfiguration, registers }: Props) {
-  const OCRnA = useRecoilValue(OCRnAState)
-  const OCRnB = useRecoilValue(OCRnBState)
-  const OCRnC = useRecoilValue(OCRnCState)
-  const ICR = useRecoilValue(ICRState)
   const timerNr = fullTimerConfiguration.timerNr
   const code = map(registers, (bitNames, regName) => {
     const assignments: {
@@ -52,6 +47,24 @@ export default function Code({ fullTimerConfiguration, registers }: Props) {
     }
   })
 
+  const OCRs = ['A', 'B', 'C']
+    .map((ABC) => {
+      const regName = `OCR${timerNr}${ABC}`
+      const value = fullTimerConfiguration[regName]
+      const code = `${regName} = ${value};`
+      return value !== undefined && code
+    })
+    .filter(isTruthy)
+
+  const ICRs = [0]
+    .map(() => {
+      const regName = `ICR${timerNr}`
+      const value = fullTimerConfiguration[regName]
+      const code = `${regName} = ${value};`
+      return value !== undefined && code
+    })
+    .filter(isTruthy)
+
   return (
     <pre style={{ margin: 0 }}>
       {`\
@@ -59,10 +72,9 @@ void setup(){
   noInterrupts();
 ${code.join('\t\n\n')}
 
-  OCR${timerNr}A = ${OCRnA};
-  OCR${timerNr}B = ${OCRnB};
-  OCR${timerNr}C = ${OCRnC};
-  ICR${timerNr} = ${ICR};
+  ${OCRs.join('\n  ')}
+  ${ICRs.join('\n  ')}
+  
   interrupts();
 }
 ${interrupts.join('\n')}

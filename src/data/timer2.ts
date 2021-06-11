@@ -102,7 +102,9 @@ C2AF6	OCnA_OutputPort
 C2BF7	OCnB_OutputPort
 0	PD3
 1	PF7
-`)
+`),
+  [{ OCR2A: '0' }],
+  [{ OCR2B: '0' }]
 ]
 const timer = { registers, configs }
 export default timer

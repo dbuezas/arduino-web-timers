@@ -169,7 +169,11 @@ HDR3	OCnB_OutputPort	OCnB_OutputCurrent
   tsv(`
 OCnC_OutputCurrent
 12mA
-`)
+`),
+  [{ OCR3A: '0' }],
+  [{ OCR3B: '0' }],
+  [{ OCR3C: '0' }],
+  [{ ICR3: '0' }]
 ]
 
 const timer = { registers, configs }

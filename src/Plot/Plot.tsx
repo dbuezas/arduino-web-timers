@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import useSize from '@react-hook/size'
 
 // import TriggerVoltageHandle, { TriggerVoltageRef } from './TriggerVoltageHandle'
@@ -15,14 +15,13 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
-import { useRecoilState } from 'recoil'
-import { ICRState, OCRnStates } from '../state/ocr'
 
 type Props = {
   bitValues: TDefaultState
+  setBitValue: (bitName: string, bitValue: string) => void
   style: Object
 }
-export default function Plot({ bitValues, style }: Props) {
+export default function Plot({ bitValues, style, setBitValue }: Props) {
   const counterMax = parseInt(bitValues.counterMax as any)
   const param = {
     timerNr: bitValues.timerNr as string,
@@ -41,36 +40,42 @@ export default function Plot({ bitValues, style }: Props) {
     ICRn: 0
   }
 
-  const OCR_states = ['A', 'B', 'C'].map((ABC, i) => ({
-    name: 'OCR' + param.timerNr + ABC,
-    isTop: bitValues.topValue === 'OCR' + param.timerNr + ABC,
-    isInterrupt: bitValues[`OCIEn${ABC}_text`] === 'yes',
-    isActiveOutput:
-      bitValues['CompareOutputMode' + ABC] &&
-      bitValues['CompareOutputMode' + ABC] !== 'disconnect',
-    // state: useState((counterMax / 5) * (i + 1)),
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    state: useRecoilState(OCRnStates[i]),
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    ref: useRef<CompareRegisterHandleRef>(null),
-    i
-  }))
-  param.OCRnXs = OCR_states.map(({ state }) => state[0])
+  const OCR_states = ['A', 'B', 'C'].map((ABC, i) => {
+    const name = 'OCR' + param.timerNr + ABC
+    return {
+      name,
+      isTop: bitValues.topValue === name,
+      isInterrupt: bitValues[`OCIEn${ABC}_text`] === 'yes',
+      isActiveOutput:
+        bitValues['CompareOutputMode' + ABC] &&
+        bitValues['CompareOutputMode' + ABC] !== 'disconnect',
+      // state: useState((counterMax / 5) * (i + 1)),
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      // state: useRecoilState(OCRnStates[i]),
+      state: parseFloat(bitValues[name] || ''),
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      ref: useRef<CompareRegisterHandleRef>(null),
+      i
+    }
+  })
+  param.OCRnXs = OCR_states.map(({ state }) => state)
+  const name = 'ICR' + param.timerNr
   const ICR_state = {
-    name: 'ICR' + param.timerNr,
-    isTop: bitValues.topValue === 'ICR' + param.timerNr,
+    name,
+    isTop: bitValues.topValue === name,
     isInterrupt: bitValues.ICIEn_text === 'yes',
     isActiveOutput: false,
     // state: useState((counterMax / 5) * 4),
-    state: useRecoilState(ICRState),
+    // state: useRecoilState(ICRState),
+    state: parseFloat(bitValues[name] || ''),
     // eslint-disable-next-line react-hooks/rules-of-hooks
     ref: useRef<CompareRegisterHandleRef>(null)
   }
-  param.ICRn = ICR_state.state[0]
+  param.ICRn = ICR_state.state
 
   const IOCR_states = [...OCR_states, ICR_state]
   param.top =
-    IOCR_states.find(({ isTop }) => isTop)?.state[0] ??
+    IOCR_states.find(({ isTop }) => isTop)?.state ??
     parseInt(bitValues.topValue as any)
   const ocrMax = parseInt(bitValues.topValue as any) || counterMax
 
@@ -204,8 +209,9 @@ export default function Plot({ bitValues, style }: Props) {
                   width,
                   yExtent: [0, ocrMax],
                   yScale,
-                  compareRegisterValue: state[0],
-                  setCompareRegisterValue: state[1],
+                  compareRegisterValue: state,
+                  setCompareRegisterValue: (val: number) =>
+                    setBitValue(name, val + ''),
                   name
                 }}
               />

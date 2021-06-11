@@ -1,10 +1,7 @@
 import every from 'lodash/every'
-import map from 'lodash/map'
-import { TTable, TDefaultState, TTimerRegisters } from './types'
+import { TTable } from './types'
 
-import sortBy from 'lodash/sortBy'
 import uniq from 'lodash/uniq'
-import forEach from 'lodash/forEach'
 import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import { pickBy } from 'lodash'

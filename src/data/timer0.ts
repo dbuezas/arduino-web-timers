@@ -122,7 +122,9 @@ HDR0	OCnB_OutputPort	OCnB_OutputCurrent
 HDR1	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PD6	80mA
-`)
+`),
+  [{ OCR0A: '0' }],
+  [{ OCR0B: '0' }]
 ]
 const timer = { registers, configs }
 export default timer

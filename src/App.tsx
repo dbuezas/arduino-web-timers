@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Container, Content, Footer, Header, Icon, Nav, Navbar } from 'rsuite'
+import { Container, Content, Header, Icon, Nav, Navbar } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
-// import 'rsuite/dist/styles/rsuite-dark.css'
 
 import './App.css'
 import timer0 from './data/timer0'
@@ -62,7 +61,7 @@ const App = () => {
               position: 'relative'
             }}
           >
-            <TimerSetup timer={timer} />
+            <TimerSetup timer={timer} key={timerIndex} />
           </Content>
         </Container>
       </div>
