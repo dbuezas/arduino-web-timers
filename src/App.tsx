@@ -1,5 +1,7 @@
+import { map } from 'lodash'
 import { useState } from 'react'
-import { Container, Content, Header, Icon, Nav, Navbar } from 'rsuite'
+import { useRecoilState } from 'recoil'
+import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 
 import './App.css'
@@ -8,13 +10,14 @@ import timer1 from './data/timer1'
 import timer2 from './data/timer2'
 import timer3 from './data/timer3'
 import TimerSetup from './Panes/TimerSetup'
+import { PanelModes, PanelModeState } from './state/displayMode'
 
 const timers = [timer0, timer1, timer2, timer3]
 
 const App = () => {
   const [timerIndex, setTimerIndex] = useState(0)
   const timer = timers[timerIndex]
-
+  const [panelMode, setPanelMode] = useRecoilState(PanelModeState)
   return (
     <>
       <div>
@@ -48,7 +51,23 @@ const App = () => {
                   ))}
                 </Nav>
                 <Nav pullRight>
-                  <Nav.Item icon={<Icon icon="cog" />}>Settings</Nav.Item>
+                  <Dropdown
+                    trigger="hover"
+                    icon={<Icon icon="cog" />}
+                    title={panelMode}
+                    placement="bottomEnd"
+                  >
+                    {map(PanelModes, (mode) => (
+                      <Dropdown.Item
+                        active={mode === panelMode}
+                        onSelect={setPanelMode}
+                        eventKey={mode}
+                        key={mode}
+                      >
+                        {mode}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown>
                 </Nav>
               </Navbar.Body>
             </Navbar>

@@ -95,24 +95,24 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 `),
   tsv(`
 OCIE1A	OCIEnA_text	interruptVectorCodeA
-0	no
-1	yes	ISR(TIMER1_COMPA_vect) { /* on OCR0A match */ }
+0	no	//nocode
+1	yes	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}
 `),
   tsv(`
 OCIE1B	OCIEnB_text	interruptVectorCodeB
-0	no
-1	yes	ISR(TIMER1_COMPB_vect) { /* on OCR0B match */ }
+0	no	//nocode
+1	yes	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}
     
 `),
   tsv(`
 TOIE1	TOIEn_text	interruptVectorCodeOVF
-0	no
-1	yes	ISR(TIMER1_OVF_vect) { /* on overflow*/ }
+0	no	//nocode
+1	yes	ISR(TIMER1_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
 ICIE1	ICIEn_text	interruptVectorCodeCapture
-0	no
-1	yes	ISR(TIMER1_CAPT_vect) { /* on input capture/ }
+0	no	//nocode
+1	yes	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}
 `),
 
   tsv(`
@@ -143,9 +143,9 @@ HDR5	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PF5	80mA
 `),
-  [{ OCR1A: '0' }],
-  [{ OCR1B: '0' }],
-  [{ ICR1: '0' }]
+  [{ OCR1A: '40000' }],
+  [{ OCR1B: '10000' }],
+  [{ ICR1: '65000' }]
 ]
 const timer = { registers, configs }
 export default timer

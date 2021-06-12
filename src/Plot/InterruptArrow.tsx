@@ -21,7 +21,10 @@ export default function InterruptArrow({
       {flagValues.map(
         (n, i) =>
           n && (
-            <g transform={`translate(${xScale(t[i])}, ${yScale(TCNT[i])})`}>
+            <g
+              key={i}
+              transform={`translate(${xScale(t[i])}, ${yScale(TCNT[i])})`}
+            >
               <path
                 d={
                   d3.line()([

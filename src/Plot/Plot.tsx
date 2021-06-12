@@ -15,6 +15,7 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
+import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
 
 type Props = {
   bitValues: TDefaultState
@@ -40,42 +41,21 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
     ICRn: 0
   }
 
-  const OCR_states = ['A', 'B', 'C'].map((ABC, i) => {
-    const name = 'OCR' + param.timerNr + ABC
-    return {
-      name,
-      isTop: bitValues.topValue === name,
-      isInterrupt: bitValues[`OCIEn${ABC}_text`] === 'yes',
-      isActiveOutput:
-        bitValues['CompareOutputMode' + ABC] &&
-        bitValues['CompareOutputMode' + ABC] !== 'disconnect',
-      // state: useState((counterMax / 5) * (i + 1)),
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      // state: useRecoilState(OCRnStates[i]),
-      state: parseFloat(bitValues[name] || ''),
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      ref: useRef<CompareRegisterHandleRef>(null),
-      i
-    }
-  })
-  param.OCRnXs = OCR_states.map(({ state }) => state)
-  const name = 'ICR' + param.timerNr
-  const ICR_state = {
-    name,
-    isTop: bitValues.topValue === name,
-    isInterrupt: bitValues.ICIEn_text === 'yes',
-    isActiveOutput: false,
-    // state: useState((counterMax / 5) * 4),
-    // state: useRecoilState(ICRState),
-    state: parseFloat(bitValues[name] || ''),
+  const IOCR_states = getCompareRegTraints(bitValues).map((traits, i) => ({
+    ...traits,
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    ref: useRef<CompareRegisterHandleRef>(null)
-  }
-  param.ICRn = ICR_state.state
+    ref: useRef<CompareRegisterHandleRef>(null),
+    i
+  }))
 
-  const IOCR_states = [...OCR_states, ICR_state]
+  param.OCRnXs = IOCR_states.filter(({ isOutput }) => isOutput).map(
+    ({ value }) => value
+  )
+
+  param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
+
   param.top =
-    IOCR_states.find(({ isTop }) => isTop)?.state ??
+    IOCR_states.find(({ isTop }) => isTop)?.value ??
     parseInt(bitValues.topValue as any)
   const ocrMax = parseInt(bitValues.topValue as any) || counterMax
 
@@ -87,7 +67,7 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
   const [width, height_] = useSize(containerRef)
   const height_ouputCompare = 30
   const margin_ouputCompare = 10
-  const activeOCnXs = OCR_states.filter(({ isActiveOutput }) => isActiveOutput)
+  const activeOCnXs = IOCR_states.filter(({ isActiveOutput }) => isActiveOutput)
   const height_timer =
     height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
   const xScale = d3
@@ -115,10 +95,6 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
           IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(e))
           e.preventDefault()
         }}
-
-        // onMouseDown={(e) => {
-        //   e.preventDefault()
-        // }}
       >
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
@@ -134,7 +110,7 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
         />
         {activeOCnXs.map(
           ({ isActiveOutput, i }, k) =>
-            OCR_states[i].isActiveOutput && (
+            isActiveOutput && (
               <Curve
                 {...{
                   key: i,
@@ -156,8 +132,23 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
             )
         )}
 
-        {/* refactor! */}
-        {ICR_state.isInterrupt && (
+        {simulation.MATCH_Xs.flatMap(
+          (matches, i) =>
+            IOCR_states[i].isInterrupt && (
+              <InterruptArrow
+                {...{
+                  key: i,
+                  flagValues: matches,
+                  TCNT: simulation.TCNT,
+                  t: simulation.t,
+                  xScale,
+                  yScale,
+                  label: 'OCR' + bitValues.timerNr + 'ABC'[i] + ' interrupt'
+                }}
+              />
+            )
+        )}
+        {IOCR_states.find(({ isInput }) => isInput)!.isInterrupt && (
           <InterruptArrow
             {...{
               flagValues: simulation.CAPT,
@@ -181,26 +172,9 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
             }}
           />
         )}
-        {simulation.MATCH_Xs.flatMap(
-          (matches, i) =>
-            OCR_states[i].isInterrupt && (
-              <InterruptArrow
-                {...{
-                  key: i,
-                  flagValues: matches,
-                  TCNT: simulation.TCNT,
-                  t: simulation.t,
-                  xScale,
-                  yScale,
-                  label: 'OCR' + bitValues.timerNr + 'ABC'[i] + ' interrupt'
-                }}
-              />
-            )
-        )}
 
-        {/*********end refactor me */}
         {IOCR_states.map(
-          ({ isActiveOutput, isTop, isInterrupt, ref, state, name }) =>
+          ({ isActiveOutput, isTop, isInterrupt, ref, value, name }) =>
             (isActiveOutput || isTop || isInterrupt) && (
               <CompareRegisterHandle
                 {...{
@@ -209,7 +183,7 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
                   width,
                   yExtent: [0, ocrMax],
                   yScale,
-                  compareRegisterValue: state,
+                  compareRegisterValue: value,
                   setCompareRegisterValue: (val: number) =>
                     setBitValue(name, val + ''),
                   name

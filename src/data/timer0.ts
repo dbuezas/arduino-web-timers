@@ -79,19 +79,19 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 `),
   tsv(`
 OCIE0A	OCIEnA_text	interruptVectorCodeA
-0	no
-1	yes	ISR(TIMER0_COMPA_vect) {\\n/* on OCR0A match */\\n}
+0	no	//nocode
+1	yes	ISR(TIMER0_COMPA_vect) {\\n    /* on OCR0A match */\\n}
 `),
   tsv(`
 OCIE0B	OCIEnB_text	interruptVectorCodeB
-0	no
-1	yes	ISR(TIMER0_COMPB_vect) {\\n/* on OCR0B match */\\n}
+0	no	//nocode
+1	yes	ISR(TIMER0_COMPB_vect) {\\n    /* on OCR0B match */\\n}
     
 `),
   tsv(`
 TOIE0	TOIEn_text	interruptVectorCodeOVF
-0	no
-1	yes	ISR(TIMER0_OVF_vect) {\\n/* on overflow*/\\n}
+0	no	//nocode
+1	yes	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
 F2XEN	TC2XS0	clockDoubler	ExternalClockInput
@@ -123,8 +123,8 @@ HDR1	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PD6	80mA
 `),
-  [{ OCR0A: '0' }],
-  [{ OCR0B: '0' }]
+  [{ OCR0A: '200' }],
+  [{ OCR0B: '100' }]
 ]
 const timer = { registers, configs }
 export default timer

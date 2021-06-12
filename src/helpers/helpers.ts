@@ -53,8 +53,8 @@ export function isTruthy<TValue>(
 }
 
 const negatedMatch = (a: string, b: string) => {
-  const [, negA] = a.match(/\!(.*)/) || []
-  const [, negB] = b.match(/\!(.*)/) || []
+  const [, negA] = a.match(/!(.*)/) || []
+  const [, negB] = b.match(/!(.*)/) || []
   if (negA) {
     if (!b) return a
     if (negA !== b) return b

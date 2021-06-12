@@ -117,29 +117,33 @@ CS3	CS32	CS31	CS30	clockPrescalerOrSource	ExternalClockInput
 0	0	0	0	disconnect	N/A
 `),
   tsv(`
+InterruptCommonSignature
+ISR(TIMER3_vect)
+`),
+  tsv(`
 OCIE3A	OCIEnA_text	interruptVectorCodeA
-0	no
-1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    // [... your code]\\n  }\\n}
+0	no  	//nocode
+1	yes	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}
 `),
   tsv(`
 OCIE3B	OCIEnB_text	interruptVectorCodeB
-0	no
-1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    // [... your code]\\n  }\\n}
+0	no  	//nocode
+1	yes	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}
 `),
   tsv(`
 OCIE3C	OCIEnC_text	interruptVectorCodeC
-0	no
-1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    // [... your code]\\n  }\\n}
+0	no  	//nocode
+1	yes	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}
 `),
   tsv(`
-TOIE3	TOIEn_text	interruptVectorCodeD
-0	no
-1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    // [... your code]\\n  }\\n}
+TOIE3	TOIEn_text	interruptVectorCodeOVF
+0	no  	//nocode
+1	yes	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}
 `),
   tsv(`
 ICIE3	ICIEn_text	interruptVectorCodeCapture
-0	no
-1	yes	ISR(TIMER3_vect) {\\n  if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    // [... your code]\\n  }\\n}
+0	no  	//nocode
+1	yes	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}
 `),
   tsv(`
 C3AC	WCE	OCnA_OutputPort

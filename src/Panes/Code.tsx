@@ -1,4 +1,5 @@
 import { forEach, map, sortBy, uniq } from 'lodash'
+import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
 import { isTruthy } from '../helpers/helpers'
 import { TRow, TTimerRegisters } from '../helpers/types'
 
@@ -7,7 +8,6 @@ type Props = {
   registers: TTimerRegisters
 }
 export default function Code({ fullTimerConfiguration, registers }: Props) {
-  const timerNr = fullTimerConfiguration.timerNr
   const code = map(registers, (bitNames, regName) => {
     const assignments: {
       regName: string
@@ -37,48 +37,45 @@ export default function Code({ fullTimerConfiguration, registers }: Props) {
       const bitAssignmentsStr = bitAssignments.length
         ? `\n    ${bitAssignments.join(' |\n    ')}`
         : '0'
+      if (bitAssignmentsStr === '0') return ''
       return `  ${regName} = ${bitAssignmentsStr};`
     })
-  }).flat()
-  const interrupts: string[] = []
+  })
+    .flat()
+    .filter(isTruthy)
+
+  let interrupts: string[] = []
   forEach(fullTimerConfiguration, (value, bitSetName) => {
-    if (value && bitSetName.startsWith('interruptVectorCode')) {
+    if (
+      value &&
+      value !== '//nocode' &&
+      bitSetName.startsWith('interruptVectorCode')
+    ) {
       interrupts.push(value.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
     }
   })
+  if (interrupts.length && fullTimerConfiguration.InterruptCommonSignature) {
+    interrupts = [
+      fullTimerConfiguration.InterruptCommonSignature + ' {',
+      ...interrupts.map((code) => '    ' + code.split('\n').join('\n    ')),
+      '}'
+    ]
+  }
 
-  const OCRs = ['A', 'B', 'C']
-    .map((ABC) => {
-      const regName = `OCR${timerNr}${ABC}`
-      const value = fullTimerConfiguration[regName]
-      const code = `${regName} = ${value};`
-      return value !== undefined && code
-    })
-    .filter(isTruthy)
-
-  const ICRs = [0]
-    .map(() => {
-      const regName = `ICR${timerNr}`
-      const value = fullTimerConfiguration[regName]
-      const code = `${regName} = ${value};`
-      return value !== undefined && code
-    })
-    .filter(isTruthy)
+  const compareRegsCode = getCompareRegTraints(fullTimerConfiguration)
+    .filter(({ isUsed }) => isUsed)
+    .map(({ code }) => code)
 
   return (
     <pre style={{ margin: 0 }}>
       {`\
 void setup(){
   noInterrupts();
-${code.join('\t\n\n')}
-
-  ${OCRs.join('\n  ')}
-  ${ICRs.join('\n  ')}
-  
+${code.join('\t\n')}
+  ${compareRegsCode.join('\n  ')}
   interrupts();
 }
-${interrupts.join('\n')}
-}`}
+${interrupts.join('\n')}`}
     </pre>
   )
 }
