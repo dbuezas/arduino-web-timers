@@ -103,8 +103,8 @@ C2BF7	OCnB_OutputPort
 0	PD3
 1	PF7
 `),
-  [{ OCR2A: '0' }],
-  [{ OCR2B: '0' }]
+  [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
+  [{ OCR2B: Math.round((255 * 1) / 3) + '' }]
 ]
 const timer = { registers, configs }
 export default timer

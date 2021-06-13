@@ -123,8 +123,8 @@ HDR1	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PD6	80mA
 `),
-  [{ OCR0A: '200' }],
-  [{ OCR0B: '100' }]
+  [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
+  [{ OCR0B: Math.round((255 * 1) / 3) + '' }]
 ]
 const timer = { registers, configs }
 export default timer
