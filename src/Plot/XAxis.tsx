@@ -2,6 +2,8 @@ import * as d3 from 'd3'
 import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
 import { Simulation } from '../helpers/simulator'
+// @ts-ignore
+import useD3Transition from 'use-d3-transition'
 
 type ohNoItIsAny = any
 
@@ -41,13 +43,12 @@ export default function XAxis({ height, xScale, data }: Props) {
   useLayoutEffect(() => {
     if (!gEl) return
     const xTicks = d3.ticks(xScale.domain()[0], xScale.domain()[1], 10)
-    // const xTicks = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(
-    //   (n) =>
-    //     xScale.domain()[0] + ((xScale.domain()[1] - xScale.domain()[0]) / 8) * n
-    // )
-    d3.select(gEl).call((g) =>
-      g
-        .attr('transform', `translate(0,${height - margin.bottom})`)
+
+    d3.select(gEl).call((g) => {
+      g.attr('transform', `translate(0,${height - margin.bottom})`)
+        // .transition()
+        // .ease(d3.easeLinear)
+        // .duration(100)
         .call(
           d3
             .axisBottom(xScale)
@@ -57,8 +58,12 @@ export default function XAxis({ height, xScale, data }: Props) {
             .tickFormat((t) => formatTime(t as any))
             .tickSizeOuter(0)
         )
-        .call((g) => g.select('.domain').remove())
-    )
+
+      //   .call((g) => g.select('.domain').remove())
+      // g.call((g) => g.select('.domain').remove())
+
+      // return the selection:
+    })
   }, [gEl, xScale, height])
 
   return <g className="x axis" ref={nodeRef} />

@@ -1,20 +1,23 @@
+import { useClipboard } from 'use-clipboard-copy'
 import { forEach, map, sortBy, uniq } from 'lodash'
+import { useRecoilValue } from 'recoil'
 import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
 import { isTruthy } from '../helpers/helpers'
-import { TRow, TTimerRegisters } from '../helpers/types'
+import { timerState } from '../state/state'
+import { suggestedConfigurationState } from './state'
+import { Button } from 'rsuite'
 
-type Props = {
-  fullTimerConfiguration: TRow
-  registers: TTimerRegisters
-}
-export default function Code({ fullTimerConfiguration, registers }: Props) {
+export default function Code() {
+  const suggestedConfig = useRecoilValue(suggestedConfigurationState)
+  const { registers } = useRecoilValue(timerState)
+
   const code = map(registers, (bitNames, regName) => {
     const assignments: {
       regName: string
       bitValue: string
       bitName: string
     }[] = []
-    forEach(fullTimerConfiguration, (value, bitSetName) =>
+    forEach(suggestedConfig, (value, bitSetName) =>
       forEach(bitNames, (bitName) => {
         if (bitSetName === bitName)
           assignments.push({ regName, bitValue: value || '0', bitName })
@@ -45,7 +48,7 @@ export default function Code({ fullTimerConfiguration, registers }: Props) {
     .filter(isTruthy)
 
   let interrupts: string[] = []
-  forEach(fullTimerConfiguration, (value, bitSetName) => {
+  forEach(suggestedConfig, (value, bitSetName) => {
     if (
       value &&
       value !== '//nocode' &&
@@ -54,28 +57,54 @@ export default function Code({ fullTimerConfiguration, registers }: Props) {
       interrupts.push(value.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
     }
   })
-  if (interrupts.length && fullTimerConfiguration.InterruptCommonSignature) {
+  if (interrupts.length && suggestedConfig.InterruptCommonSignature) {
     interrupts = [
-      fullTimerConfiguration.InterruptCommonSignature + ' {',
+      suggestedConfig.InterruptCommonSignature + ' {',
       ...interrupts.map((code) => '    ' + code.split('\n').join('\n    ')),
       '}'
     ]
   }
 
-  const compareRegsCode = getCompareRegTraints(fullTimerConfiguration)
+  const compareRegsCode = getCompareRegTraints(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
     .map(({ code }) => code)
 
-  return (
-    <pre style={{ margin: 0 }}>
-      {`\
+  const fullCode = `\
 void setup(){
+  /* ${window.location.href} */
   noInterrupts();
 ${code.join('\t\n')}
   ${compareRegsCode.join('\n  ')}
   interrupts();
 }
-${interrupts.join('\n')}`}
-    </pre>
+${interrupts.join('\n')}`
+
+  return (
+    <>
+      <CopyToClipboard text={fullCode} />
+      <pre style={{ margin: 0 }}>{fullCode}</pre>
+    </>
+  )
+}
+
+function CopyToClipboard({ text }: { text: string }) {
+  const clipboard = useClipboard({
+    copiedTimeout: 600 // timeout duration in milliseconds
+  })
+  return (
+    <div>
+      <textarea
+        ref={clipboard.target}
+        value={text}
+        readOnly
+        style={{ display: 'none' }}
+      />
+      <Button
+        color={clipboard.copied ? 'green' : undefined}
+        onClick={clipboard.copy}
+      >
+        {clipboard.copied ? 'Copied' : 'Copy'}
+      </Button>
+    </div>
   )
 }

@@ -1,26 +1,31 @@
 import { map } from 'lodash'
-import { useState } from 'react'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 
 import './App.css'
-import timer0 from './data/timer0'
-import timer1 from './data/timer1'
-import timer2 from './data/timer2'
-import timer3 from './data/timer3'
 import TimerSetup from './Panes/TimerSetup'
-import { PanelModes, PanelModeState } from './state/displayMode'
-
-const timers = [timer0, timer1, timer2, timer3]
+import {
+  PanelModes,
+  panelModeState,
+  MicroControllers,
+  microControllerState,
+  timerState,
+  RegisterLocationState
+} from './state/state'
+import { useHistory } from 'react-router-dom'
+import timers from './data/lgt328p'
 
 const App = () => {
-  const [timerIndex, setTimerIndex] = useState(0)
-  const timer = timers[timerIndex]
-  const [panelMode, setPanelMode] = useRecoilState(PanelModeState)
+  const history = useHistory()
+  const timer = useRecoilValue(timerState)
+  const mcu = useRecoilValue(microControllerState)
+  console.log('app')
+  const [panelMode, setPanelMode] = useRecoilState(panelModeState)
   return (
     <>
       <div>
+        <RegisterLocationState />
         <Container className="App">
           <Header>
             <Navbar appearance="inverse">
@@ -35,7 +40,31 @@ const App = () => {
                 </a>
               </Navbar.Header>
               <Navbar.Body>
-                <Nav activeKey={timerIndex} onSelect={setTimerIndex}>
+                <Nav>
+                  <Dropdown
+                    trigger="hover"
+                    icon={<Icon icon="cog" />}
+                    title={mcu}
+                    placement="bottomEnd"
+                  >
+                    {map(MicroControllers, (aChip) => (
+                      <Dropdown.Item
+                        active={aChip === mcu}
+                        onSelect={(mcu) => history.push('/' + mcu + '/0')}
+                        eventKey={aChip}
+                        key={aChip}
+                      >
+                        {aChip}
+                      </Dropdown.Item>
+                    ))}
+                  </Dropdown>
+                </Nav>
+                <Nav
+                  activeKey={timer.timerNr}
+                  onSelect={(timerNr) =>
+                    history.push('/' + mcu + '/' + timerNr)
+                  }
+                >
                   {timers.map((_, i) => (
                     <Nav.Item
                       eventKey={i}
@@ -80,7 +109,7 @@ const App = () => {
               position: 'relative'
             }}
           >
-            <TimerSetup timer={timer} key={timerIndex} />
+            <TimerSetup key={timer.timerNr} />
           </Content>
         </Container>
       </div>

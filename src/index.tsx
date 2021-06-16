@@ -4,11 +4,20 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { RecoilRoot } from 'recoil'
+import { BrowserRouter, Redirect, Route } from 'react-router-dom'
+
 ReactDOM.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <App />
-    </RecoilRoot>
+    <BrowserRouter>
+      <RecoilRoot>
+        <Route path="/:mcu/:timerIdx">
+          <App />
+        </Route>
+        <Route exact path="/">
+          <Redirect to="/lgt328p/0" />
+        </Route>
+      </RecoilRoot>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root')
 )

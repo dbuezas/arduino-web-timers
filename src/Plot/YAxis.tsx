@@ -15,6 +15,8 @@ export default function YAxis({ width, yScale }: Props) {
     if (!gEl) return
     const yTicks = d3.ticks(yScale.domain()[0], yScale.domain()[1], 10)
     d3.select(gEl)
+      // .transition()
+      // .duration(200)
       .call((g) =>
         g.attr('transform', `translate(${margin.left},0)`).call(
           d3

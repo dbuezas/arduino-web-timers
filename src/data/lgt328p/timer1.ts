@@ -1,5 +1,5 @@
-import { tsv, tsvRegisters } from './timers'
-import { TTimerConfig } from '../helpers/types'
+import { tsv, tsvRegisters } from '../timers'
+import { TTimerConfig } from '../../helpers/types'
 
 const registers = tsvRegisters(`
 TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR	PMX0	HDR

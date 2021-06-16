@@ -16,13 +16,15 @@ import CompareRegisterHandle, {
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
 import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { userConfigBitState } from '../state/state'
+import { suggestedConfigurationState } from '../Panes/state'
 
 type Props = {
-  bitValues: TDefaultState
-  setBitValue: (bitName: string, bitValue: string) => void
   style: Object
 }
-export default function Plot({ bitValues, style, setBitValue }: Props) {
+export default function Plot({ style }: Props) {
+  const bitValues = useRecoilValue(suggestedConfigurationState)
   const counterMax = parseInt(bitValues.counterMax as any)
   const param = {
     timerNr: bitValues.timerNr as string,
@@ -174,22 +176,29 @@ export default function Plot({ bitValues, style, setBitValue }: Props) {
         )}
 
         {IOCR_states.map(
-          ({ isActiveOutput, isTop, isInterrupt, ref, value, name }) =>
-            (isActiveOutput || isTop || isInterrupt) && (
-              <CompareRegisterHandle
-                {...{
-                  key: name,
-                  ref,
-                  width,
-                  yExtent: [0, ocrMax],
-                  yScale,
-                  compareRegisterValue: value,
-                  setCompareRegisterValue: (val: number) =>
-                    setBitValue(name, val + ''),
-                  name
-                }}
-              />
+          ({ isActiveOutput, isTop, isInterrupt, ref, value, name }) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const setUserConfigBit = useSetRecoilState(userConfigBitState(name))
+
+            return (
+              (isActiveOutput || isTop || isInterrupt) && (
+                <CompareRegisterHandle
+                  {...{
+                    key: name,
+                    ref,
+                    width,
+                    yExtent: [0, ocrMax],
+                    yScale,
+                    compareRegisterValue: value,
+                    setCompareRegisterValue: (val: number) =>
+                      // eslint-disable-next-line react-hooks/rules-of-hooks
+                      setUserConfigBit(val + ''),
+                    name
+                  }}
+                />
+              )
             )
+          }
         )}
       </svg>
     </div>

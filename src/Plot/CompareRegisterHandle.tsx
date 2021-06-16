@@ -19,6 +19,9 @@ type Props = {
   compareRegisterValue: number
   name: string
 }
+
+let i = 0
+
 const constrain = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max)
 const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
@@ -39,6 +42,7 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
         setDraggingTV(false)
       },
       onMouseMove(e) {
+        // onMouseMove(e)
         if (draggingTV) {
           let scaled = yScale.invert(e.nativeEvent.offsetY)
           scaled = constrain(Math.round(scaled), ...yExtent)

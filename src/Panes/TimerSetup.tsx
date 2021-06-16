@@ -1,87 +1,21 @@
-import { useMemo, useState } from 'react'
 import { Checkbox, CheckboxGroup, FlexboxGrid, Panel } from 'rsuite'
-import { useRecoilValue } from 'recoil'
-import uniq from 'lodash/uniq'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { descriptions } from '../data/timers'
-import { TRow, TTable, TTimer } from '../helpers/types'
 import { map } from 'lodash'
 import './TimerSetup.css'
-import {
-  getValuesPerBitName,
-  isTruthy,
-  joinTables,
-  splitTables
-} from '../helpers/helpers'
+
 import Plot from '../Plot/Plot'
 import Code from './Code'
 import ResizePanel from 'react-resize-panel-ts'
-import { PanelModes, PanelModeState } from '../state/displayMode'
-
-function useCheckboxGroups(tableSet: TTable[]) {
-  const [groupState, setGroupState] = useState<TRow>({})
-  const possibleFullAssignments = useMemo(
-    () => joinTables([[groupState], ...tableSet]),
-    [groupState, tableSet]
-  )
-  const optionsPerBitName = useMemo(
-    () => getValuesPerBitName(tableSet),
-    [tableSet]
-  )
-
-  const checkboxGroupData = useMemo(
-    () =>
-      map(optionsPerBitName, (allOptions, bitName) => {
-        const selectedWithout = { ...groupState, [bitName]: null }
-        let joined: TRow[]
-        if (groupState[bitName]) {
-          joined = joinTables([[selectedWithout], ...tableSet])
-        } else {
-          // optimization
-          joined = possibleFullAssignments
-        }
-        const enabledOptions = uniq(
-          joined.map((col) => col[bitName]).filter(isTruthy)
-        )
-
-        const forcedOption =
-          !groupState[bitName] && enabledOptions.length === 1
-            ? possibleFullAssignments[0][bitName]
-            : null
-        const suggestedOption =
-          !groupState[bitName] && enabledOptions.length > 1
-            ? possibleFullAssignments[0][bitName]
-            : null
-        const setValue = (val: string) =>
-          setGroupState({
-            ...groupState,
-            [bitName]: val
-          })
-
-        return {
-          bitName,
-          selectedOption: groupState[bitName],
-          suggestedOption:
-            suggestedOption || forcedOption || groupState[bitName],
-          forcedOption: forcedOption,
-          setValue,
-          setOption: (val: string[]) => setValue(val[1]),
-          options: allOptions.map((value, i) => ({
-            isSuggested: value === suggestedOption,
-            value,
-            isDisabled: !enabledOptions.includes(value) || !!forcedOption
-          }))
-        }
-      }),
-    [groupState, optionsPerBitName, tableSet, possibleFullAssignments]
-  )
-  return checkboxGroupData
-}
+import { PanelModes, panelModeState, userConfigBitState } from '../state/state'
+import { allSplitGroupsState, TCheckboxGroupData } from './state'
+import React from 'react'
 
 type input = {
   bitName: string
+  humanName?: string
   selectedOption: string | null
   forcedOption: string | null
-  setOption: (val: string[]) => void
   options: {
     isSuggested: boolean
     value: string
@@ -89,34 +23,30 @@ type input = {
   }[]
 }
 
-function TableConfig({
-  bitName,
-  selectedOption,
-  forcedOption,
-  setOption,
-  options
-}: input) {
-  return (
-    <CheckboxGroup
-      inline
-      value={[selectedOption || forcedOption]}
-      onChange={setOption}
-    >
-      <p>{bitName}</p>
-      {options.map(({ value, isSuggested, isDisabled }, i) => (
-        <Checkbox
-          indeterminate={isSuggested}
-          key={i}
-          value={value}
-          disabled={isDisabled}
-        >
-          {value}
-        </Checkbox>
-      ))}
-    </CheckboxGroup>
-  )
-}
-type TCheckboxGroupData = ReturnType<typeof useCheckboxGroups>
+const TableConfig = React.memo(
+  ({ bitName, humanName, selectedOption, forcedOption, options }: input) => {
+    const setUserConfigBit = useSetRecoilState(userConfigBitState(bitName))
+    return (
+      <CheckboxGroup
+        inline
+        value={[selectedOption || forcedOption]}
+        onChange={(val: string[]) => setUserConfigBit(val[1])}
+      >
+        <p>{humanName || bitName}</p>
+        {options.map(({ value, isSuggested, isDisabled }, i) => (
+          <Checkbox
+            indeterminate={isSuggested}
+            key={i}
+            value={value}
+            disabled={isDisabled}
+          >
+            {value}
+          </Checkbox>
+        ))}
+      </CheckboxGroup>
+    )
+  }
+)
 
 const getCheckboxGroupsByGroup = (allCheckboxGroups: TCheckboxGroupData[]) =>
   allCheckboxGroups.map((checkboxGroups, i) => ({
@@ -124,15 +54,17 @@ const getCheckboxGroupsByGroup = (allCheckboxGroups: TCheckboxGroupData[]) =>
     checkboxGroups
   }))
 type TCheckboxGroupByPanel = ReturnType<typeof getCheckboxGroupsByGroup>
+
 const getCheckboxGroupsByPanel = (allCheckboxGroups: TCheckboxGroupData) =>
   map(descriptions, (bitDescriptions, panelName) => ({
     panelName,
     checkboxGroups: allCheckboxGroups
       .map(({ bitName, ...rest }) => ({
         ...rest,
-        bitName: bitDescriptions[bitName]
+        bitName,
+        humanName: bitDescriptions[bitName]
       }))
-      .filter(({ bitName }) => bitName)
+      .filter(({ humanName }) => humanName)
   })).filter(({ checkboxGroups }) => checkboxGroups.length)
 
 const getHiddenCheckboxGroup = (allCheckboxGroups: TCheckboxGroupData) => ({
@@ -148,14 +80,36 @@ const getHiddenCheckboxGroup = (allCheckboxGroups: TCheckboxGroupData) => ({
       )
     )
 })
-function TimerSetup({ timer }: { timer: TTimer }) {
-  // console.time('r')
 
-  const tableSets = useMemo(() => splitTables(timer.configs), [timer])
-  const splitGroups = tableSets.map(useCheckboxGroups)
+const Column = React.memo(
+  ({
+    panelName,
+    colCount,
+    checkboxGroups
+  }: {
+    panelName: string
+    colCount: number
+    checkboxGroups: TCheckboxGroupData
+  }) => {
+    const style = { width: 100 / (colCount + 1) + '%' }
+
+    return (
+      <FlexboxGrid.Item key={panelName} style={style}>
+        <Panel header={panelName} bordered shaded collapsible defaultExpanded>
+          {checkboxGroups.map((checkboxGroupData, i) => (
+            <TableConfig key={i} {...checkboxGroupData} />
+          ))}
+        </Panel>
+      </FlexboxGrid.Item>
+    )
+  }
+)
+
+function TimerSetup() {
+  const splitGroups = useRecoilValue(allSplitGroupsState)
   const allCheckboxGroups = splitGroups.flat()
 
-  const panelMode = useRecoilValue(PanelModeState)
+  const panelMode = useRecoilValue(panelModeState)
   let byPanel: TCheckboxGroupByPanel
   switch (panelMode) {
     case PanelModes.Normal:
@@ -171,39 +125,20 @@ function TimerSetup({ timer }: { timer: TTimer }) {
       byPanel = getCheckboxGroupsByGroup(splitGroups)
       break
   }
-  const suggestedConfiguration = Object.fromEntries(
-    allCheckboxGroups.map(({ bitName, suggestedOption }) => [
-      bitName,
-      suggestedOption
-    ])
-  )
   const style = { width: 100 / (byPanel.length + 1) + '%' }
+
   const r = (
     <div className="TimerSetup">
       <FlexboxGrid style={{ flexGrow: 1, overflow: 'scroll' }}>
-        {byPanel.map(({ panelName, checkboxGroups }) => {
-          return (
-            <FlexboxGrid.Item key={panelName} style={style}>
-              <Panel
-                header={panelName}
-                bordered
-                shaded
-                collapsible
-                defaultExpanded
-              >
-                {checkboxGroups.map((checkboxGroupData, i) => (
-                  <TableConfig key={i} {...checkboxGroupData} />
-                ))}
-              </Panel>
-            </FlexboxGrid.Item>
-          )
-        })}
+        {byPanel.map(({ panelName, checkboxGroups }, i) => (
+          <Column
+            key={i}
+            {...{ panelName, checkboxGroups, colCount: byPanel.length }}
+          />
+        ))}
         <FlexboxGrid.Item key="code" style={style}>
           <Panel header="Code" bordered shaded collapsible defaultExpanded>
-            <Code
-              fullTimerConfiguration={suggestedConfiguration}
-              registers={timer.registers}
-            />
+            <Code />
           </Panel>
         </FlexboxGrid.Item>
       </FlexboxGrid>
@@ -217,20 +152,10 @@ function TimerSetup({ timer }: { timer: TTimer }) {
           height: 200
         }}
       >
-        <Plot
-          key={suggestedConfiguration.timerNr}
-          bitValues={suggestedConfiguration}
-          setBitValue={(bitName: string, value: string) => {
-            allCheckboxGroups.forEach(({ bitName: bitName2, setValue }) => {
-              if (bitName === bitName2) setValue(value)
-            })
-          }}
-          style={{ minHeight: 300 }}
-        />
+        <Plot style={{ minHeight: 300 }} />
       </ResizePanel>
     </div>
   )
-  // console.timeEnd('r')
   return r
 }
 

@@ -18,4 +18,5 @@ export type TDefaultState = TRow
 export type TTimer = {
   configs: TTimerConfig
   registers: TTimerRegisters
+  timerNr: number
 }
