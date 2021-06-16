@@ -19,8 +19,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-resize-panel-ts": "0.0.5",
-    "react-router-dom": "^5.2.0",
-    "react-router-query-params": "^1.0.4",
     "react-scripts": "4.0.3",
     "recoil": "^0.3.1",
     "rsuite": "^4.10.1",
@@ -57,7 +55,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.170",
-    "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.24.0",
     "@typescript-eslint/parser": "^4.24.0",
     "@welldone-software/why-did-you-render": "^6.2.0",

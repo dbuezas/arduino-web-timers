@@ -1,5 +1,5 @@
 import { map } from 'lodash'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 
@@ -9,17 +9,14 @@ import {
   PanelModes,
   panelModeState,
   MicroControllers,
-  microControllerState,
-  timerState,
-  RegisterLocationState
+  RegisterLocationState,
+  userConfigBitState
 } from './state/state'
-import { useHistory } from 'react-router-dom'
 import timers from './data/lgt328p'
 
 const App = () => {
-  const history = useHistory()
-  const timer = useRecoilValue(timerState)
-  const mcu = useRecoilValue(microControllerState)
+  const [timerIdx, setTimerIdx] = useRecoilState(userConfigBitState('timer'))
+  const [mcu, setMcu] = useRecoilState(userConfigBitState('mcu'))
   console.log('app')
   const [panelMode, setPanelMode] = useRecoilState(panelModeState)
   return (
@@ -50,7 +47,7 @@ const App = () => {
                     {map(MicroControllers, (aChip) => (
                       <Dropdown.Item
                         active={aChip === mcu}
-                        onSelect={(mcu) => history.push('/' + mcu + '/0')}
+                        onSelect={setMcu}
                         eventKey={aChip}
                         key={aChip}
                       >
@@ -59,12 +56,7 @@ const App = () => {
                     ))}
                   </Dropdown>
                 </Nav>
-                <Nav
-                  activeKey={timer.timerNr}
-                  onSelect={(timerNr) =>
-                    history.push('/' + mcu + '/' + timerNr)
-                  }
-                >
+                <Nav activeKey={timerIdx} onSelect={setTimerIdx}>
                   {timers.map((_, i) => (
                     <Nav.Item
                       eventKey={i}
@@ -109,7 +101,7 @@ const App = () => {
               position: 'relative'
             }}
           >
-            <TimerSetup key={timer.timerNr} />
+            <TimerSetup key={timerIdx} />
           </Content>
         </Container>
       </div>

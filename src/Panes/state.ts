@@ -48,7 +48,7 @@ export const relevantGroupConfigState = selectorFamily({
       const userConfig: TRow = {}
       for (const bitName of relevantBitNames) {
         const userBitConfig = get(userConfigBitState(bitName))
-        if (userBitConfig !== null) userConfig[bitName] = userBitConfig
+        if (userBitConfig !== undefined) userConfig[bitName] = userBitConfig
       }
       return userConfig
     }
@@ -70,7 +70,7 @@ export const splitGroupsState = selectorFamily({
         (allOptions, bitName) => {
           let joined
           if (userState[bitName]) {
-            const selectedWithout = { ...userState, [bitName]: null }
+            const selectedWithout = { ...userState, [bitName]: undefined }
             joined = joinTables([[selectedWithout], ...tableSet])
           } else {
             // optimization
@@ -84,11 +84,11 @@ export const splitGroupsState = selectorFamily({
           const forcedOption =
             !userState[bitName] && enabledOptions.length === 1
               ? possibleFullAssignments[0][bitName]
-              : null
+              : undefined
           const suggestedOption =
             !userState[bitName] && enabledOptions.length > 1
               ? possibleFullAssignments[0][bitName]
-              : null
+              : undefined
           return {
             bitName,
             selectedOption: userState[bitName],
@@ -109,9 +109,9 @@ export const splitGroupsState = selectorFamily({
 
 export type TCheckboxGroupData = {
   bitName: string
-  selectedOption: string | null
-  suggestedOption: string | null
-  forcedOption: string | null
+  selectedOption: string | undefined
+  suggestedOption: string | undefined
+  forcedOption: string | undefined
   options: {
     isSuggested: boolean
     value: string

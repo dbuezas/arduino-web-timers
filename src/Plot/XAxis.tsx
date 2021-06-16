@@ -3,7 +3,7 @@ import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
 import { Simulation } from '../helpers/simulator'
 // @ts-ignore
-import useD3Transition from 'use-d3-transition'
+// import useD3Transition from 'use-d3-transition'
 
 type ohNoItIsAny = any
 

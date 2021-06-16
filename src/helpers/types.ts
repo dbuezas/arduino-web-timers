@@ -1,7 +1,7 @@
 export type TTableNames = string
 
 export type TRow = {
-  [k: string]: string | null
+  [k: string]: string | undefined
 }
 export type TTable = TRow[]
 export type TTimerConfig = TTable[]

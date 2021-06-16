@@ -46,9 +46,7 @@ export const splitTables = ([left, ...tables]: TTable[]): TTable[][] => {
 
   return [cluster, ...splitTables(remaining)]
 }
-export function isTruthy<TValue>(
-  value: TValue | null | undefined
-): value is TValue {
+export function isTruthy<TValue>(value: TValue | undefined): value is TValue {
   return !!value
 }
 
@@ -81,7 +79,7 @@ const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
           else if (leftVal !== rightVal) return false
           return true
         })
-        if (!keep) return null
+        if (!keep) return undefined
         return row
       })
       .filter(isTruthy)
@@ -89,7 +87,7 @@ const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
   return _joinTables([joined, ...tables])
 }
 export const joinTables = (tables: TTable[]): TTable => {
-  // first remove empty bitValues to improve speed (bitValue=''|null means the value is not constrained)
+  // first remove empty bitValues to improve speed (bitValue=''|undefined means the value is not constrained)
   const cleanTables = tables.map((table) => table.map((row) => pickBy(row)))
   return _joinTables(cleanTables)
 }

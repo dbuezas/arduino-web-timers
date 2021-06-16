@@ -1,4 +1,3 @@
-import { useParams } from 'react-router'
 import {
   atom,
   atomFamily,
@@ -7,10 +6,10 @@ import {
   selectorFamily,
   useSetRecoilState
 } from 'recoil'
+import { setHashFromObject, setHashParam, useHashParams } from './useHash'
+
 import timers from '../data/lgt328p'
-import { useQueryString } from 'use-route-as-state'
 import { useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
 
 export enum PanelModes {
   Normal = 'Normal',
@@ -27,10 +26,6 @@ export enum MicroControllers {
   ATMEGA328P = 'ATMEGA328P'
 }
 
-type RouterParams = {
-  timerIdx: string
-  mcu: string
-}
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()
   useEffect(() => {
@@ -38,36 +33,36 @@ function usePrevious<T>(value: T) {
   })
   return ref.current
 }
+const defaultState = { mcu: MicroControllers.LGT8F328P, timer: '0' }
 export const RegisterLocationState = () => {
-  const { timerIdx, mcu } = useParams<RouterParams>()
-  const setTimerIdx = useSetRecoilState(timerIdxState)
-  const setMcu = useSetRecoilState(microControllerState)
-  setTimerIdx(+timerIdx)
-  setMcu(mcu as MicroControllers)
-
-  const loc = useLocation()
-  console.log('loc', loc)
-
-  const setConfigBitBulk = useSetRecoilState(userConfigBitBulkState)
-  let newUserConfig = Object.fromEntries(
-    new URLSearchParams(window.location.search).entries()
-  )
-  const oldUserConfig = usePrevious(newUserConfig)
-  console.log('RegisterLocationState', newUserConfig, oldUserConfig)
-  const withNulls = {} as Record<string, string>
-  for (const bitName in { ...oldUserConfig, ...newUserConfig }) {
-    withNulls[bitName] = newUserConfig[bitName]
+  const params = useHashParams()
+  const prev = usePrevious(params)
+  const withNulls: Record<string, string | undefined> = { ...defaultState }
+  for (const key in { ...params, ...prev }) {
+    withNulls[key] = params[key]
   }
-  setConfigBitBulk(withNulls)
-
+  useSetRecoilState(userConfigBitBulkState)(withNulls)
   return <></>
 }
-const userConfigState = atomFamily<string | null, string>({
+const userConfigState = atomFamily<string | undefined, string>({
   key: 'userConfigState',
-  default: (param) => null
+  default: (param) => undefined
+})
+const userConfigBitBulkState = selector<Record<string, string | undefined>>({
+  key: 'userConfigBitBulkState',
+  get: ({ get }) => {
+    throw new Error('Dont use')
+  },
+  set: ({ set }, obj) => {
+    if (obj instanceof DefaultValue) return
+    for (const key in obj) {
+      set(userConfigState(key), obj[key])
+    }
+    setHashFromObject(obj)
+  }
 })
 
-export const userConfigBitState = selectorFamily<string | null, string>({
+export const userConfigBitState = selectorFamily<string | undefined, string>({
   key: 'userConfigBitState',
   get:
     (bitName: string) =>
@@ -78,47 +73,16 @@ export const userConfigBitState = selectorFamily<string | null, string>({
   set:
     (bitName: string) =>
     ({ get, set }, value) => {
-      const currentBitValue = get(userConfigState(bitName))
-      value = value instanceof DefaultValue ? null : value
-      let params = new URLSearchParams(window.location.search)
-      if (currentBitValue !== value) {
-        if (value === null || value === undefined) {
-          params.delete(bitName)
-          set(userConfigState(bitName), null)
-        } else {
-          params.set(bitName, value)
-
-          set(userConfigState(bitName), value)
-        }
+      if (value instanceof DefaultValue) value = undefined
+      const current = get(userConfigState(bitName))
+      if (current !== value) {
+        set(userConfigState(bitName), value)
+        setHashParam(bitName, value)
       }
-      window.history.replaceState(
-        {},
-        '',
-        `${window.location.pathname}?${params}`
-      )
     }
 })
-export const userConfigBitBulkState = selector<Record<string, string>>({
-  key: 'userConfigBitBulkState',
-  get: ({ get }) => {
-    throw new Error('Dont use')
-  },
-  set: ({ set }, obj) => {
-    if (obj instanceof DefaultValue) return
-    for (const key in obj) {
-      set(userConfigBitState(key), obj[key])
-    }
-  }
-})
-export const timerIdxState = atom({
-  key: 'timerIdxState',
-  default: 0
-})
-export const microControllerState = atom({
-  key: 'microControllerState',
-  default: MicroControllers.LGT8F328P
-})
+
 export const timerState = selector({
   key: 'timerState',
-  get: ({ get }) => timers[get(timerIdxState)]
+  get: ({ get }) => timers[+(get(userConfigBitState('timer')) || 0)]
 })

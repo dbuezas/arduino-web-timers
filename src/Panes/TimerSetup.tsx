@@ -14,8 +14,8 @@ import React from 'react'
 type input = {
   bitName: string
   humanName?: string
-  selectedOption: string | null
-  forcedOption: string | null
+  selectedOption: string | undefined
+  forcedOption: string | undefined
   options: {
     isSuggested: boolean
     value: string

@@ -20,8 +20,6 @@ type Props = {
   name: string
 }
 
-let i = 0
-
 const constrain = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max)
 const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
