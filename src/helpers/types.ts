@@ -20,3 +20,12 @@ export type TTimer = {
   registers: TTimerRegisters
   timerNr: number
 }
+export enum PanelModes {
+  Normal = 'Normal',
+  Internal = 'With Internals',
+  ByDependencies = 'By Dependencies'
+}
+export enum MicroControllers {
+  LGT8F328P = 'LGT8F328P',
+  ATMEGA328P = 'ATMEGA328P'
+}

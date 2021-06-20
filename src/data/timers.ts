@@ -8,7 +8,6 @@ export const tsv = (str: string) => {
     .map((row) =>
       Object.fromEntries(
         header.map((colName, i) => [colName, (row[i] || '').trim()])
-        //row.map((cell, col) => [header[col], cell.trim()])
       )
     )
     .filter((row) => !Object.values(row).includes('-'))

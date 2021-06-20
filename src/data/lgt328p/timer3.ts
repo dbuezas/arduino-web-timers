@@ -174,10 +174,14 @@ HDR3	OCnB_OutputPort	OCnB_OutputCurrent
 OCnC_OutputCurrent
 12mA
 `),
-  [{ ICR3: Math.round((65535 * 4) / 5) + '' }],
-  [{ OCR3A: Math.round((65535 * 3) / 5) + '' }],
-  [{ OCR3B: Math.round((65535 * 2) / 5) + '' }],
-  [{ OCR3C: Math.round((65535 * 1) / 5) + '' }]
+  // [{ ICR3: Math.round((65535 * 4) / 5) + '' }],
+  // [{ OCR3A: Math.round((65535 * 3) / 5) + '' }],
+  // [{ OCR3B: Math.round((65535 * 2) / 5) + '' }],
+  // [{ OCR3C: Math.round((65535 * 1) / 5) + '' }]
+  [{ ICR3: '' }],
+  [{ OCR3A: '' }],
+  [{ OCR3B: '' }],
+  [{ OCR3C: '' }]
 ]
 
 const timer = { registers, configs }

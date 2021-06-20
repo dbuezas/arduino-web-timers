@@ -8,25 +8,16 @@ import {
 } from 'recoil'
 import { setHashFromObject, setHashParam, useHashParams } from './useHash'
 
-import timers from '../data/lgt328p'
+import timers from '../data'
 import { useEffect, useRef } from 'react'
+import { MicroControllers, PanelModes } from '../helpers/types'
 
-export enum PanelModes {
-  Normal = 'Normal',
-  Internal = 'With Internals',
-  ByDependencies = 'By Dependencies'
-}
 export const panelModeState = atom({
   key: 'PanelModeState',
   default: PanelModes.Normal
 })
 
-export enum MicroControllers {
-  LGT8F328P = 'LGT8F328P',
-  ATMEGA328P = 'ATMEGA328P'
-}
-
-function usePrevious<T>(value: T) {
+export function usePrevious<T>(value: T) {
   const ref = useRef<T>()
   useEffect(() => {
     ref.current = value
@@ -34,7 +25,7 @@ function usePrevious<T>(value: T) {
   return ref.current
 }
 const defaultState = { mcu: MicroControllers.LGT8F328P, timer: '0' }
-export const RegisterLocationState = () => {
+export const RegisterLocationStateChange = () => {
   const params = useHashParams()
   const prev = usePrevious(params)
   const withNulls: Record<string, string | undefined> = { ...defaultState }
@@ -44,8 +35,15 @@ export const RegisterLocationState = () => {
   useSetRecoilState(userConfigBitBulkState)(withNulls)
   return <></>
 }
-const userConfigState = atomFamily<string | undefined, string>({
-  key: 'userConfigState',
+export const RegisterLocationState = () => {
+  return (
+    <>
+      <RegisterLocationStateChange />
+    </>
+  )
+}
+const userConfigState_internal = atomFamily<string | undefined, string>({
+  key: 'userConfigState_internal',
   default: (param) => undefined
 })
 const userConfigBitBulkState = selector<Record<string, string | undefined>>({
@@ -56,7 +54,7 @@ const userConfigBitBulkState = selector<Record<string, string | undefined>>({
   set: ({ set }, obj) => {
     if (obj instanceof DefaultValue) return
     for (const key in obj) {
-      set(userConfigState(key), obj[key])
+      set(userConfigState_internal(key), obj[key])
     }
     setHashFromObject(obj)
   }
@@ -66,23 +64,27 @@ export const userConfigBitState = selectorFamily<string | undefined, string>({
   key: 'userConfigBitState',
   get:
     (bitName: string) =>
-    ({ get }) => {
-      const val = get(userConfigState(bitName))
-      return val
-    },
+    ({ get }) =>
+      get(userConfigState_internal(bitName)),
   set:
     (bitName: string) =>
     ({ get, set }, value) => {
       if (value instanceof DefaultValue) value = undefined
-      const current = get(userConfigState(bitName))
+      const current = get(userConfigState_internal(bitName))
       if (current !== value) {
-        set(userConfigState(bitName), value)
         setHashParam(bitName, value)
       }
     }
 })
 
+export const mcuTimers = selector({
+  key: 'mcuTimers',
+  get: ({ get }) => {
+    const micro = get(userConfigBitState('mcu')) as MicroControllers
+    return timers[micro]
+  }
+})
 export const timerState = selector({
   key: 'timerState',
-  get: ({ get }) => timers[+(get(userConfigBitState('timer')) || 0)]
+  get: ({ get }) => get(mcuTimers)[+(get(userConfigBitState('timer')) || 0)]
 })

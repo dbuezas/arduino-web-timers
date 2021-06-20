@@ -1,16 +1,32 @@
+import { useThrottle } from '@react-hook/throttle'
 import { useClipboard } from 'use-clipboard-copy'
 import { forEach, map, sortBy, uniq } from 'lodash'
 import { useRecoilValue } from 'recoil'
 import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
 import { isTruthy } from '../helpers/helpers'
 import { timerState } from '../state/state'
-import { suggestedConfigurationState } from './state'
+import { suggestedAssignmentState } from './state'
 import { Button } from 'rsuite'
+import { TRow, TTimerRegisters } from '../helpers/types'
 
 export default function Code() {
-  const suggestedConfig = useRecoilValue(suggestedConfigurationState)
+  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
   const { registers } = useRecoilValue(timerState)
-
+  // const suggestedConfig_ = useRecoilValue(suggestedAssignmentState)
+  // const { registers: registers_ } = useRecoilValue(timerState)
+  // const [suggestedConfig, setSC] = useThrottle<TRow>({})
+  // const [registers, setR] = useThrottle<TTimerRegisters>({})
+  // setSC(suggestedConfig_)
+  // setR(registers_)
+  return <Code2 {...{ suggestedConfig, registers }} />
+}
+function Code2({
+  suggestedConfig,
+  registers
+}: {
+  suggestedConfig: TRow
+  registers: TTimerRegisters
+}) {
   const code = map(registers, (bitNames, regName) => {
     const assignments: {
       regName: string

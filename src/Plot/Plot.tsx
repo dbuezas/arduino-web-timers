@@ -16,22 +16,23 @@ import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
 import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { userConfigBitState } from '../state/state'
-import { suggestedConfigurationState } from '../Panes/state'
+import { usePrevious, userConfigBitState } from '../state/state'
+import { suggestedAssignmentState } from '../Panes/state'
 
 type Props = {
   style: Object
 }
 export default function Plot({ style }: Props) {
-  const bitValues = useRecoilValue(suggestedConfigurationState)
-  const counterMax = parseInt(bitValues.counterMax as any)
+  const bitValues = useRecoilValue(suggestedAssignmentState)
+  const counterMax = parseInt(bitValues.counterMax!)
   const param = {
-    timerNr: bitValues.timerNr as string,
+    timerNr: bitValues.timerNr,
     timerMode: bitValues.timerMode as any,
     maxCpuTicks: 0,
-    prescaler: parseInt(bitValues.clockPrescalerOrSource as any),
+    prescaler: parseInt(bitValues.clockPrescalerOrSource!),
     cpuHz: bitValues.clockDoubler === 'on' ? 32000000 * 2 : 32000000,
     top: 0,
+    counterMax: parseInt(bitValues.counterMax!),
     tovTime: bitValues.setTovMoment as any,
     OCRnXs: [] as number[],
     OCRnXs_behaviour: [
@@ -57,11 +58,29 @@ export default function Plot({ style }: Props) {
 
   param.top =
     IOCR_states.find(({ isTop }) => isTop)?.value ??
-    parseInt(bitValues.topValue as any)
-  const ocrMax = parseInt(bitValues.topValue as any) || counterMax
+    parseInt(bitValues.topValue!)
+  const ocrMax = parseInt(bitValues.topValue!) || counterMax
 
   param.maxCpuTicks = param.top * param.prescaler * 4
 
+  /* TODO: put somewhere else */
+  /* DEFAULTS FOR COMPARE REGISTERS */
+  {
+    const prev = usePrevious(IOCR_states)
+    IOCR_states.forEach((iocr, i) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const setReg = useSetRecoilState(userConfigBitState(iocr.name))
+      console.log(param.top, IOCR_states.length, i, iocr.value)
+      const top = param.top || Number.parseInt(bitValues.counterMax!)
+      if (prev && !prev[i].isUsed && iocr.isUsed) {
+        setReg('' + Math.round((top / (IOCR_states.length + 1)) * (i + 1)))
+      }
+      if (prev?.[i].isUsed && !iocr.isUsed) {
+        setReg(undefined)
+      }
+    })
+  }
+  /* --- */
   const simulation = simTimer(param)
 
   const containerRef = useRef<HTMLDivElement>(null)

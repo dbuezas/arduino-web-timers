@@ -1,50 +1,34 @@
-import { map, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { selector, selectorFamily } from 'recoil'
-import {
-  getValuesPerBitName,
-  isTruthy,
-  joinTables,
-  splitTables
-} from '../helpers/helpers'
+import { isTruthy, joinTables, splitTables } from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
 import { timerState, userConfigBitState } from '../state/state'
 
-export const tableSetsState = selector({
-  key: 'tableSetsState',
+export const groupsState = selector({
+  key: 'groupsState',
   get: ({ get }) => splitTables(get(timerState).configs)
 })
-export const allSplitGroupsState = selector({
-  key: 'allSplitGroupsState',
+
+const getBitNames = (group: TTable[]) =>
+  uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
+
+export const suggestedAssignmentState = selector<TRow>({
+  key: 'suggestedAssignmentState',
   get: ({ get }) => {
-    const groups = get(tableSetsState).length
-    return [...Array(groups)].map((_, i) => get(splitGroupsState(i)))
+    const assignments = get(groupsState)
+      .map((_, i) => get(groupAssignmentsState(i))[0])
+      .flat()
+    return Object.assign({}, ...assignments)
   }
 })
-
-export const suggestedConfigurationState = selector({
-  key: 'suggestedConfigurationState',
-  get: ({ get }) => {
-    const groups = get(tableSetsState).length
-    const allSplitGroups = [...Array(groups)].map((_, i) =>
-      get(splitGroupsState(i))
-    )
-    return Object.fromEntries(
-      allSplitGroups
-        .flat()
-        .map(({ bitName, suggestedOption }) => [bitName, suggestedOption])
-    )
-  }
-})
-const getBitNames = (tableSet: TTable[]) =>
-  uniq(tableSet.flatMap((table: TTable) => Object.keys(table[0])))
-
-export const relevantGroupConfigState = selectorFamily({
-  key: 'relevantGroupConfigState',
+export const groupConfigState = selectorFamily({
+  key: 'groupConfigState',
   get:
-    (idx: number) =>
+    (groupIdx: number) =>
     ({ get }) => {
-      const tableSet = get(tableSetsState)[idx]
-      const relevantBitNames = getBitNames(tableSet)
+      const tableSets = get(groupsState)
+      const group = tableSets[groupIdx]
+      const relevantBitNames = getBitNames(group)
       const userConfig: TRow = {}
       for (const bitName of relevantBitNames) {
         const userBitConfig = get(userConfigBitState(bitName))
@@ -54,56 +38,101 @@ export const relevantGroupConfigState = selectorFamily({
     }
 })
 
-export const splitGroupsState = selectorFamily({
-  key: 'splitGroupsState',
+export const groupIdxFromBitNameState = selectorFamily({
+  key: 'groupIdxFromBitNameState',
   get:
-    (idx: number) =>
+    (bitName: string) =>
     ({ get }) => {
-      const tableSet = get(tableSetsState)[idx]
-      const userState = get(relevantGroupConfigState(idx))
-      const possibleFullAssignments = joinTables([[userState], ...tableSet])
-
-      const optionsPerBitName = getValuesPerBitName(tableSet)
-
-      const checkboxGroupData = map(
-        optionsPerBitName,
-        (allOptions, bitName) => {
-          let joined
-          if (userState[bitName]) {
-            const selectedWithout = { ...userState, [bitName]: undefined }
-            joined = joinTables([[selectedWithout], ...tableSet])
-          } else {
-            // optimization
-            joined = possibleFullAssignments
-          }
-
-          const enabledOptions = uniq(
-            joined.map((col) => col[bitName]).filter(isTruthy)
-          )
-
-          const forcedOption =
-            !userState[bitName] && enabledOptions.length === 1
-              ? possibleFullAssignments[0][bitName]
-              : undefined
-          const suggestedOption =
-            !userState[bitName] && enabledOptions.length > 1
-              ? possibleFullAssignments[0][bitName]
-              : undefined
-          return {
-            bitName,
-            selectedOption: userState[bitName],
-            suggestedOption:
-              suggestedOption || forcedOption || userState[bitName],
-            forcedOption: forcedOption,
-            options: allOptions.map((value, i) => ({
-              isSuggested: value === suggestedOption,
-              value,
-              isDisabled: !enabledOptions.includes(value) || !!forcedOption
-            }))
-          }
-        }
+      const tableSets = get(groupsState)
+      const idx = tableSets.findIndex((group) =>
+        group.some((table) => table[0].hasOwnProperty(bitName))
       )
-      return checkboxGroupData
+      return idx
+    }
+})
+export const groupFromBitNameState = selectorFamily({
+  key: 'groupFromBitNameState',
+  get:
+    (bitName: string) =>
+    ({ get }) => {
+      const tableSets = get(groupsState)
+      const idx = get(groupIdxFromBitNameState(bitName))
+      return tableSets[idx]
+    }
+})
+export const groupAssignmentsState = selectorFamily({
+  key: 'groupAssignmentsState',
+  get:
+    (groupIdx: number) =>
+    ({ get }) => {
+      const tableSets = get(groupsState)
+      const group = tableSets[groupIdx]
+      const userState = get(groupConfigState(groupIdx))
+      return joinTables([[userState], ...group])
+    }
+})
+export const allBitOptionsState = selectorFamily({
+  key: 'allBitOptionsState',
+  get:
+    (bitName: string) =>
+    ({ get }) => {
+      const group = get(groupFromBitNameState(bitName))
+      return uniq(
+        group
+          .flat()
+          .map((col) => col[bitName])
+          .filter(isTruthy)
+      )
+    }
+})
+export const enabledBitOptions = selectorFamily({
+  key: 'enabledBitOptions',
+  get:
+    (bitName: string) =>
+    ({ get }) => {
+      const group = get(groupFromBitNameState(bitName))
+      const groupIdx = get(groupIdxFromBitNameState(bitName))
+      const userState = get(groupConfigState(groupIdx))
+      const fullAssignments = get(groupAssignmentsState(groupIdx))
+      let enabledAssignments = fullAssignments
+      if (userState[bitName]) {
+        const selectedWithout = { ...userState, [bitName]: undefined }
+        enabledAssignments = joinTables([[selectedWithout], ...group])
+      }
+      return uniq(
+        enabledAssignments.map((col) => col[bitName]).filter(isTruthy)
+      )
+    }
+})
+export const bitOptionsState = selectorFamily({
+  key: 'bitOptionsState',
+  get:
+    (bitName: string) =>
+    ({ get }) => {
+      const groupIdx = get(groupIdxFromBitNameState(bitName))
+      const userState = get(groupConfigState(groupIdx))
+      const fullAssignments = get(groupAssignmentsState(groupIdx))
+      const allBitOptions = get(allBitOptionsState(bitName))
+      const enabledOptions = get(enabledBitOptions(bitName))
+      const forcedOption =
+        !userState[bitName] && enabledOptions.length === 1
+          ? fullAssignments[0][bitName]
+          : undefined
+      const suggestedOption =
+        !userState[bitName] && enabledOptions.length > 1
+          ? fullAssignments[0][bitName]
+          : undefined
+      return {
+        bitName,
+        selectedOption: userState[bitName],
+        suggestedOption: suggestedOption || forcedOption || userState[bitName],
+        forcedOption: forcedOption,
+        options: allBitOptions.map((value) => ({
+          isSuggested: value === suggestedOption,
+          value,
+          isDisabled: !enabledOptions.includes(value) || !!forcedOption
+        }))
+      }
     }
 })
 
@@ -116,5 +145,11 @@ export type TCheckboxGroupData = {
     isSuggested: boolean
     value: string
     isDisabled: boolean
+  }[]
+}[]
+export type TCheckboxMinimalGroupData = {
+  bitName: string
+  options: {
+    value: string
   }[]
 }[]

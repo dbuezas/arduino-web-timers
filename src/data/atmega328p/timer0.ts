@@ -94,12 +94,6 @@ TOIE0	TOIEn_text	interruptVectorCodeOVF
 1	yes	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
-F2XEN	TC2XS0	clockDoubler	ExternalClockInput
-0	0	off
-1	0	off
-1	1	on	N/A
-`),
-  tsv(`
 C0AC0	OC0AS	WCE	OCnA_OutputPort
 0	0	0	PD6
 0	0	1	PD6
@@ -112,16 +106,6 @@ C0BF3	WCE	OCnB_OutputPort
 0	0	PD5
 0	1	PD5
 1	1	PF3
-`),
-  tsv(`
-HDR0	OCnB_OutputPort	OCnB_OutputCurrent
-0		12mA
-1	PD5	80mA
-`),
-  tsv(`
-HDR1	OCnA_OutputPort	OCnA_OutputCurrent
-0		12mA
-1	PD6	80mA
 `),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]

@@ -10,6 +10,7 @@ type Props = {
   prescaler: number
   cpuHz: number
   top: number
+  counterMax: number
   tovTime: 'BOTTOM' | 'TOP' | 'MAX'
   OCRnXs: number[]
   OCRnXs_behaviour: (
@@ -30,6 +31,7 @@ export default function simTimer({
   prescaler,
   cpuHz,
   top,
+  counterMax,
   tovTime,
   OCRnXs,
   OCRnXs_behaviour,
@@ -56,6 +58,7 @@ export default function simTimer({
     // values surounding the events are added to ensure the plot
     // keeps the lines at their values until a change happens
     top + 1,
+    counterMax,
     0,
     top,
     ...OCRnXs,
@@ -63,7 +66,7 @@ export default function simTimer({
     ICRn,
     maxCpuTicks - 1,
     maxCpuTicks
-  ].flatMap((n) => [n, n - 1, n + 1])
+  ].flatMap((n) => [n - 1, n, n + 1])
 
   while (cpu < maxCpuTicks) {
     cpu += prescaler
@@ -74,23 +77,22 @@ export default function simTimer({
       .map((n) => (n - TCNT) * dir)
       .filter((n) => n >= 0)
     distToNext = Math.min(...nextEvents)
-
     let MATCH_Xs = OCRnXs.map(() => 0)
     let OVF = 0
     let CAPT = 0
     cpu += distToNext * prescaler
     TCNT += dir * distToNext
-    if (TCNT === top + 1) {
-      if (tovTime === 'MAX') OVF = 1 // like bottom but skips first
-      TCNT = 0
-    }
+    if (TCNT === top + 1) TCNT = 0
+
+    if (TCNT === counterMax) if (tovTime === 'MAX') OVF = 1
+
     if (TCNT === 0) {
+      if (dir === -1 && tovTime === 'BOTTOM') OVF = 1
       if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = 1
-      if (tovTime === 'BOTTOM') OVF = 1
     }
     if (TCNT === top) {
+      if (dir === 1 && tovTime === 'TOP') OVF = 1
       if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = -1
-      if (tovTime === 'TOP') OVF = 1
     }
     for (const i in OCRnXs_behaviour) {
       const behaviour = OCRnXs_behaviour[i]

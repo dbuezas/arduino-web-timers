@@ -15,7 +15,7 @@ export const setHashFromObject = (
   record: Record<string, string | undefined>
 ) => {
   const cleanRecord = Object.fromEntries(
-    Object.entries(record).filter((_, val) => val !== undefined)
+    Object.entries(record).filter(([, val]) => val !== undefined)
   ) as Record<string, string>
   const hashParams = new URLSearchParams(cleanRecord)
   return setFullHash(hashParams.toString())

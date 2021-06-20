@@ -116,12 +116,6 @@ ICIE1	ICIEn_text	interruptVectorCodeCapture
 `),
 
   tsv(`
-F2XEN	TC2XS1	clockDoubler	ExternalClockInput
-0	0	off
-1	0	off
-1	1	on	N/A
-`),
-  tsv(`
 C1BF4	WCE	OCnB_OutputPort
 0	0	PB2
 0	1	PB2
@@ -132,16 +126,6 @@ C1AF5	WCE	OCnA_OutputPort
 0	0	PB1
 0	1	PB1
 1	1	PF5
-`),
-  tsv(`
-HDR4	OCnB_OutputPort	OCnB_OutputCurrent
-0		12mA
-1	PF4	80mA
-`),
-  tsv(`
-HDR5	OCnA_OutputPort	OCnA_OutputCurrent
-0		12mA
-1	PF5	80mA
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],

@@ -49,6 +49,7 @@ export const getCompareRegTraints = (bitValues: TRow) =>
   compareRegs.map((genericName) => {
     const name = getName(genericName, bitValues)
     const value = parseFloat(bitValues[name] || '')
+    // if (Number.isNaN(value)) debugger
     return {
       genericName: genericName,
       name,
