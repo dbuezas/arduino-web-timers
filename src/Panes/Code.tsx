@@ -1,5 +1,3 @@
-import { useThrottle } from '@react-hook/throttle'
-import { useClipboard } from 'use-clipboard-copy'
 import { forEach, map, sortBy, uniq } from 'lodash'
 import { useRecoilValue } from 'recoil'
 import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
@@ -7,26 +5,36 @@ import { isTruthy } from '../helpers/helpers'
 import { timerState } from '../state/state'
 import { suggestedAssignmentState } from './state'
 import { Button } from 'rsuite'
-import { TRow, TTimerRegisters } from '../helpers/types'
+import copy from 'copy-to-clipboard'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default function Code() {
+  const codeContainerRef = useRef<HTMLPreElement>(null)
+  return (
+    <>
+      <CopyToClipboard codeContainerRef={codeContainerRef} />
+      <pre style={{ margin: 0 }} ref={codeContainerRef}>
+        {`\
+void setup(){
+  /* ${window.location.href} */
+  noInterrupts();
+`}
+        <TimerConfgCode />
+        {'\n'}
+        <CompareRegsCode />
+        {'\n'}
+        {`\
+  interrupts();
+}
+`}
+        <Interrupts />
+      </pre>
+    </>
+  )
+}
+const TimerConfgCode = () => {
   const suggestedConfig = useRecoilValue(suggestedAssignmentState)
   const { registers } = useRecoilValue(timerState)
-  // const suggestedConfig_ = useRecoilValue(suggestedAssignmentState)
-  // const { registers: registers_ } = useRecoilValue(timerState)
-  // const [suggestedConfig, setSC] = useThrottle<TRow>({})
-  // const [registers, setR] = useThrottle<TTimerRegisters>({})
-  // setSC(suggestedConfig_)
-  // setR(registers_)
-  return <Code2 {...{ suggestedConfig, registers }} />
-}
-function Code2({
-  suggestedConfig,
-  registers
-}: {
-  suggestedConfig: TRow
-  registers: TTimerRegisters
-}) {
   const code = map(registers, (bitNames, regName) => {
     const assignments: {
       regName: string
@@ -63,6 +71,24 @@ function Code2({
     .flat()
     .filter(isTruthy)
 
+  return <>{code.join('\n')}</>
+}
+function CompareRegsCode() {
+  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
+
+  const compareRegsCode = getCompareRegTraints(suggestedConfig)
+    .filter(({ isUsed }) => isUsed)
+    .map(({ code }) => code)
+  return (
+    <>
+      {'  '}
+      {compareRegsCode.join('\n  ')}
+    </>
+  )
+}
+function Interrupts() {
+  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
+
   let interrupts: string[] = []
   forEach(suggestedConfig, (value, bitSetName) => {
     if (
@@ -80,47 +106,38 @@ function Code2({
       '}'
     ]
   }
-
-  const compareRegsCode = getCompareRegTraints(suggestedConfig)
-    .filter(({ isUsed }) => isUsed)
-    .map(({ code }) => code)
-
-  const fullCode = `\
-void setup(){
-  /* ${window.location.href} */
-  noInterrupts();
-${code.join('\t\n')}
-  ${compareRegsCode.join('\n  ')}
-  interrupts();
-}
-${interrupts.join('\n')}`
-
   return (
     <>
-      <CopyToClipboard text={fullCode} />
-      <pre style={{ margin: 0 }}>{fullCode}</pre>
+      {interrupts.join('\n')}
+      {'\n'}
     </>
   )
 }
 
-function CopyToClipboard({ text }: { text: string }) {
-  const clipboard = useClipboard({
-    copiedTimeout: 600 // timeout duration in milliseconds
-  })
-  return (
-    <div>
-      <textarea
-        ref={clipboard.target}
-        value={text}
-        readOnly
-        style={{ display: 'none' }}
-      />
-      <Button
-        color={clipboard.copied ? 'green' : undefined}
-        onClick={clipboard.copy}
-      >
-        {clipboard.copied ? 'Copied' : 'Copy'}
-      </Button>
-    </div>
-  )
-}
+const CopyToClipboard = React.memo(
+  ({
+    codeContainerRef
+  }: {
+    codeContainerRef: React.RefObject<HTMLPreElement>
+  }) => {
+    // using refs to avoid rerenders
+    const [clicked, setClicked] = useState(false)
+    useEffect(() => {
+      setTimeout(() => setClicked(false), 600)
+    }, [clicked])
+    return (
+      <div>
+        <Button
+          color={clicked ? 'green' : undefined}
+          onClick={() => {
+            copy(codeContainerRef.current?.textContent || '')
+            setClicked(true)
+            console.log(codeContainerRef.current?.textContent || '')
+          }}
+        >
+          {clicked ? 'Copied' : 'Copy'}
+        </Button>
+      </div>
+    )
+  }
+)

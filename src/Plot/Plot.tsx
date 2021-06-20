@@ -70,7 +70,6 @@ export default function Plot({ style }: Props) {
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const setReg = useSetRecoilState(userConfigBitState(iocr.name))
-      console.log(param.top, IOCR_states.length, i, iocr.value)
       const top = param.top || Number.parseInt(bitValues.counterMax!)
       if (prev && !prev[i].isUsed && iocr.isUsed) {
         setReg('' + Math.round((top / (IOCR_states.length + 1)) * (i + 1)))
