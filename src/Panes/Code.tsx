@@ -1,9 +1,9 @@
-import { forEach, map, sortBy, uniq } from 'lodash'
+import { map } from 'lodash'
 import { useRecoilValue } from 'recoil'
-import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
+import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { isTruthy } from '../helpers/helpers'
 import { timerState } from '../state/state'
-import { suggestedAssignmentState } from './state'
+import { suggestedAssignmentState, suggestedBitAssignmentState } from './state'
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useRef, useState } from 'react'
@@ -33,40 +33,24 @@ void setup(){
   )
 }
 const TimerConfgCode = () => {
-  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
+  const omitRegisterZeros = true
+  const omitBitZeros = true
   const { registers } = useRecoilValue(timerState)
   const code = map(registers, (bitNames, regName) => {
-    const assignments: {
-      regName: string
-      bitValue: string
-      bitName: string
-    }[] = []
-    forEach(suggestedConfig, (value, bitSetName) =>
-      forEach(bitNames, (bitName) => {
-        if (bitSetName === bitName)
-          assignments.push({ regName, bitValue: value || '0', bitName })
+    const bitAssignments = bitNames
+      .map((bitName) => {
+        const bitValue =
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          useRecoilValue(suggestedBitAssignmentState(bitName)) || '0'
+        if (omitBitZeros && bitValue === '0') return ''
+        return `${bitValue} << ${bitName}`
       })
-    )
-    const regNames = uniq(map(assignments, 'regName'))
-    return regNames.map((regName) => {
-      let regAssignments = assignments.filter(({ regName: r }) => r === regName)
-      regAssignments = sortBy(regAssignments, 'bitName')
-      const omitZeros = true
-      if (omitZeros) {
-        regAssignments = regAssignments.filter(
-          ({ bitValue }) => bitValue !== '0'
-        )
-      }
-      const bitAssignments = regAssignments.map(
-        //@ts-ignore
-        ({ bitValue, bitName }) => `${bitValue} << ${bitName}`
-      )
-      const bitAssignmentsStr = bitAssignments.length
-        ? `\n    ${bitAssignments.join(' |\n    ')}`
-        : '0'
-      if (bitAssignmentsStr === '0') return ''
-      return `  ${regName} = ${bitAssignmentsStr};`
-    })
+      .filter(isTruthy)
+    const bitAssignmentsStr = bitAssignments.length
+      ? `\n    ${bitAssignments.join(' |\n    ')}`
+      : '0'
+    if (omitRegisterZeros && bitAssignmentsStr === '0') return ''
+    return `  ${regName} = ${bitAssignmentsStr};`
   })
     .flat()
     .filter(isTruthy)
@@ -76,7 +60,7 @@ const TimerConfgCode = () => {
 function CompareRegsCode() {
   const suggestedConfig = useRecoilValue(suggestedAssignmentState)
 
-  const compareRegsCode = getCompareRegTraints(suggestedConfig)
+  const compareRegsCode = getAllCompareRegTraits(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
     .map(({ code }) => code)
   return (
@@ -87,21 +71,27 @@ function CompareRegsCode() {
   )
 }
 function Interrupts() {
-  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
+  const interruptBitNames = [
+    'interruptVectorCodeA',
+    'interruptVectorCodeB',
+    'interruptVectorCodeC',
+    'interruptVectorCodeOVF',
+    'interruptVectorCodeCapture'
+  ]
+  const interruptCommonSignature = useRecoilValue(
+    suggestedBitAssignmentState('InterruptCommonSignature')
+  )
+  let interrupts = interruptBitNames
+    .map(
+      (bitName) =>
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useRecoilValue(suggestedBitAssignmentState(bitName)) || '//nocode'
+    )
+    .filter((bitValue) => bitValue !== '//nocode')
 
-  let interrupts: string[] = []
-  forEach(suggestedConfig, (value, bitSetName) => {
-    if (
-      value &&
-      value !== '//nocode' &&
-      bitSetName.startsWith('interruptVectorCode')
-    ) {
-      interrupts.push(value.replace(/\\n/g, '\n').replace(/\\t/g, '\t'))
-    }
-  })
-  if (interrupts.length && suggestedConfig.InterruptCommonSignature) {
+  if (interrupts.length && interruptCommonSignature) {
     interrupts = [
-      suggestedConfig.InterruptCommonSignature + ' {',
+      interruptCommonSignature + ' {',
       ...interrupts.map((code) => '    ' + code.split('\n').join('\n    ')),
       '}'
     ]

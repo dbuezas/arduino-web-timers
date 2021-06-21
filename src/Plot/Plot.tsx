@@ -14,7 +14,7 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
-import { getCompareRegTraints } from '../helpers/compareRegisterUtil'
+import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { usePrevious, userConfigBitState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
@@ -43,7 +43,7 @@ export default function Plot({ style }: Props) {
     ICRn: 0
   }
 
-  const IOCR_states = getCompareRegTraints(bitValues).map((traits, i) => ({
+  const IOCR_states = getAllCompareRegTraits(bitValues).map((traits, i) => ({
     ...traits,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     ref: useRef<CompareRegisterHandleRef>(null),

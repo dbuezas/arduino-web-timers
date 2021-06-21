@@ -9,9 +9,22 @@ export const groupsState = selector({
   get: ({ get }) => splitTables(get(timerState).configs)
 })
 
-const getBitNames = (group: TTable[]) =>
-  uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
+const getBitNames = (group: TTable[]) => {
+  if (group === undefined) debugger
+  return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
+}
 
+export const suggestedBitAssignmentState = selectorFamily({
+  key: 'suggestedBitAssignmentState',
+  get:
+    (bitName: string) =>
+    ({ get }) => {
+      const groupIdx = get(groupIdxFromBitNameState(bitName))
+      if (groupIdx === -1) return undefined
+      const fullAssignments = get(groupAssignmentsState(groupIdx))
+      return fullAssignments[0][bitName]
+    }
+})
 export const suggestedAssignmentState = selector<TRow>({
   key: 'suggestedAssignmentState',
   get: ({ get }) => {
@@ -85,11 +98,12 @@ export const allBitOptionsState = selectorFamily({
       )
     }
 })
-export const enabledBitOptions = selectorFamily({
-  key: 'enabledBitOptions',
+export const enabledBitOptionsState = selectorFamily({
+  key: 'enabledBitOptionsState',
   get:
     (bitName: string) =>
     ({ get }) => {
+      // todo, cleanup, perf
       const group = get(groupFromBitNameState(bitName))
       const groupIdx = get(groupIdxFromBitNameState(bitName))
       const userState = get(groupConfigState(groupIdx))
@@ -113,7 +127,7 @@ export const bitOptionsState = selectorFamily({
       const userState = get(groupConfigState(groupIdx))
       const fullAssignments = get(groupAssignmentsState(groupIdx))
       const allBitOptions = get(allBitOptionsState(bitName))
-      const enabledOptions = get(enabledBitOptions(bitName))
+      const enabledOptions = get(enabledBitOptionsState(bitName))
       const forcedOption =
         !userState[bitName] && enabledOptions.length === 1
           ? fullAssignments[0][bitName]

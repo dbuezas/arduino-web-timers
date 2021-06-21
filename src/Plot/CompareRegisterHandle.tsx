@@ -2,10 +2,12 @@ import {
   forwardRef,
   MouseEventHandler,
   useImperativeHandle,
+  useRef,
   useState
 } from 'react'
 import { margin } from './margin'
 import './CompareRegisterHandle.css'
+import { usePrevious } from '../state/state'
 
 export type CompareRegisterHandleRef = {
   onMouseUp: MouseEventHandler
@@ -22,6 +24,7 @@ type Props = {
 
 const constrain = (n: number, min: number, max: number) =>
   Math.min(Math.max(n, min), max)
+
 const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
   (
     {

@@ -7,7 +7,10 @@ export const tsv = (str: string) => {
   return rows
     .map((row) =>
       Object.fromEntries(
-        header.map((colName, i) => [colName, (row[i] || '').trim()])
+        header.map((colName, i) => [
+          colName,
+          (row[i] || '').trim().replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+        ])
       )
     )
     .filter((row) => !Object.values(row).includes('-'))

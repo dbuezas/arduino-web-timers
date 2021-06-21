@@ -38,14 +38,14 @@ const getIsInput = (genericName: GenericCompRegName) => genericName === 'Input'
 const getIsOutput = (genericName: GenericCompRegName) =>
   !getIsInput(genericName)
 
-const compareRegs: GenericCompRegName[] = [
+export const compareRegs: GenericCompRegName[] = [
   'OutputA',
   'OutputB',
   'OutputC',
   'Input'
 ]
 
-export const getCompareRegTraints = (bitValues: TRow) =>
+export const getAllCompareRegTraits = (bitValues: TRow) =>
   compareRegs.map((genericName) => {
     const name = getName(genericName, bitValues)
     const value = parseFloat(bitValues[name] || '')
