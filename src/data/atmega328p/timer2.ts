@@ -2,15 +2,15 @@ import { tsv, tsvRegisters } from '../timers'
 import { TTimerConfig } from '../../helpers/types'
 
 const registers = tsvRegisters(`
-TCCR2A	TCCR2B	TIMSK2	TIFR2	PMX1	HDR
-COM2A1	FOC2A	-	-	-	-
-COM2A0	FOC2B	-	-	-	-
-COM2B1	-	-	-	-	HDR5
-COM2B0	-	-	-	-	HDR4
--	WGM22	-	-	-	HDR3
--	CS22	OCIE2B	OCF2B	C3AC	HDR2
-WGM21	CS21	OCIE2A	OCF2A	C2BF7	HDR1
-WGM20	CS20	TOIE2	TOV2	C2AF6	HDR0
+TCCR2A	TCCR2B	TIMSK2	TIFR2
+COM2A1	FOC2A	-	-
+COM2A0	FOC2B	-	-
+COM2B1	-	-	-
+COM2B0	-	-	-
+-	WGM22	-	-
+-	CS22	OCIE2B	OCF2B
+WGM21	CS21	OCIE2A	OCF2A
+WGM20	CS20	TOIE2	TOV2
 `)
 const configs: TTimerConfig = [
   tsv(`
@@ -92,16 +92,6 @@ OCIE2B	OCIEnB_text	interruptVectorCodeB
 TOIE2	TOIEn_text	interruptVectorCodeOVF
 0	no  	//nocode
 1	yes	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}
-`),
-  tsv(`
-C2AF6	OCnA_OutputPort
-0	PB3
-1	PF6
-`),
-  tsv(`
-C2BF7	OCnB_OutputPort
-0	PD3
-1	PF7
 `),
   // [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR2B: Math.round((255 * 1) / 3) + '' }]

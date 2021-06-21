@@ -2,15 +2,15 @@ import { tsv, tsvRegisters } from '../timers'
 import { TTimerConfig } from '../../helpers/types'
 
 const registers = tsvRegisters(`
-TCCR0A	TCCR0B	TCCR0C	TIMSK0	DTR0	TIFR0	TCKSCR	PMX0	HDR
-COM0A1	FOC0A	DSX07	-	DTR07	OC0A	-	WCE	-
-COM0A0	FOC0B	DSX06	-	DTR06	OC0B	F2XEN	C1BF4	-
-COM0B1	OC0AS	DSX05	-	DTR05	-	TC2XF1	C1AF5	HDR5
-COM0B0	DTEN0	DSX04	-	DTR04	-	TC2XF0	C0BF3	HDR4
-DOC0B	WGM02	-	-	DTR03	-	-	C0AC0	HDR3
-DOC0A	CS02	-	OCIE0B	DTR02	OCF0B	AFCKS	SSB1	HDR2
-WGM01	CS01	DSX01	OCIE0A	DTR01	OCF0A	TC2XS1	TXD6	HDR1
-WGM00	CS00	DSX00	TOIE0	DTR00	TOV0	TC2XS0	RXD5	HDR0
+TCCR0A	TCCR0B	TCCR0C	TIMSK0	TIFR0
+COM0A1	FOC0A	DSX07	-	OC0A
+COM0A0	FOC0B	DSX06	-	OC0B
+COM0B1	-	DSX05	-	-
+COM0B0	-	DSX04	-	-
+-	WGM02	-	-	-
+-	CS02	-	OCIE0B	OCF0B
+WGM01	CS01	DSX01	OCIE0A	OCF0A
+WGM00	CS00	DSX00	TOIE0	TOV0
 `)
 const configs: TTimerConfig = [
   tsv(`
@@ -92,20 +92,6 @@ OCIE0B	OCIEnB_text	interruptVectorCodeB
 TOIE0	TOIEn_text	interruptVectorCodeOVF
 0	no	//nocode
 1	yes	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
-`),
-  tsv(`
-C0AC0	OC0AS	WCE	OCnA_OutputPort
-0	0	0	PD6
-0	0	1	PD6
-0	1	1	PE4
-1	0	1	PC0
-1	1	1	PE4+PC0
-`),
-  tsv(`
-C0BF3	WCE	OCnB_OutputPort
-0	0	PD5
-0	1	PD5
-1	1	PF3
 `),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]

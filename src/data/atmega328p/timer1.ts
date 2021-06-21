@@ -2,15 +2,15 @@ import { tsv, tsvRegisters } from '../timers'
 import { TTimerConfig } from '../../helpers/types'
 
 const registers = tsvRegisters(`
-TCCR1A	TCCR1B	TCCR1C	TCCR1D	TIMSK1	DTR1	TIFR1	TCKSCR	PMX0	HDR
-COM1A1	ICNC1	FOC1A	DSX17	-		-	-	WCE	-
-COM1A0	ICES1	FOC1B	DSX16	-		-	F2XEN	C1BF4	-
-COM1B1	-	DOC1B	DSX15	ICIE1		ICF1	TC2XF1	C1AF5	HDR5
-COM1B0	WGM13	DOC1A	DSX14	-		-	TC2XF0	C0BF3	HDR4
--	WGM12	DTEN1	-	-		-	-	C0AC0	HDR3
--	CS12	-	-	OCIE1A		OCF1B	AFCKS	SSB1	HDR2
-WGM11	CS11	-	DSX11	OCIE1B		OCF1A	TC2XS1	TXD6	HDR1
-WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0	RXD5	HDR0
+TCCR1A	TCCR1B	TCCR1C	TIMSK1	DTR1	TIFR1
+COM1A1	ICNC1	FOC1A	-		-
+COM1A0	ICES1	FOC1B	-		-
+COM1B1	-	-	ICIE1		ICF1
+COM1B0	WGM13	-	-		-
+-	WGM12	-	-		-
+-	CS12	-	OCIE1A		OCF1B
+WGM11	CS11	-	OCIE1B		OCF1A
+WGM10	CS10	-	TOIE1		TOV1
 `)
 const configs: TTimerConfig = [
   tsv(`
@@ -113,19 +113,6 @@ TOIE1	TOIEn_text	interruptVectorCodeOVF
 ICIE1	ICIEn_text	interruptVectorCodeCapture
 0	no	//nocode
 1	yes	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}
-`),
-
-  tsv(`
-C1BF4	WCE	OCnB_OutputPort
-0	0	PB2
-0	1	PB2
-1	1	PF4
-`),
-  tsv(`
-C1AF5	WCE	OCnA_OutputPort
-0	0	PB1
-0	1	PB1
-1	1	PF5
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],

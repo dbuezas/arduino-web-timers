@@ -2,12 +2,10 @@ import {
   forwardRef,
   MouseEventHandler,
   useImperativeHandle,
-  useRef,
   useState
 } from 'react'
 import { margin } from './margin'
 import './CompareRegisterHandle.css'
-import { usePrevious } from '../state/state'
 
 export type CompareRegisterHandleRef = {
   onMouseUp: MouseEventHandler
