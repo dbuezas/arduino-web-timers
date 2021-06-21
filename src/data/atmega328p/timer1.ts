@@ -48,8 +48,8 @@ COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1	CompareOutputModeB
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	toggle	15	disconnect
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	toggle	11	disconnect
 2	1	0	PCPWM	clear-up, set-down
@@ -71,8 +71,8 @@ COM1B	COM1B1	COM1B0	timerMode	CompareOutputModeB	topValue
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	disconnect
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	disconnect
 2	1	0	PCPWM	clear-up, set-down
@@ -94,12 +94,12 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 0	0	0	0	disconnect	N/A
 `),
   tsv(`
-OCIE1A	OCIEnA_text	interruptVectorCodeA
+OCIE1A	interruptA	interruptVectorCodeA
 0	off	//nocode
 1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}
 `),
   tsv(`
-OCIE1B	OCIEnB_text	interruptVectorCodeB
+OCIE1B	interruptB	interruptVectorCodeB
 0	off	//nocode
 1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}
     
@@ -110,7 +110,7 @@ TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF
 1	on	ISR(TIMER1_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
-ICIE1	InterruptOnInputCapture	interruptVectorCodeCapture
+ICIE1	InterruptOnInputCapture	interruptVectorCaptureCode
 0	off	//nocode
 1	on	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}
 `),

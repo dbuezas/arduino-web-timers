@@ -40,8 +40,8 @@ COM2A	COM2A0	COM2A1	timerMode	CompareOutputModeA
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	-
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	-
 2	1	0	PCPWM	clear-up, set-down
@@ -59,8 +59,8 @@ COM2B	COM2B0	COM2B1	timerMode	CompareOutputModeB
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	-
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	-
 2	1	0	PCPWM	clear-up, set-down
@@ -78,12 +78,12 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
 0	0	0	0	disconnect
 `),
   tsv(`
-OCIE2A	OCIEnA_text	interruptVectorCodeA
+OCIE2A	interruptA	interruptVectorCodeA
 0	no  	//nocode
 1	on	ISR(TIMER2_COMPA_vect) {\\n    /* on OCR2A match */\\n}
 `),
   tsv(`
-OCIE2B	OCIEnB_text	interruptVectorCodeB
+OCIE2B	interruptB	interruptVectorCodeB
 0	no  	//nocode
 1	on	ISR(TIMER2_COMPB_vect) {\\n    /* on OCR2B match */\\n}
     

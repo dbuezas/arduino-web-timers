@@ -48,8 +48,8 @@ COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3	CompareOutputModeB	Compare
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	toggle	15	disconnect	disconnect
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	toggle	11	disconnect	disconnect
 2	1	0	PCPWM	clear-up, set-down
@@ -71,8 +71,8 @@ COM3B	COM3B1	COM3B0	timerMode	CompareOutputModeB
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	disconnect
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	disconnect
 2	1	0	PCPWM	clear-up, set-down
@@ -94,8 +94,8 @@ COM3C	COM3C1	COM3C0	timerMode	CompareOutputModeC
 3	1	1	CTC	set
 0	0	0	FPWM	disconnect
 1	0	1	FPWM	disconnect
-2	1	0	FPWM	clear, set-at-max
-3	1	1	FPWM	set, clear-at-max
+2	1	0	FPWM	clear-on-match, set-at-max
+3	1	1	FPWM	set-on-match, clear-at-max
 0	0	0	PCPWM	disconnect
 1	0	1	PCPWM	disconnect
 2	1	0	PCPWM	clear-up, set-down
@@ -121,17 +121,17 @@ InterruptCommonSignature
 ISR(TIMER3_vect)
 `),
   tsv(`
-OCIE3A	OCIEnA_text	interruptVectorCodeA
+OCIE3A	interruptA	interruptVectorCodeA
 0	no  	//nocode
 1	on	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}
 `),
   tsv(`
-OCIE3B	OCIEnB_text	interruptVectorCodeB
+OCIE3B	interruptB	interruptVectorCodeB
 0	no  	//nocode
 1	on	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}
 `),
   tsv(`
-OCIE3C	OCIEnC_text	interruptVectorCodeC
+OCIE3C	interruptC	interruptVectorCodeC
 0	no  	//nocode
 1	on	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}
 `),
@@ -141,7 +141,7 @@ TOIE3	InterruptOnTimerOverflow	interruptVectorCodeOVF
 1	on	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}
 `),
   tsv(`
-ICIE3	InterruptOnInputCapture	interruptVectorCodeCapture
+ICIE3	InterruptOnInputCapture	interruptVectorCaptureCode
 0	no  	//nocode
 1	on	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}
 `),

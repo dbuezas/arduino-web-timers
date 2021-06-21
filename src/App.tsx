@@ -48,7 +48,7 @@ const App = () => {
                     >
                       {map(MicroControllers, (aChip) => (
                         <Dropdown.Item
-                          active={aChip === mcu}
+                          // active={aChip === mcu}
                           onSelect={(mcu) =>
                             setHashFromObject({
                               mcu,
@@ -95,7 +95,7 @@ const App = () => {
                     >
                       {map(PanelModes, (mode) => (
                         <Dropdown.Item
-                          active={mode === panelMode}
+                          // active={mode === panelMode}
                           onSelect={setPanelMode}
                           eventKey={mode}
                           key={mode}
@@ -116,7 +116,7 @@ const App = () => {
                 position: 'relative'
               }}
             >
-              <TimerSetup key={timerIdx} />
+              <TimerSetup key={timerIdx + '-' + mcu} />
             </Content>
           </Container>
         )}

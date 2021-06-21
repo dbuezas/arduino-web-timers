@@ -37,24 +37,24 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
   },
   'Output A': {
     CompareOutputModeA: 'Behaviour',
-    OCIEnA_text: 'Interrupt',
+    interruptA: 'Interrupt on match',
     OCnA_OutputPort: 'Output port',
     OCnA_OutputCurrent: 'Output current'
   },
   'Output B': {
     CompareOutputModeB: 'Behaviour',
-    OCIEnB_text: 'Interrupt',
+    interruptB: 'Interrupt on match',
     OCnB_OutputPort: 'Output port',
     OCnB_OutputCurrent: 'Output current'
   },
   'Output C': {
     CompareOutputModeC: 'Behaviour',
-    OCIEnC_text: 'Interrupt',
+    interruptC: 'Interrupt on match',
     OCnC_OutputPort: 'Output port',
     OCnC_OutputCurrent: 'Output current'
   },
   Extras: {
-    updateOcrMoment: 'When are the OCR registers updated (e.g OCR1A)',
+    updateOcrMoment: 'When are the OCRs updated',
     setTovMoment: 'When overflow interrupt is triggered',
     InterruptOnTimerOverflow: 'Interrupt on Timer Overflow',
     InputCaptureNoiseSupression: 'Input capture noise supression',
@@ -62,10 +62,7 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
     InputCaptureEdgeSelect: 'Input Capture Edge Select'
   }
 }
-export const bitValueDescriptions: Record<
-  string,
-  Record<string, string> | string
-> = {
+export const bitValueDescriptions: Record<string, Record<string, string>> = {
   timerMode: {
     Normal: 'Counts always up, overflowing to zero. Duty is always 50%.',
     PCPWM:
@@ -92,14 +89,19 @@ export const bitValueDescriptions: Record<
   updateOcrMoment: {
     TOP: 'OCR registers are updated whenever the timer reaches its top. Can be a fixed number or the value of some register',
     BOTTOM: 'OCR registers are updated when the timer resets to zero',
-    Immediately: 'OCR registers are updated whenever they are changed.'
+    immediate:
+      'OCR registers are updated as soon as they are changed, without a buffer.'
   },
-  InterruptOnInputCapture: `When a capture is triggered (PB0 in Timer1, PF4 in Timer3, ICRn not used as TOP), the counter value is copied into the input capture register (ICRn). The event will also set the input capture flag (ICFn), and this can be used to cause an input capture interrupt, if this interrupt is enabled. \nIt can also be used to trigger an interrupt on compare match against the counter.`,
+  InterruptOnInputCapture: {
+    title: `When ICRn not used as TOP and a capture is triggered (PB0 in Timer1, PF4 in Timer3), the counter value is copied into the input capture register (ICRn). The event will also set the input capture flag (ICFn), and this can be used to cause an input capture interrupt, if this interrupt is enabled. \nIt can also be used to trigger an interrupt on compare match against the counter.`
+  },
   InputCaptureNoiseSupression: {
     on: `The noise canceler improves noise immunity by using a simple digital filtering scheme. The noise canceler input is monitored over four samples, and all four must be equal for changing the output that in turn is used by the edge detector.
     When enabled, the noise canceler introduces additional four system clock cycles of delay from a change applied
-    to the input, to the update of the ICR1 register. The noise canceler uses the system clock and is therefore not affected by the
+    to the input, to the update of the ICRn register. The noise canceler uses the system clock and is therefore not affected by the
     prescaler.`
   },
-  InputCaptureEdgeSelect: `When the ICRn is used as TOP value, the ICPn is disconnected and consequently the input capture function is disabled.`
+  InputCaptureEdgeSelect: {
+    title: `When the ICRn is used as TOP value, the ICPn is disconnected and consequently the input capture function is disabled.`
+  }
 }

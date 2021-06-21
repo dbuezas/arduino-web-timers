@@ -84,7 +84,7 @@
     "COM1A1": "1",
     "COM0A0": "0",
     "timerMode": "FPWM",
-    "CompareOutputModeA": "clear, set-at-max",
+    "CompareOutputModeA": "clear-on-match, set-at-max",
     "WGM1": ""
   },
   {
@@ -92,7 +92,7 @@
     "COM1A1": "1",
     "COM0A0": "1",
     "timerMode": "FPWM",
-    "CompareOutputModeA": "set, clear-at-max",
+    "CompareOutputModeA": "set-on-match, clear-at-max",
     "WGM1": ""
   },
   {

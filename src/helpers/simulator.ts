@@ -16,8 +16,8 @@ type Props = {
   OCRnXs_behaviour: (
     | 'clear'
     | 'set'
-    | 'set, clear-at-max'
-    | 'clear, set-at-max'
+    | 'set-on-match, clear-at-max'
+    | 'clear-on-match, set-at-max'
     | 'toggle'
     | 'clear-up, set-down'
     | 'set-up, clear-down'
@@ -99,8 +99,8 @@ export default function simTimer({
       if (TCNT === OCRnXs[i]) {
         if (behaviour === 'set') OCnXs[i] = 1
         if (behaviour === 'clear') OCnXs[i] = 0
-        if (behaviour === 'set, clear-at-max') OCnXs[i] = 1
-        if (behaviour === 'clear, set-at-max') OCnXs[i] = 0
+        if (behaviour === 'set-on-match, clear-at-max') OCnXs[i] = 1
+        if (behaviour === 'clear-on-match, set-at-max') OCnXs[i] = 0
         if (behaviour === 'toggle') OCnXs[i] = OCnXs[i] === 1 ? 0 : 1
         if (behaviour === 'clear-up, set-down') {
           if (dir === 1) OCnXs[i] = 0
@@ -114,8 +114,8 @@ export default function simTimer({
       }
 
       if (TCNT === top) {
-        if (behaviour === 'set, clear-at-max') OCnXs[i] = 0
-        if (behaviour === 'clear, set-at-max') OCnXs[i] = 1
+        if (behaviour === 'set-on-match, clear-at-max') OCnXs[i] = 0
+        if (behaviour === 'clear-on-match, set-at-max') OCnXs[i] = 1
       }
     }
     if (TCNT === ICRn) CAPT = 1 //CAPT

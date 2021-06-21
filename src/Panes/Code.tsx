@@ -76,7 +76,7 @@ function Interrupts() {
     'interruptVectorCodeB',
     'interruptVectorCodeC',
     'interruptVectorCodeOVF',
-    'interruptVectorCodeCapture'
+    'interruptVectorCaptureCode'
   ]
   const interruptCommonSignature = useRecoilValue(
     suggestedBitAssignmentState('InterruptCommonSignature')

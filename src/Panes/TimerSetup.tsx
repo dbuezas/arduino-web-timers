@@ -30,6 +30,7 @@ const BitConfig = ({
     bitOptionsState(bitName)
   )
   const descr = bitValueDescriptions[bitName]
+  const descrTitle = descr?.title
   return (
     <CheckboxGroup
       inline
@@ -38,11 +39,11 @@ const BitConfig = ({
     >
       <p>
         {humanName || bitName}{' '}
-        {typeof bitValueDescriptions[bitName] === 'string' && (
+        {descrTitle && (
           <Whisper
             placement="right"
             trigger="hover"
-            speaker={<Tooltip>{bitValueDescriptions[bitName]}</Tooltip>}
+            speaker={<Tooltip>{descrTitle}</Tooltip>}
           >
             <Icon
               icon="info-circle"
@@ -52,8 +53,7 @@ const BitConfig = ({
         )}
       </p>
       {options.map(({ value, isSuggested, isDisabled }, i) => {
-        const bitValueDescr =
-          typeof descr === 'object' ? descr[value] : undefined
+        const bitValueDescr = descr?.[value]
 
         return (
           <span key={i}>
