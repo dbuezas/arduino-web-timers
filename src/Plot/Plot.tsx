@@ -179,7 +179,7 @@ export default function Plot({ style }: Props) {
             }}
           />
         )}
-        {bitValues.TOIEn_text === 'yes' && (
+        {bitValues.InterruptOnTimerOverflow === 'on' && (
           <InterruptArrow
             {...{
               flagValues: simulation.OVF,

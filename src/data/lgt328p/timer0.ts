@@ -79,19 +79,19 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 `),
   tsv(`
 OCIE0A	OCIEnA_text	interruptVectorCodeA
-0	no	//nocode
-1	yes	ISR(TIMER0_COMPA_vect) {\\n    /* on OCR0A match */\\n}
+0	off	//nocode
+1	on	ISR(TIMER0_COMPA_vect) {\\n    /* on OCR0A match */\\n}
 `),
   tsv(`
 OCIE0B	OCIEnB_text	interruptVectorCodeB
-0	no	//nocode
-1	yes	ISR(TIMER0_COMPB_vect) {\\n    /* on OCR0B match */\\n}
+0	off	//nocode
+1	on	ISR(TIMER0_COMPB_vect) {\\n    /* on OCR0B match */\\n}
     
 `),
   tsv(`
-TOIE0	TOIEn_text	interruptVectorCodeOVF
-0	no	//nocode
-1	yes	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
+TOIE0	InterruptOnTimerOverflow	interruptVectorCodeOVF
+0	off	//nocode
+1	on	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
 F2XEN	TC2XS0	clockDoubler	ExternalClockInput

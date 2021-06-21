@@ -123,38 +123,43 @@ ISR(TIMER3_vect)
   tsv(`
 OCIE3A	OCIEnA_text	interruptVectorCodeA
 0	no  	//nocode
-1	yes	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}
+1	on	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}
 `),
   tsv(`
 OCIE3B	OCIEnB_text	interruptVectorCodeB
 0	no  	//nocode
-1	yes	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}
+1	on	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}
 `),
   tsv(`
 OCIE3C	OCIEnC_text	interruptVectorCodeC
 0	no  	//nocode
-1	yes	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}
+1	on	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}
 `),
   tsv(`
-TOIE3	TOIEn_text	interruptVectorCodeOVF
+TOIE3	InterruptOnTimerOverflow	interruptVectorCodeOVF
 0	no  	//nocode
-1	yes	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}
+1	on	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}
 `),
   tsv(`
-ICIE3	ICIEn_text	interruptVectorCodeCapture
+ICIE3	InterruptOnInputCapture	interruptVectorCodeCapture
 0	no  	//nocode
-1	yes	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}
+1	on	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}
+`),
+  tsv(`
+ICNC3	InputCaptureNoiseSupression
+0	off
+1	on
 `),
   tsv(`
 C3AC	WCE	OCnA_OutputPort
-0	0	PF1 (wired to PD1 in QFP32)
-0	1	PF1 (wired to PD1 in QFP32)
-1	1	AC0P (wired to PD6 in QFP32 and SSOP20)
+0	0	PF1
+0	1	PF1
+1	1	AC0P
 `),
   tsv(`
 OCnB_OutputPort
-PF2 (wired to PD2 in QFP32 and SSOP20)
-PF3 (can't find the way in the datasheet)
+PF2
+PF3-broken
 `),
   tsv(`
 OCnC_OutputPort
@@ -163,12 +168,12 @@ PF3
   tsv(`
 HDR2	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
-1	PF1 (wired to PD1 in QFP32)	80mA
+1	PF1	80mA
 `),
   tsv(`
 HDR3	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
-1	PF2 (wired to PD2 in QFP32 and SSOP20)	80mA
+1	PF2	80mA
 `),
   tsv(`
 OCnC_OutputCurrent

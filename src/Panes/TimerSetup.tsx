@@ -1,6 +1,14 @@
-import { Checkbox, CheckboxGroup, FlexboxGrid, Panel } from 'rsuite'
+import {
+  Checkbox,
+  CheckboxGroup,
+  FlexboxGrid,
+  Icon,
+  Panel,
+  Tooltip,
+  Whisper
+} from 'rsuite'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { descriptions } from '../data/timers'
+import { bitNameDescriptions, bitValueDescriptions } from '../data/timers'
 import { difference, map, uniq } from 'lodash'
 import './TimerSetup.css'
 
@@ -21,23 +29,56 @@ const BitConfig = ({
   const { selectedOption, forcedOption, options } = useRecoilValue(
     bitOptionsState(bitName)
   )
+  const descr = bitValueDescriptions[bitName]
   return (
     <CheckboxGroup
       inline
       value={[selectedOption || forcedOption]}
       onChange={(val: string[]) => setUserConfigBit(val[1])}
     >
-      <p>{humanName || bitName}</p>
-      {options.map(({ value, isSuggested, isDisabled }, i) => (
-        <Checkbox
-          indeterminate={isSuggested}
-          key={i}
-          value={value}
-          disabled={isDisabled}
-        >
-          {value}
-        </Checkbox>
-      ))}
+      <p>
+        {humanName || bitName}{' '}
+        {typeof bitValueDescriptions[bitName] === 'string' && (
+          <Whisper
+            placement="right"
+            trigger="hover"
+            speaker={<Tooltip>{bitValueDescriptions[bitName]}</Tooltip>}
+          >
+            <Icon
+              icon="info-circle"
+              style={{ color: 'lightgrey', fontSize: 12 }}
+            />
+          </Whisper>
+        )}
+      </p>
+      {options.map(({ value, isSuggested, isDisabled }, i) => {
+        const bitValueDescr =
+          typeof descr === 'object' ? descr[value] : undefined
+
+        return (
+          <span key={i}>
+            <Checkbox
+              indeterminate={isSuggested}
+              value={value}
+              disabled={isDisabled}
+            >
+              {value}
+            </Checkbox>{' '}
+            {bitValueDescr && (
+              <Whisper
+                placement="right"
+                trigger="hover"
+                speaker={<Tooltip>{bitValueDescr}</Tooltip>}
+              >
+                <Icon
+                  icon="info-circle"
+                  style={{ color: 'lightgrey', fontSize: 12 }}
+                />
+              </Whisper>
+            )}
+          </span>
+        )
+      })}
     </CheckboxGroup>
   )
 }
@@ -67,7 +108,7 @@ const getAllBitnamesInGroups = (groups: TTable[][]) =>
   )
 const getPanesGroupedByDescription = (groups: TTable[][]): TPanel[] => {
   const allBitnamesInGroups = getAllBitnamesInGroups(groups)
-  return map(descriptions, (bitDescriptions, panelName) => ({
+  return map(bitNameDescriptions, (bitDescriptions, panelName) => ({
     panelName,
     bitNames: map(bitDescriptions, (humanName, bitName) => ({
       bitName,
@@ -78,7 +119,7 @@ const getPanesGroupedByDescription = (groups: TTable[][]): TPanel[] => {
 const getHiddenPane = (groups: TTable[][]): TPanel => {
   const allBitnames = getAllBitnamesInGroups(groups)
 
-  const visibleBitnames: string[] = Object.values(descriptions)
+  const visibleBitnames: string[] = Object.values(bitNameDescriptions)
     .map(Object.values)
     .flat()
   return {

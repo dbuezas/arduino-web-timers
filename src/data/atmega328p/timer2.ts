@@ -80,18 +80,18 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
   tsv(`
 OCIE2A	OCIEnA_text	interruptVectorCodeA
 0	no  	//nocode
-1	yes	ISR(TIMER2_COMPA_vect) {\\n    /* on OCR2A match */\\n}
+1	on	ISR(TIMER2_COMPA_vect) {\\n    /* on OCR2A match */\\n}
 `),
   tsv(`
 OCIE2B	OCIEnB_text	interruptVectorCodeB
 0	no  	//nocode
-1	yes	ISR(TIMER2_COMPB_vect) {\\n    /* on OCR2B match */\\n}
+1	on	ISR(TIMER2_COMPB_vect) {\\n    /* on OCR2B match */\\n}
     
 `),
   tsv(`
-TOIE2	TOIEn_text	interruptVectorCodeOVF
+TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF
 0	no  	//nocode
-1	yes	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}
+1	on	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   // [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR2B: Math.round((255 * 1) / 3) + '' }]

@@ -95,24 +95,34 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 `),
   tsv(`
 OCIE1A	OCIEnA_text	interruptVectorCodeA
-0	no	//nocode
-1	yes	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}
+0	off	//nocode
+1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}
 `),
   tsv(`
 OCIE1B	OCIEnB_text	interruptVectorCodeB
-0	no	//nocode
-1	yes	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}
+0	off	//nocode
+1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}
     
 `),
   tsv(`
-TOIE1	TOIEn_text	interruptVectorCodeOVF
-0	no	//nocode
-1	yes	ISR(TIMER1_OVF_vect) {\\n    /* on overflow */\\n}
+TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF
+0	off	//nocode
+1	on	ISR(TIMER1_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
-ICIE1	ICIEn_text	interruptVectorCodeCapture
-0	no	//nocode
-1	yes	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}
+ICIE1	InterruptOnInputCapture	interruptVectorCodeCapture
+0	off	//nocode
+1	on	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}
+`),
+  tsv(`
+ICNC1	InputCaptureNoiseSupression
+0	off
+1	on
+`),
+  tsv(`
+ICES1	InputCaptureEdgeSelect
+0	falling
+1	rising
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],
