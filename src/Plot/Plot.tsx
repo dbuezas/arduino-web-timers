@@ -14,7 +14,10 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
-import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
+import {
+  getAllCompareRegTraits,
+  getCompareRegTraits
+} from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { usePrevious, userConfigBitState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
@@ -40,7 +43,10 @@ export default function Plot({ style }: Props) {
       bitValues.CompareOutputModeB as any,
       bitValues.CompareOutputModeC as any
     ],
-    ICRn: 0
+    ICRn: 0,
+    deadTimeEnable: bitValues.DeadTime === 'on',
+    deadTimeA: getCompareRegTraits('DeadTimeA', bitValues).value,
+    deadTimeB: getCompareRegTraits('DeadTimeB', bitValues).value
   }
 
   const IOCR_states = getAllCompareRegTraits(bitValues).map((traits, i) => ({
@@ -192,31 +198,35 @@ export default function Plot({ style }: Props) {
           />
         )}
 
-        {IOCR_states.map(
-          ({ isActiveOutput, isTop, isInterrupt, ref, value, name }) => {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const setUserConfigBit = useSetRecoilState(userConfigBitState(name))
-
-            return (
-              (isActiveOutput || isTop || isInterrupt) && (
-                <CompareRegisterHandle
-                  {...{
-                    key: name,
-                    ref,
-                    width,
-                    yExtent: [0, ocrMax],
-                    yScale,
-                    compareRegisterValue: value,
-                    setCompareRegisterValue: (val: number) =>
-                      // eslint-disable-next-line react-hooks/rules-of-hooks
-                      setUserConfigBit(val + ''),
-                    name
-                  }}
-                />
-              )
+        {IOCR_states.map(({ isUsed, ref, value, name }) => {
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const setUserConfigBit = useSetRecoilState(userConfigBitState(name))
+          const yExtent2: [number, number] = name.startsWith('DTR')
+            ? [0, Math.sqrt(ocrMax + 1) - 1]
+            : [0, ocrMax]
+          const yScale = d3
+            .scaleLinear()
+            .domain(yExtent2)
+            .rangeRound([height_timer - margin.bottom, margin.top])
+          return (
+            isUsed && (
+              <CompareRegisterHandle
+                {...{
+                  key: name,
+                  ref,
+                  width,
+                  yExtent: yExtent2,
+                  yScale,
+                  compareRegisterValue: value,
+                  setCompareRegisterValue: (val: number) =>
+                    // eslint-disable-next-line react-hooks/rules-of-hooks
+                    setUserConfigBit(val + ''),
+                  name
+                }}
+              />
             )
-          }
-        )}
+          )
+        })}
       </svg>
     </div>
   )

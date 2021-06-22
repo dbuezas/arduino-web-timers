@@ -59,7 +59,8 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
     InterruptOnTimerOverflow: 'Interrupt on Timer Overflow',
     InputCaptureNoiseSupression: 'Input capture noise supression',
     InterruptOnInputCapture: 'Interrupt on Input Capture',
-    InputCaptureEdgeSelect: 'Input Capture Edge Select'
+    InputCaptureEdgeSelect: 'Input Capture Edge Select',
+    DeadTime: 'Insert dead time'
   }
 }
 export const bitValueDescriptions: Record<string, Record<string, string>> = {
@@ -103,5 +104,9 @@ export const bitValueDescriptions: Record<string, Record<string, string>> = {
   },
   InputCaptureEdgeSelect: {
     title: `When the ICRn is used as TOP value, the ICPn is disconnected and consequently the input capture function is disabled.`
+  },
+  DeadTime: {
+    on: `dead time enable control
+    Setting DTENn to logic one, inserting dead time is enable. Base on waveform generated in B channel compare output, both OCnA and OCnB can insert dead time, whose interval is decided by corresponding counter time of DTRn register. Waveform polarity output by OCnA is decided by relationship between CnMn and COMnB, for details referring to list for waveform polarity after inserting dead time.`
   }
 }

@@ -1,13 +1,21 @@
 import { TRow } from './types'
 
-export type GenericCompRegName = 'OutputA' | 'OutputB' | 'OutputC' | 'Input'
+export type GenericCompRegName =
+  | 'OutputA'
+  | 'OutputB'
+  | 'OutputC'
+  | 'Input'
+  | 'DeadTimeA'
+  | 'DeadTimeB'
 
 const getName = (genericName: GenericCompRegName, bitValues: TRow) =>
   ({
     OutputA: `OCR${bitValues.timerNr}A`,
     OutputB: `OCR${bitValues.timerNr}B`,
     OutputC: `OCR${bitValues.timerNr}C`,
-    Input: `ICR${bitValues.timerNr}`
+    Input: `ICR${bitValues.timerNr}`,
+    DeadTimeA: `DTR${bitValues.timerNr}L`,
+    DeadTimeB: `DTR${bitValues.timerNr}H`
   }[genericName])
 
 const getIsTop = (genericName: GenericCompRegName, bitValues: TRow) =>
@@ -18,7 +26,9 @@ const getIsInterrupt = (genericName: GenericCompRegName, bitValues: TRow) =>
       OutputA: `OCIE${bitValues.timerNr}A`,
       OutputB: `OCIE${bitValues.timerNr}B`,
       OutputC: `OCIE${bitValues.timerNr}C`,
-      Input: `ICIE${bitValues.timerNr}`
+      Input: `ICIE${bitValues.timerNr}`,
+      DeadTimeA: `DTRL${bitValues.timerNr}`,
+      DeadTimeB: `DTRH${bitValues.timerNr}`
     }[genericName]
   ] === '1'
 const getIsActiveOutput = (genericName: GenericCompRegName, bitValues: TRow) =>
@@ -27,39 +37,78 @@ const getIsActiveOutput = (genericName: GenericCompRegName, bitValues: TRow) =>
       OutputA: `CompareOutputModeA`,
       OutputB: `CompareOutputModeB`,
       OutputC: `CompareOutputModeC`,
-      Input: ``
+      Input: ``,
+      DeadTimeA: ``,
+      DeadTimeB: ``
     }[genericName]
   ] || 'disconnect') !== 'disconnect'
+const getIsActiveDeadTime = (
+  genericName: GenericCompRegName,
+  bitValues: TRow
+) =>
+  bitValues[
+    {
+      OutputA: ``,
+      OutputB: ``,
+      OutputC: ``,
+      Input: ``,
+      DeadTimeA: `DeadTime`,
+      DeadTimeB: `DeadTime`
+    }[genericName]
+  ] === 'on'
 const getIsUsed = (genericName: GenericCompRegName, bitValues: TRow) =>
   getIsTop(genericName, bitValues) ||
   getIsInterrupt(genericName, bitValues) ||
-  getIsActiveOutput(genericName, bitValues)
-const getIsInput = (genericName: GenericCompRegName) => genericName === 'Input'
+  getIsActiveOutput(genericName, bitValues) ||
+  getIsActiveDeadTime(genericName, bitValues)
+
+const getIsInput = (genericName: GenericCompRegName) =>
+  ({
+    OutputA: false,
+    OutputB: false,
+    OutputC: false,
+    Input: true,
+    DeadTimeA: false,
+    DeadTimeB: false
+  }[genericName])
 const getIsOutput = (genericName: GenericCompRegName) =>
-  !getIsInput(genericName)
+  ({
+    OutputA: true,
+    OutputB: true,
+    OutputC: true,
+    Input: false,
+    DeadTimeA: false,
+    DeadTimeB: false
+  }[genericName])
 
 export const compareRegs: GenericCompRegName[] = [
   'OutputA',
   'OutputB',
   'OutputC',
-  'Input'
+  'Input',
+  'DeadTimeA',
+  'DeadTimeB'
 ]
 
+export const getCompareRegTraits = (
+  genericName: GenericCompRegName,
+  bitValues: TRow
+) => {
+  const name = getName(genericName, bitValues)
+  const value = parseFloat(bitValues[name] || '')
+  // if (Number.isNaN(value)) debugger
+  return {
+    genericName: genericName,
+    name,
+    value,
+    code: `${name} = ${value};`,
+    isInput: getIsInput(genericName),
+    isOutput: getIsOutput(genericName),
+    isActiveOutput: getIsActiveOutput(genericName, bitValues),
+    isTop: getIsTop(genericName, bitValues),
+    isInterrupt: getIsInterrupt(genericName, bitValues),
+    isUsed: getIsUsed(genericName, bitValues)
+  }
+}
 export const getAllCompareRegTraits = (bitValues: TRow) =>
-  compareRegs.map((genericName) => {
-    const name = getName(genericName, bitValues)
-    const value = parseFloat(bitValues[name] || '')
-    // if (Number.isNaN(value)) debugger
-    return {
-      genericName: genericName,
-      name,
-      value,
-      code: `${name} = ${value};`,
-      isInput: getIsInput(genericName),
-      isOutput: getIsOutput(genericName),
-      isActiveOutput: getIsActiveOutput(genericName, bitValues),
-      isTop: getIsTop(genericName, bitValues),
-      isInterrupt: getIsInterrupt(genericName, bitValues),
-      isUsed: getIsUsed(genericName, bitValues)
-    }
-  })
+  compareRegs.map((genericName) => getCompareRegTraits(genericName, bitValues))

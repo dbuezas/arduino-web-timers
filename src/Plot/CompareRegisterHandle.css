@@ -2,10 +2,14 @@
 .plotContainer line.OCRHandle {
   cursor: row-resize;
 }
+.plotContainer text.OCRText {
+  cursor: row-resize;
+  /* stroke-width: 0; */
+  stroke: white;
+}
 
 .plotContainer line.OCRHandle {
-  stroke-width: 40;
-  stroke: white;
+  stroke-width: 30;
   opacity: 0.03;
 }
 
@@ -16,28 +20,48 @@
   opacity: 0.7;
 }
 
-.plotContainer line.OCR0A,
-.plotContainer line.OCR1A,
-.plotContainer line.OCR2A,
-.plotContainer line.OCR3A {
+.plotContainer .OCR0A,
+.plotContainer .OCR1A,
+.plotContainer .OCR2A,
+.plotContainer .OCR3A {
+  color: darkred;
   stroke: darkred;
 }
 
-.plotContainer line.OCR0B,
-.plotContainer line.OCR1B,
-.plotContainer line.OCR2B,
-.plotContainer line.OCR3B {
+.plotContainer .OCR0B,
+.plotContainer .OCR1B,
+.plotContainer .OCR2B,
+.plotContainer .OCR3B {
+  color: darkolivegreen;
   stroke: darkolivegreen;
 }
-.plotContainer line.OCR0C,
-.plotContainer line.OCR1C,
-.plotContainer line.OCR2C,
-.plotContainer line.OCR3C {
+.plotContainer .OCR0C,
+.plotContainer .OCR1C,
+.plotContainer .OCR2C,
+.plotContainer .OCR3C {
+  color: darkslategray;
   stroke: darkslategray;
 }
-.plotContainer line.ICR0,
-.plotContainer line.ICR1,
-.plotContainer line.ICR2,
-.plotContainer line.ICR3 {
+.plotContainer .ICR0,
+.plotContainer .ICR1,
+.plotContainer .ICR2,
+.plotContainer .ICR3 {
+  color: darkorange;
   stroke: darkorange;
+}
+
+.plotContainer .DTR0L,
+.plotContainer .DTR1L,
+.plotContainer .DTR2L,
+.plotContainer .DTR3L {
+  color: blue;
+  stroke: blue;
+}
+
+.plotContainer .DTR0H,
+.plotContainer .DTR1H,
+.plotContainer .DTR2H,
+.plotContainer .DTR3H {
+  color: blueviolet;
+  stroke: blueviolet;
 }
