@@ -61,42 +61,48 @@ export default function simTimer({
 
   const actionAt = OCRnXs_behaviour.map((behaviour, i) => {
     const action = {
-      setAt: Number.NaN,
-      clearAt: Number.NaN,
-      toggleAt: Number.NaN,
-      matchAt: OCRnXs[i]
+      setAt: { n: Number.NaN, dir: 0 },
+      clearAt: { n: Number.NaN, dir: 0 },
+      toggleAt: { n: Number.NaN, dir: 0 },
+      matchAt: OCRnXs[i],
+      insertDeadTimeOn: 'none' as 'none' | 'set' | 'clear',
+      behaviour
     }
     switch (behaviour) {
       case 'set':
-        action.setAt = OCRnXs[i]
+        action.setAt = { n: OCRnXs[i], dir: 1 }
         OCnXs[i] = 0
         break
       case 'clear':
-        action.clearAt = OCRnXs[i]
+        action.clearAt = { n: OCRnXs[i], dir: 1 }
         OCnXs[i] = 1
         break
       case 'toggle':
-        action.toggleAt = OCRnXs[i]
+        action.toggleAt = { n: OCRnXs[i], dir: 1 }
         OCnXs[i] = 0
         break
       case 'set-on-match, clear-at-max':
-        action.setAt = OCRnXs[i]
-        action.clearAt = top
+        action.setAt = { n: OCRnXs[i], dir: 1 }
+        action.clearAt = { n: top, dir: 1 }
+        action.insertDeadTimeOn = 'set'
         OCnXs[i] = 0
         break
       case 'clear-on-match, set-at-max':
-        action.clearAt = OCRnXs[i]
-        action.setAt = top
+        action.clearAt = { n: OCRnXs[i], dir: 1 }
+        action.setAt = { n: top, dir: 1 }
+        action.insertDeadTimeOn = 'clear'
         OCnXs[i] = 1
         break
       case 'set-up, clear-down':
-        action.setAt = OCRnXs[i]
-        action.clearAt = -OCRnXs[i]
+        action.setAt = { n: OCRnXs[i], dir: 1 }
+        action.clearAt = { n: OCRnXs[i], dir: -1 }
+        action.insertDeadTimeOn = 'set'
         OCnXs[i] = 0
         break
       case 'clear-up, set-down':
-        action.clearAt = OCRnXs[i]
-        action.setAt = -OCRnXs[i]
+        action.clearAt = { n: OCRnXs[i], dir: 1 }
+        action.setAt = { n: OCRnXs[i], dir: -1 }
+        action.insertDeadTimeOn = 'clear'
         OCnXs[i] = 1
         break
     }
@@ -105,27 +111,28 @@ export default function simTimer({
   if (deadTimeEnable) {
     const A = actionAt[0]
     const B = actionAt[1]
-    if (OCRnXs_behaviour[0] === OCRnXs_behaviour[1]) {
-      A.setAt = B.setAt
-      A.clearAt = B.clearAt + deadTimeA
-      B.setAt = B.setAt + deadTimeB
+    if (A.behaviour === B.behaviour) {
+      A.insertDeadTimeOn = B.insertDeadTimeOn === 'set' ? 'clear' : 'set'
     } else {
-      A.clearAt = B.setAt
-      A.setAt = B.clearAt + deadTimeA
-      B.setAt = B.setAt + deadTimeB
+      A.insertDeadTimeOn = B.insertDeadTimeOn
     }
+
+    if (A.insertDeadTimeOn === 'set') A.setAt.n += deadTimeA * A.setAt.dir
+    if (A.insertDeadTimeOn === 'clear') A.clearAt.n += deadTimeA * A.clearAt.dir
+    if (B.insertDeadTimeOn === 'set') B.setAt.n += deadTimeB * B.setAt.dir
+    if (B.insertDeadTimeOn === 'clear') B.clearAt.n += deadTimeB * B.clearAt.dir
     if (['PCPWM', 'PFCPWM'].includes(timerMode)) {
-      if (A.clearAt > top) A.clearAt -= top + top
-      if (A.clearAt < -top) A.clearAt += top + top
-      if (A.setAt > top) A.setAt -= top + top
-      if (A.setAt < -top) A.setAt += top + top
-      if (B.setAt > top) B.setAt -= top + top
-      if (B.setAt < -top) B.setAt += top + top
+      if (A.clearAt.n > top) A.clearAt.n -= top + top
+      if (A.clearAt.n < -top) A.clearAt.n += top + top
+      if (A.setAt.n > top) A.setAt.n -= top + top
+      if (A.setAt.n < -top) A.setAt.n += top + top
+      if (B.setAt.n > top) B.setAt.n -= top + top
+      if (B.setAt.n < -top) B.setAt.n += top + top
     }
     if (['FPWM'].includes(timerMode)) {
-      A.clearAt %= top + 1
-      A.setAt %= top + 1
-      B.setAt %= top + 1
+      A.clearAt.n %= top + 1
+      A.setAt.n %= top + 1
+      B.setAt.n %= top + 1
     }
   }
   let TCNT = -1
@@ -160,10 +167,11 @@ export default function simTimer({
     TCNT += dir * distToNext
     if (TCNT === top + 1) TCNT = 0
     actionAt.forEach(({ setAt, clearAt, toggleAt, matchAt }, i) => {
-      if (TCNT * dir === setAt) OCnXs[i] = 1
-      if (TCNT * dir === clearAt) OCnXs[i] = 0
-      if (TCNT * dir === toggleAt) OCnXs[i] = OCnXs[i] === 1 ? 0 : 1
-      if (TCNT * dir === matchAt) MATCH_Xs[i] = 1
+      if (setAt.dir === dir && setAt.n === TCNT) OCnXs[i] = 1
+      if (clearAt.dir === dir && clearAt.n === TCNT) OCnXs[i] = 0
+      if (toggleAt.dir === dir && toggleAt.n === TCNT)
+        OCnXs[i] = OCnXs[i] === 1 ? 0 : 1
+      if (matchAt === TCNT) MATCH_Xs[i] = 1
     })
     if (TCNT === ICRn) CAPT = 1
     if (TCNT === counterMax && tovTime === 'MAX') OVF = 1
