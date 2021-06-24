@@ -122,27 +122,27 @@ ISR(TIMER3_vect)
 `),
   tsv(`
 OCIE3A	interruptA	interruptVectorCodeA
-0	no  	//nocode
+0	off  	//nocode
 1	on	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}
 `),
   tsv(`
 OCIE3B	interruptB	interruptVectorCodeB
-0	no  	//nocode
+0	off  	//nocode
 1	on	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}
 `),
   tsv(`
 OCIE3C	interruptC	interruptVectorCodeC
-0	no  	//nocode
+0	off  	//nocode
 1	on	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}
 `),
   tsv(`
 TOIE3	InterruptOnTimerOverflow	interruptVectorCodeOVF
-0	no  	//nocode
+0	off  	//nocode
 1	on	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}
 `),
   tsv(`
 ICIE3	InterruptOnInputCapture	interruptVectorCaptureCode
-0	no  	//nocode
+0	off  	//nocode
 1	on	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}
 `),
   tsv(`

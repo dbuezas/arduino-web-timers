@@ -18,6 +18,17 @@ timerNr	timerBits	counterMax
 0	8	255
 `),
   tsv(`
+WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment
+0	0	0	0	Normal	0xFF	immediate	MAX
+1	0	0	1	PCPWM	0xFF	TOP	BOTTOM
+2	0	1	0	CTC	OCR0A	immediate	MAX
+3	0	1	1	FPWM	0xFF	TOP	MAX
+4	1	0	0	-	-	-	-
+5	1	0	1	PCPWM	OCR0A	TOP	BOTTOM
+6	1	1	0	-	-	-	-
+7	1	1	1	FPWM	OCR0A	TOP	TOP
+`),
+  tsv(`
 COM0A	COM0A0	COM0A1	timerMode	CompareOutputModeA	WGM02	CompareOutputModeB
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
@@ -35,17 +46,6 @@ COM0A	COM0A0	COM0A1	timerMode	CompareOutputModeA	WGM02	CompareOutputModeB
 1	0	1	PCPWM	toggle	1	disconnect
 2	1	0	PCPWM	clear-up, set-down
 3	1	1	PCPWM	set-up, clear-down
-`),
-  tsv(`
-WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment
-0	0	0	0	Normal	0xFF	immediate	MAX
-1	0	0	1	PCPWM	0xFF	TOP	BOTTOM
-2	0	1	0	CTC	OCR0A	immediate	MAX
-3	0	1	1	FPWM	0xFF	TOP	MAX
-4	1	0	0	-	-	-	-
-5	1	0	1	PCPWM	OCR0A	TOP	BOTTOM
-6	1	1	0	-	-	-	-
-7	1	1	1	FPWM	OCR0A	TOP	TOP
 `),
   tsv(`
 COM0B	COM0B0	COM0B1	timerMode	CompareOutputModeB

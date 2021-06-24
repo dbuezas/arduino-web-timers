@@ -28,6 +28,7 @@ WGM2	WGM22	WGM21	WGM20	timerMode	topValue	updateOcrMoment	setTovMoment
 6	1	1	0	-	-	-	-
 7	1	1	1	FPWM	OCR2A	TOP	TOP
   `),
+
   tsv(`
 COM2A	COM2A0	COM2A1	timerMode	CompareOutputModeA
 0	0	0	Normal	disconnect
@@ -79,18 +80,18 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
 `),
   tsv(`
 OCIE2A	interruptA	interruptVectorCodeA
-0	no  	//nocode
+0	off  	//nocode
 1	on	ISR(TIMER2_COMPA_vect) {\\n    /* on OCR2A match */\\n}
 `),
   tsv(`
 OCIE2B	interruptB	interruptVectorCodeB
-0	no  	//nocode
+0	off  	//nocode
 1	on	ISR(TIMER2_COMPB_vect) {\\n    /* on OCR2B match */\\n}
     
 `),
   tsv(`
 TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF
-0	no  	//nocode
+0	off  	//nocode
 1	on	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}
 `),
   tsv(`
