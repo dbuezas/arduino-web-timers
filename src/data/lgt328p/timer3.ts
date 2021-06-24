@@ -15,7 +15,7 @@ WGM30	CS30	FOC3C	DSX30		TOIE3	TOV3	RXD5	C2AF6		HDR0
 const configs: TTimerConfig = [
   tsv(`
 timerNr	timerBits	counterMax
-3	16	65355
+3	16	65535
 `),
   tsv(`
 WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
@@ -179,10 +179,34 @@ HDR3	OCnB_OutputPort	OCnB_OutputCurrent
 OCnC_OutputCurrent
 12mA
 `),
-  // [{ ICR3: Math.round((65535 * 4) / 5) + '' }],
-  // [{ OCR3A: Math.round((65535 * 3) / 5) + '' }],
-  // [{ OCR3B: Math.round((65535 * 2) / 5) + '' }],
-  // [{ OCR3C: Math.round((65535 * 1) / 5) + '' }]
+  tsv(`
+DTEN3	DeadTime
+0	off
+1	on
+`),
+  tsv(`
+timerMode	DTEN3
+Normal	0
+CTC	0
+FPWM	
+PCPWM	
+`),
+  tsv(`
+DTEN3	COM3A
+0	
+1	2
+1	3
+`),
+  tsv(`
+DTEN3	COM3B
+0	
+1	2
+1	3
+`),
+  // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
+  // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]
+  [{ DTR3L: '' }],
+  [{ DTR3H: '' }],
   [{ ICR3: '' }],
   [{ OCR3A: '' }],
   [{ OCR3B: '' }],

@@ -201,8 +201,10 @@ export default function Plot({ style }: Props) {
         {IOCR_states.map(({ isUsed, ref, value, name }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           const setUserConfigBit = useSetRecoilState(userConfigBitState(name))
+
+          // TODO: redo the extent thing with DTRs
           const yExtent2: [number, number] = name.startsWith('DTR')
-            ? [0, Math.sqrt(ocrMax + 1) - 1]
+            ? [0, Math.sqrt(counterMax + 1) - 1]
             : [0, ocrMax]
           const yScale = d3
             .scaleLinear()

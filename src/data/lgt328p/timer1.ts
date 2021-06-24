@@ -15,7 +15,7 @@ WGM10	CS10	-	DSX10	TOIE1		TOV1	TC2XS0	RXD5	HDR0
 const configs: TTimerConfig = [
   tsv(`
 timerNr	timerBits	counterMax
-1	16	65355
+1	16	65535
 `),
   tsv(`
 WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
@@ -152,9 +152,32 @@ HDR5	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	PF5	80mA
 `),
-  // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
-  // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],
-  // [{ OCR1B: Math.round((65535 * 1) / 4) + '' }]
+  tsv(`
+DTEN1	DeadTime
+0	off
+1	on
+`),
+  tsv(`
+timerMode	DTEN1
+Normal	0
+CTC	0
+FPWM	
+PCPWM	
+`),
+  tsv(`
+DTEN1	COM1A
+0	
+1	2
+1	3
+`),
+  tsv(`
+DTEN1	COM1B
+0	
+1	2
+1	3
+`),
+  [{ DTR1L: '' }],
+  [{ DTR1H: '' }],
   [{ ICR1: '' }],
   [{ OCR1A: '' }],
   [{ OCR1B: '' }]
