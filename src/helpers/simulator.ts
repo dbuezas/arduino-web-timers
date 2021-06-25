@@ -1,11 +1,11 @@
-/* eslint-disable no-loop-func */
 /*
 PCPWM == updates at top
 PFCPWM == updates at bottom
 but this should be passed from update OCRnX upate time bit value
 */
 
-import { uniq } from 'lodash'
+import { groupBy } from 'lodash'
+import { format } from 'prettier'
 
 type Props = {
   timerMode: 'Normal' | 'PCPWM' | 'CTC' | 'FPWM' | 'PFCPWM'
@@ -30,7 +30,32 @@ type Props = {
   deadTimeB: number
   ICRn: number
 }
-
+type EventOutput = {
+  evt: 'OUTPUT'
+  reg: number
+  output: boolean
+  cpu: number
+}
+type Event =
+  | {
+      evt: 'OVF'
+      cpu: number
+    }
+  | {
+      evt: 'TCNT'
+      value: number
+      cpu: number
+    }
+  | {
+      evt: 'MATCH'
+      reg: number
+      cpu: number
+    }
+  | {
+      evt: 'CAPTURE'
+      cpu: number
+    }
+  | EventOutput
 export default function simTimer({
   timerMode,
   maxCpuTicks,
@@ -46,99 +71,10 @@ export default function simTimer({
   deadTimeB,
   ICRn
 }: Props) {
-  // TODO: refactor the simulation
-
-  const results = {
-    t: [] as number[],
-    cpu: [] as number[],
-    TCNT: [] as number[],
-    OCnXs: OCRnXs.map(() => [] as number[]),
-    MATCH_Xs: OCRnXs.map(() => [] as number[]),
-    OVF: [] as number[],
-    CAPT: [] as number[]
-  }
-  let OCnXs = OCRnXs.map(() => 0)
-
-  const actionAt = OCRnXs_behaviour.map((behaviour, i) => {
-    const action = {
-      setAt: { n: Number.NaN, dir: 0 },
-      clearAt: { n: Number.NaN, dir: 0 },
-      toggleAt: { n: Number.NaN, dir: 0 },
-      matchAt: OCRnXs[i],
-      insertDeadTimeOn: 'none' as 'none' | 'set' | 'clear',
-      behaviour
-    }
-    switch (behaviour) {
-      case 'set':
-        action.setAt = { n: OCRnXs[i], dir: 1 }
-        OCnXs[i] = 0
-        break
-      case 'clear':
-        action.clearAt = { n: OCRnXs[i], dir: 1 }
-        OCnXs[i] = 1
-        break
-      case 'toggle':
-        action.toggleAt = { n: OCRnXs[i], dir: 1 }
-        OCnXs[i] = 0
-        break
-      case 'set-on-match, clear-at-max':
-        action.setAt = { n: OCRnXs[i], dir: 1 }
-        action.clearAt = { n: top, dir: 1 }
-        action.insertDeadTimeOn = 'set'
-        OCnXs[i] = 0
-        break
-      case 'clear-on-match, set-at-max':
-        action.clearAt = { n: OCRnXs[i], dir: 1 }
-        action.setAt = { n: top, dir: 1 }
-        action.insertDeadTimeOn = 'clear'
-        OCnXs[i] = 1
-        break
-      case 'set-up, clear-down':
-        action.setAt = { n: OCRnXs[i], dir: 1 }
-        action.clearAt = { n: OCRnXs[i], dir: -1 }
-        action.insertDeadTimeOn = 'set'
-        OCnXs[i] = 0
-        break
-      case 'clear-up, set-down':
-        action.clearAt = { n: OCRnXs[i], dir: 1 }
-        action.setAt = { n: OCRnXs[i], dir: -1 }
-        action.insertDeadTimeOn = 'clear'
-        OCnXs[i] = 1
-        break
-    }
-    return action
-  })
-  if (deadTimeEnable) {
-    const A = actionAt[0]
-    const B = actionAt[1]
-    if (A.behaviour === B.behaviour) {
-      A.insertDeadTimeOn = B.insertDeadTimeOn === 'set' ? 'clear' : 'set'
-    } else {
-      A.insertDeadTimeOn = B.insertDeadTimeOn
-    }
-
-    if (A.insertDeadTimeOn === 'set') A.setAt.n += deadTimeA * A.setAt.dir
-    if (A.insertDeadTimeOn === 'clear') A.clearAt.n += deadTimeA * A.clearAt.dir
-    if (B.insertDeadTimeOn === 'set') B.setAt.n += deadTimeB * B.setAt.dir
-    if (B.insertDeadTimeOn === 'clear') B.clearAt.n += deadTimeB * B.clearAt.dir
-    if (['PCPWM', 'PFCPWM'].includes(timerMode)) {
-      if (A.clearAt.n > top) A.clearAt.n -= top + top
-      if (A.clearAt.n < -top) A.clearAt.n += top + top
-      if (A.setAt.n > top) A.setAt.n -= top + top
-      if (A.setAt.n < -top) A.setAt.n += top + top
-      if (B.setAt.n > top) B.setAt.n -= top + top
-      if (B.setAt.n < -top) B.setAt.n += top + top
-    }
-    if (['FPWM'].includes(timerMode)) {
-      A.clearAt.n %= top + 1
-      A.setAt.n %= top + 1
-      B.setAt.n %= top + 1
-    }
-  }
   let TCNT = -1
   let dir = 1
   let cpu = -1
-  let eventTimes = [
+  const eventTimes = [
     // only when TCNT equals these values, something can happen
     // values surounding the events are added to ensure the plot
     // keeps the lines at their values until a change happens
@@ -146,53 +82,161 @@ export default function simTimer({
     counterMax,
     0,
     top,
-    ...actionAt.map(Object.values),
+    ...OCRnXs,
+    top,
     ICRn,
     maxCpuTicks - 1,
     maxCpuTicks
-  ]
-    .flat()
-    .map((n) => Math.abs(n || 0))
-    .flatMap((n) => [n - 1, n, n + 1])
-  eventTimes = uniq(eventTimes)
+  ].flatMap((n) => [n - 1, n, n + 1])
+
+  let data: Event[] = []
   while (cpu < maxCpuTicks) {
+    cpu += prescaler
+    TCNT += dir
+    let distToNext
     const nextEvents = eventTimes
+      // eslint-disable-next-line no-loop-func
       .map((n) => (n - TCNT) * dir)
-      .filter((n) => n > 0)
-    const distToNext = Math.min(...nextEvents)
-    let MATCH_Xs = OCRnXs.map(() => 0)
-    let OVF = 0
-    let CAPT = 0
+      .filter((n) => n >= 0)
+    distToNext = Math.min(...nextEvents)
     cpu += distToNext * prescaler
     TCNT += dir * distToNext
     if (TCNT === top + 1) TCNT = 0
-    actionAt.forEach(({ setAt, clearAt, toggleAt, matchAt }, i) => {
-      if (setAt.dir === dir && setAt.n === TCNT) OCnXs[i] = 1
-      if (clearAt.dir === dir && clearAt.n === TCNT) OCnXs[i] = 0
-      if (toggleAt.dir === dir && toggleAt.n === TCNT)
-        OCnXs[i] = OCnXs[i] === 1 ? 0 : 1
-      if (matchAt === TCNT) MATCH_Xs[i] = 1
-    })
-    if (TCNT === ICRn) CAPT = 1
-    if (TCNT === counterMax && tovTime === 'MAX') OVF = 1
+
+    if (TCNT === counterMax)
+      if (tovTime === 'MAX') data.push({ evt: 'OVF', cpu })
+
     if (TCNT === 0) {
-      if (dir === -1 && tovTime === 'BOTTOM') OVF = 1
+      if (dir === -1 && tovTime === 'BOTTOM') data.push({ evt: 'OVF', cpu })
       if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = 1
+      data.push({ evt: 'TCNT', value: TCNT, cpu })
     }
     if (TCNT === top) {
-      if (dir === 1 && tovTime === 'TOP') OVF = 1
+      if (dir === 1 && tovTime === 'TOP') data.push({ evt: 'OVF', cpu })
       if (['PCPWM', 'PFCPWM'].includes(timerMode)) dir = -1
+      data.push({ evt: 'TCNT', value: TCNT, cpu })
+    }
+    if (TCNT === ICRn) data.push({ evt: 'CAPTURE', cpu })
+
+    for (let i = 0; i < OCRnXs_behaviour.length; i++) {
+      const behaviour = OCRnXs_behaviour[i]
+      let output: null | boolean = null
+      if (TCNT === OCRnXs[i]) {
+        if (behaviour === 'set') output = true
+        if (behaviour === 'clear') output = false
+        if (behaviour === 'set-on-match, clear-at-max') output = true
+        if (behaviour === 'clear-on-match, set-at-max') output = false
+        if (behaviour === 'toggle') output = !output
+        if (behaviour === 'clear-up, set-down') {
+          if (dir === 1) output = false
+          if (dir === -1) output = true
+        }
+        if (behaviour === 'set-up, clear-down') {
+          if (dir === 1) output = true
+          if (dir === -1) output = false
+        }
+        data.push({ evt: 'MATCH', reg: i, cpu })
+      }
+
+      if (TCNT === top) {
+        if (behaviour === 'set-on-match, clear-at-max') output = false
+        if (behaviour === 'clear-on-match, set-at-max') output = true
+      }
+      if (output !== null) data.push({ evt: 'OUTPUT', reg: i, output, cpu })
     }
 
-    results.t.push(cpu / cpuHz)
-    results.cpu.push(cpu)
+    data.push({ evt: 'TCNT', value: TCNT, cpu })
+  }
+  if (deadTimeEnable) {
+    const isCOMB3 = [
+      'set-on-match, clear-at-max',
+      'set-up, clear-down'
+    ].includes(OCRnXs_behaviour[1])
+    const isAInverted = OCRnXs_behaviour[1] !== OCRnXs_behaviour[0]
+    const outA = []
+    const outB = []
+    let was: boolean | undefined
+    const outputB = data.filter(function (event): event is EventOutput {
+      return event.evt === 'OUTPUT' && event.reg === 1
+    })
+    data = data.filter(
+      (event) => !(event.evt === 'OUTPUT' && [0, 1].includes(event.reg))
+    )
+    for (const { cpu, output } of outputB) {
+      const is = output
+      if (was === undefined) was = !is
+      if (!was && is) {
+        // setting B is delayied
+        data.push({ evt: 'OUTPUT', cpu: cpu + deadTimeB, output: true, reg: 1 })
+        // change in A is immediate
+        data.push({ evt: 'OUTPUT', cpu, output: !isAInverted, reg: 0 })
+      }
+      if (was && !is) {
+        // clearing B is immediate
+        data.push({ evt: 'OUTPUT', cpu, output: false, reg: 1 })
+        // change in A is delayed
+        data.push({
+          evt: 'OUTPUT',
+          cpu: cpu + deadTimeA,
+          output: isAInverted,
+          reg: 0
+        })
+      }
+      was = is
+    }
+  }
+
+  return formatData(data, cpuHz, OCRnXs.length)
+}
+
+const formatData = (data: Event[], cpuHz: number, outputsCount: number) => {
+  const results = {
+    t: [] as number[],
+    cpu: [] as number[],
+    TCNT: [] as number[],
+    OCnXs: [...Array(outputsCount)].map(() => [] as number[]),
+    MATCH_Xs: [...Array(outputsCount)].map(() => [] as number[]),
+    OVF: [] as number[],
+    CAPT: [] as number[]
+  }
+  data.sort((a, b) => a.cpu - b.cpu)
+  const grouped = Object.entries(groupBy(data, 'cpu'))
+
+  const OCnXs = [...Array(outputsCount)].map(() => 0)
+  let TCNT = 0
+
+  for (const [cpu, group] of grouped) {
+    const MATCH_Xs = [...Array(outputsCount)].map(() => 0)
+    let OVF = 0
+    let CAPT = 0
+    for (const datum of group) {
+      switch (datum.evt) {
+        case 'TCNT':
+          TCNT = datum.value
+          break
+        case 'OVF':
+          OVF = 1
+          break
+        case 'OUTPUT':
+          OCnXs[datum.reg] = datum.output ? 1 : 0
+          break
+        case 'CAPTURE':
+          CAPT = 1
+          break
+        case 'MATCH':
+          MATCH_Xs[datum.reg] = 1
+          break
+      }
+    }
+    results.t.push(+cpu / cpuHz)
+    results.cpu.push(+cpu)
     results.TCNT.push(TCNT)
-    results.OVF.push(OVF)
-    results.CAPT.push(CAPT)
-    for (const i in OCRnXs_behaviour) {
+    for (const i in OCnXs) {
       results.OCnXs[i].push(OCnXs[i])
       results.MATCH_Xs[i].push(MATCH_Xs[i])
     }
+    results.OVF.push(OVF)
+    results.CAPT.push(CAPT)
   }
   return results
 }

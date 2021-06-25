@@ -35,9 +35,8 @@ export function formatTime(s: ohNoItIsAny) {
 type Props = {
   height: number
   xScale: d3.ScaleLinear<number, number>
-  data: Simulation
 }
-export default function XAxis({ height, xScale, data }: Props) {
+export default function XAxis({ height, xScale }: Props) {
   const nodeRef = useRef<SVGSVGElement>(null)
   const gEl = nodeRef.current
   useLayoutEffect(() => {
