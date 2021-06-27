@@ -163,6 +163,7 @@ Normal	0
 CTC	0
 FPWM	
 PCPWM	
+PFCPWM	
 `),
   tsv(`
 DTEN1	COM1A

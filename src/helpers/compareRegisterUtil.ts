@@ -80,6 +80,15 @@ const getIsOutput = (genericName: GenericCompRegName) =>
     DeadTimeA: false,
     DeadTimeB: false
   }[genericName])
+const getIsDeadTime = (genericName: GenericCompRegName) =>
+  ({
+    OutputA: false,
+    OutputB: false,
+    OutputC: false,
+    Input: false,
+    DeadTimeA: true,
+    DeadTimeB: true
+  }[genericName])
 
 export const compareRegs: GenericCompRegName[] = [
   'OutputA',
@@ -104,6 +113,7 @@ export const getCompareRegTraits = (
     code: `${name} = ${value};`,
     isInput: getIsInput(genericName),
     isOutput: getIsOutput(genericName),
+    isDeadTime: getIsDeadTime(genericName),
     isActiveOutput: getIsActiveOutput(genericName, bitValues),
     isTop: getIsTop(genericName, bitValues),
     isInterrupt: getIsInterrupt(genericName, bitValues),

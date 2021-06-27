@@ -3,6 +3,10 @@
   fill: none;
   stroke: black;
 }
+.plotContainer path.curve-TCNT2 {
+  stroke-width: 10px;
+  stroke: rgba(255, 0, 0, 0.2);
+}
 .plotContainer path.curve-TCNT {
   stroke: steelblue;
 }

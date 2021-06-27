@@ -67,7 +67,7 @@ export default function Plot({ style }: Props) {
     parseInt(bitValues.topValue!)
   const ocrMax = parseInt(bitValues.topValue!) || counterMax
 
-  param.maxCpuTicks = param.top * param.prescaler * 4
+  param.maxCpuTicks = (param.top + 1) * param.prescaler * 4
 
   /* TODO: put somewhere else */
   /* DEFAULTS FOR COMPARE REGISTERS */
@@ -133,6 +133,26 @@ export default function Plot({ style }: Props) {
             idx: 'TCNT'
           }}
         />
+        {/* ------- */}
+        <Curve
+          {...{
+            idx: 'dtA',
+            name: 'dtA',
+            xScale,
+            yScale: d3.scaleLinear().domain([0, 1]).rangeRound([100, 50]),
+            data: simulation.t.map((t, j) => [t, simulation.deadTimes[0][j]])
+          }}
+        />
+        <Curve
+          {...{
+            idx: 'dtB',
+            name: 'dtB',
+            xScale,
+            yScale: d3.scaleLinear().domain([0, 1]).rangeRound([200, 150]),
+            data: simulation.t.map((t, j) => [t, simulation.deadTimes[1][j]])
+          }}
+        />
+        {/* ------- */}
         {activeOCnXs.map(
           ({ isActiveOutput, i }, k) =>
             isActiveOutput && (
