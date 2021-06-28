@@ -3,6 +3,11 @@
   fill: none;
   stroke: black;
 }
+.plotContainer path.curve-DeadTime-0,
+.plotContainer path.curve-DeadTime-1 {
+  stroke: none;
+  fill: rgba(0, 0, 0, 0.2);
+}
 .plotContainer path.curve-TCNT2 {
   stroke-width: 10px;
   stroke: rgba(255, 0, 0, 0.2);

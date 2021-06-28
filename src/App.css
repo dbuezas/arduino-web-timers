@@ -11,3 +11,6 @@ body {
   overflow: hidden;
   background: #f7f7fa;
 }
+.github-fork-ribbon:before {
+  background-color: #3498ff !important;
+}

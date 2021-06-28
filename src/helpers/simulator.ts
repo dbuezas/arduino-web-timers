@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 import { uniq } from 'lodash'
 
 /*
@@ -6,12 +7,21 @@ PFCPWM == updates at bottom
 but this should be passed from update OCRnX upate time bit value
 */
 type TimerMode = 'Normal' | 'PCPWM' | 'CTC' | 'FPWM' | 'PFCPWM'
-const tcntToCpu = (
-  { tcnt, dir }: { tcnt: number; dir: number },
-  top: number
-) => {
+type Counter = { tcnt: number; dir: number }
+const tcntToCpu = ({ tcnt, dir }: Counter, top: number) => {
   if (dir === -1) return 2 * top - tcnt
   return tcnt
+}
+const offsetCounter = (
+  counter: Counter,
+  offset: number,
+  top: number,
+  timerMode: TimerMode
+) => cpuToTcnt(tcntToCpu(counter, top) + offset, top, timerMode)
+
+const getTimerLength = (top: number, timerMode: TimerMode) => {
+  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
+  return isDoubleSlope ? top * 2 : top
 }
 const cpuToTcnt = (cpu: number, top: number, timerMode: TimerMode) => {
   while (cpu < 0) cpu += top
@@ -29,9 +39,10 @@ const cpuToTcnt = (cpu: number, top: number, timerMode: TimerMode) => {
   if (tcnt < top) return { tcnt, dir: 1 }
   return { tcnt: top * 2 - tcnt, dir: -1 }
 }
+const matches = (a: Counter, b: Counter) => a.tcnt === b.tcnt && a.dir === b.dir
+
 type Props = {
   timerMode: TimerMode
-  maxCpuTicks: number
   prescaler: number
   cpuHz: number
   top: number
@@ -55,7 +66,6 @@ type Props = {
 const TOGGLE = -1
 export default function simTimer({
   timerMode,
-  maxCpuTicks,
   prescaler,
   cpuHz,
   top,
@@ -68,6 +78,7 @@ export default function simTimer({
   deadTimeA,
   deadTimeB
 }: Props) {
+  const prescaledCPUEnd = getTimerLength(top, timerMode) * 4
   const results = {
     t: [] as number[],
     cpu: [] as number[],
@@ -78,6 +89,7 @@ export default function simTimer({
     CAPT: [] as number[],
     deadTimes: [[], []] as number[][]
   }
+  if (isNaN(top)) return results
   let OCnXs = OCRnXs.map(() => 0)
   let deadTimes = [0, 0]
 
@@ -142,19 +154,18 @@ export default function simTimer({
     if (deadTimeA < top)
       actionDeadTimeA.push({
         to: 0,
-        ...cpuToTcnt(tcntToCpu(bClear, top) + deadTimeA, top, timerMode)
+        ...offsetCounter(bClear, deadTimeA, top, timerMode)
       })
     actionDeadTimeB = [{ to: 1, tcnt: bSet.tcnt, dir: bSet.dir }]
     if (deadTimeB < top)
       actionDeadTimeB.push({
         to: 0,
-        ...cpuToTcnt(tcntToCpu(bSet, top) + deadTimeB, top, timerMode)
+        ...offsetCounter(bSet, deadTimeB, top, timerMode)
       })
   }
-  let prescaledCPU = -1
-  let cpu = -1
-  let eventTimes = [
-    // only when TCNT equals these values, something can happen
+  let tcntEventTimes = [
+    // Optimization:
+    // Things happen only when TCNT equals these values.
     // values surounding the events are added to ensure the plot
     // keeps the lines at their values until a change happens
     0,
@@ -163,56 +174,51 @@ export default function simTimer({
     ...actionDeadTimeA.map(({ tcnt }) => tcnt),
     ...actionDeadTimeB.map(({ tcnt }) => tcnt),
     top,
-    top + 1,
-    counterMax,
-    maxCpuTicks - 1,
-    maxCpuTicks
+    counterMax
   ].flatMap((n) => [n - 1, n, n + 1])
-  eventTimes = uniq(eventTimes)
-  while (cpu < maxCpuTicks) {
-    prescaledCPU++
-    cpu += prescaler
-    let distToNext
-    let TCNT = cpuToTcnt(prescaledCPU, top, timerMode).tcnt
-    let dir = cpuToTcnt(prescaledCPU, top, timerMode).dir
 
-    const nextEvents = eventTimes
-      // eslint-disable-next-line no-loop-func
-      .map((n) => (n - TCNT) * dir)
-      .filter((n) => n >= 0)
-    distToNext = Math.min(...nextEvents)
+  let prescaledCPU = -1
+  tcntEventTimes = uniq(tcntEventTimes)
+
+  let counter = {
+    tcnt: -1,
+    dir: 1
+  }
+  while (prescaledCPU < prescaledCPUEnd) {
+    const nextEvents = tcntEventTimes
+      .map((n) => (n - counter.tcnt) * counter.dir)
+      .filter((n) => n > 0)
+    let distToNext = Math.min(...nextEvents)
     let MATCH_Xs = OCRnXs.map(() => 0)
     let OVF = 0
     let CAPT = 0
     prescaledCPU += distToNext
-    cpu += distToNext * prescaler
-    TCNT = cpuToTcnt(prescaledCPU, top, timerMode).tcnt
-    dir = cpuToTcnt(prescaledCPU, top, timerMode).dir
 
-    if (TCNT === 0 && tovTime === 'BOTTOM') OVF = 1
-    if (TCNT === top && tovTime === 'TOP') OVF = 1
-    if (TCNT === counterMax && tovTime === 'MAX') OVF = 1
+    counter = cpuToTcnt(prescaledCPU, top, timerMode)
+    if (counter.tcnt === 0 && tovTime === 'BOTTOM') OVF = 1
+    if (counter.tcnt === top && tovTime === 'TOP') OVF = 1
+    if (counter.tcnt === counterMax && tovTime === 'MAX') OVF = 1
 
     actions.forEach(({ at, matchAt }, i) => {
       at.forEach((action) => {
-        if (TCNT === action.tcnt && dir === action.dir) {
+        if (matches(counter, action)) {
           OCnXs[i] = action.to === TOGGLE ? +!OCnXs[i] : action.to
         }
       })
       ;[actionDeadTimeA, actionDeadTimeB].forEach((at, i) => {
         at.forEach((action) => {
-          if (TCNT === action.tcnt && dir === action.dir) {
+          if (matches(counter, action)) {
             deadTimes[i] = action.to
           }
         })
       })
-      if (TCNT === matchAt) MATCH_Xs[i] = 1
+      if (counter.tcnt === matchAt) MATCH_Xs[i] = 1
     })
 
-    if (TCNT === ICRn) CAPT = 1 //CAPT
-    results.t.push(cpu / cpuHz)
-    results.cpu.push(cpu)
-    results.TCNT.push(TCNT)
+    if (counter.tcnt === ICRn) CAPT = 1
+    results.t.push((prescaledCPU * prescaler) / cpuHz)
+    results.cpu.push(prescaledCPU * prescaler)
+    results.TCNT.push(counter.tcnt)
     results.OVF.push(OVF)
     results.CAPT.push(CAPT)
     for (const i in OCRnXs_behaviour) {

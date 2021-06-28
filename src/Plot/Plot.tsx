@@ -31,7 +31,6 @@ export default function Plot({ style }: Props) {
   const param = {
     timerNr: bitValues.timerNr,
     timerMode: bitValues.timerMode as any,
-    maxCpuTicks: 0,
     prescaler: parseInt(bitValues.clockPrescalerOrSource!),
     cpuHz: bitValues.clockDoubler === 'on' ? 32000000 * 2 : 32000000,
     top: 0,
@@ -67,18 +66,22 @@ export default function Plot({ style }: Props) {
     parseInt(bitValues.topValue!)
   const ocrMax = parseInt(bitValues.topValue!) || counterMax
 
-  param.maxCpuTicks = (param.top + 1) * param.prescaler * 4
-
   /* TODO: put somewhere else */
   /* DEFAULTS FOR COMPARE REGISTERS */
   {
     const prev = usePrevious(IOCR_states)
+    const ioCount = IOCR_states.filter(
+      ({ isDeadTime, isUsed }) => !isDeadTime
+    ).length
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const setReg = useSetRecoilState(userConfigBitState(iocr.name))
       const top = param.top || Number.parseInt(bitValues.counterMax!)
       if (prev && !prev[i].isUsed && iocr.isUsed) {
-        setReg('' + Math.round((top / (IOCR_states.length + 1)) * (i + 1)))
+        const n = iocr.isDeadTime
+          ? Math.sqrt(counterMax) / 2
+          : (top / (ioCount + 1)) * (i + 1)
+        setReg('' + Math.round(n))
       }
       if (prev?.[i].isUsed && !iocr.isUsed) {
         setReg(undefined)
@@ -133,49 +136,52 @@ export default function Plot({ style }: Props) {
             idx: 'TCNT'
           }}
         />
-        {/* ------- */}
-        <Curve
-          {...{
-            idx: 'dtA',
-            name: 'dtA',
-            xScale,
-            yScale: d3.scaleLinear().domain([0, 1]).rangeRound([100, 50]),
-            data: simulation.t.map((t, j) => [t, simulation.deadTimes[0][j]])
-          }}
-        />
-        <Curve
-          {...{
-            idx: 'dtB',
-            name: 'dtB',
-            xScale,
-            yScale: d3.scaleLinear().domain([0, 1]).rangeRound([200, 150]),
-            data: simulation.t.map((t, j) => [t, simulation.deadTimes[1][j]])
-          }}
-        />
-        {/* ------- */}
-        {activeOCnXs.map(
-          ({ isActiveOutput, i }, k) =>
-            isActiveOutput && (
-              <Curve
-                {...{
-                  key: i,
-                  idx: i,
-                  name: 'OC' + param.timerNr + 'ABC'[i],
-                  xScale,
-                  yScale: d3
-                    .scaleLinear()
-                    .domain([0, 1])
-                    .rangeRound([
-                      height_timer + height_ouputCompare * (k + 1),
-                      height_timer +
-                        height_ouputCompare * k +
-                        margin_ouputCompare
-                    ]),
-                  data: simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])
-                }}
-              />
-            )
-        )}
+        {activeOCnXs.map(({ isActiveOutput, i }, k) => {
+          const yScale = d3
+            .scaleLinear()
+            .domain([0, 1])
+            .rangeRound([
+              height_timer + height_ouputCompare * (k + 1),
+              height_timer + height_ouputCompare * k + margin_ouputCompare
+            ])
+          return (
+            <>
+              {isActiveOutput && (
+                <Curve
+                  {...{
+                    key: i,
+                    idx: i,
+                    name: 'OC' + param.timerNr + 'ABC'[i],
+                    xScale,
+                    yScale,
+                    data: simulation.t.map((t, j) => [
+                      t,
+                      simulation.OCnXs[i][j]
+                    ])
+                  }}
+                />
+              )}
+              {param.deadTimeEnable && (
+                <Curve
+                  {...{
+                    idx: 'DeadTime-' + i,
+                    name: '',
+                    xScale,
+                    yScale,
+                    data: [
+                      [0, 0],
+                      ...simulation.t.map((t, j) => [
+                        t,
+                        simulation.deadTimes[i][j]
+                      ]),
+                      [simulation.t[simulation.t.length - 1], 0]
+                    ] as [number, number][]
+                  }}
+                />
+              )}
+            </>
+          )
+        })}
 
         {simulation.MATCH_Xs.flatMap(
           (matches, i) =>

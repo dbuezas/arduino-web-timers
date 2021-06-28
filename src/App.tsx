@@ -13,7 +13,7 @@ import {
   userConfigBitState
 } from './state/state'
 import { setHashFromObject } from './state/useHash'
-
+const gh = 'https://github.com/dbuezas/web-arduino-timers'
 const App = () => {
   const timerIdx = useRecoilValue(userConfigBitState('timer'))
   const mcu = useRecoilValue(userConfigBitState('mcu'))
@@ -22,6 +22,10 @@ const App = () => {
   const isLoading = mcuTimers === undefined || timerIdx === undefined
   return (
     <>
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
+      />
       <div>
         <RegisterLocationState />
         {!isLoading && (
@@ -30,19 +34,19 @@ const App = () => {
               <Navbar appearance="inverse">
                 <Navbar.Header>
                   &nbsp; &nbsp; &nbsp;
-                  <Icon icon="microchip" size="lg" />
+                  <img src="./logo.png" alt="logo" style={{ height: 55.5 }} />
                   <a
                     href="github"
                     style={{ padding: '18px 20px', display: 'inline-block' }}
                   >
-                    TIMERNATOR
+                    Arduino Web Timers
                   </a>
                 </Navbar.Header>
                 <Navbar.Body>
                   <Nav>
                     <Dropdown
                       trigger="hover"
-                      icon={<Icon icon="cog" />}
+                      icon={<Icon icon="microchip" />}
                       title={mcu}
                       placement="bottomEnd"
                     >
@@ -89,6 +93,39 @@ const App = () => {
                   <Nav pullRight>
                     <Dropdown
                       trigger="hover"
+                      icon={<Icon icon="help-o" />}
+                      title="About"
+                      placement="bottomEnd"
+                    >
+                      <Dropdown.Item
+                        href={gh + '/discussions/categories/show-and-tell'}
+                        target="blank"
+                      >
+                        Share what you used this for!
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        href={gh + '/discussions/categories/q-a'}
+                        target="blank"
+                      >
+                        Q&A
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        href={gh + '/discussions/categories/ideas'}
+                        target="blank"
+                      >
+                        Propose a feature
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        href={gh + '/issues/new/choose'}
+                        target="blank"
+                      >
+                        Report a bug
+                      </Dropdown.Item>
+                    </Dropdown>
+                  </Nav>
+                  <Nav pullRight>
+                    <Dropdown
+                      trigger="hover"
                       icon={<Icon icon="cog" />}
                       title={panelMode}
                       placement="bottomEnd"
@@ -121,6 +158,14 @@ const App = () => {
           </Container>
         )}
       </div>
+      <a
+        className="github-fork-ribbon right-bottom fixed"
+        href={gh}
+        data-ribbon="Fork me on GitHub"
+        title="Fork me on GitHub"
+      >
+        Fork me on GitHub
+      </a>
     </>
   )
 }
