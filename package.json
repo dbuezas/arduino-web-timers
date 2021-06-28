@@ -1,7 +1,14 @@
 {
   "name": "arduino-web-timers",
+  "homepage": "https://dbuezas.github.io/arduino-web-timers/",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "author": {
+    "name": "David Buezas",
+    "email": "david.buezas@gmail.com",
+    "url": "https://github.com/dbuezas/arduino-web-timers/"
+  },
   "dependencies": {
     "@react-hook/size": "^2.1.1",
     "@react-hook/throttle": "^2.2.0",
@@ -33,7 +40,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +77,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^1.7.0",
+    "gh-pages": "^3.2.3",
     "prettier": "^2.3.0"
   }
 }
