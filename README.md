@@ -9,8 +9,8 @@ Application to configure and visualise timers. All your changes are stored in th
 
 - Atmel atmega328p (e.g Arduino Uno, Nano, Pro-mini)
 - Logic Green lgt8f328p [checkout this core](https://github.com/dbuezas/lgt8fx)
-
-## Supported timers
+- If people uses this, I can add more (e.g attiny)
+## Supported timers (all!)
 
 - Timer0
 - Timer1
@@ -25,7 +25,7 @@ Application to configure and visualise timers. All your changes are stored in th
 - Phase Correct PWM
 - Frequency Phase Correct PWM
 
-## Supported features
+## Supported features (all!)
 
 - Code Generation
 - Output Compare Match Interrupts
@@ -35,7 +35,9 @@ Application to configure and visualise timers. All your changes are stored in th
 - Clock prescalers
 - External clock
 - Dead Time
-- Timer clock doubling
+- Timer clock speed doubling
+- High current output
+- Port mixing
 - ...
 
 --
