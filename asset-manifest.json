@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/arduino-web-timers/static/css/main.b1114c9e.chunk.css",
+    "main.js": "/arduino-web-timers/static/js/main.e716b02e.chunk.js",
+    "main.js.map": "/arduino-web-timers/static/js/main.e716b02e.chunk.js.map",
+    "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.0cc8aaac.js",
+    "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.0cc8aaac.js.map",
+    "static/css/2.7785af68.chunk.css": "/arduino-web-timers/static/css/2.7785af68.chunk.css",
+    "static/js/2.49bc8608.chunk.js": "/arduino-web-timers/static/js/2.49bc8608.chunk.js",
+    "static/js/2.49bc8608.chunk.js.map": "/arduino-web-timers/static/js/2.49bc8608.chunk.js.map",
+    "static/js/3.bc2255bd.chunk.js": "/arduino-web-timers/static/js/3.bc2255bd.chunk.js",
+    "static/js/3.bc2255bd.chunk.js.map": "/arduino-web-timers/static/js/3.bc2255bd.chunk.js.map",
+    "index.html": "/arduino-web-timers/index.html",
+    "static/css/2.7785af68.chunk.css.map": "/arduino-web-timers/static/css/2.7785af68.chunk.css.map",
+    "static/css/main.b1114c9e.chunk.css.map": "/arduino-web-timers/static/css/main.b1114c9e.chunk.css.map",
+    "static/js/2.49bc8608.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.49bc8608.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.0cc8aaac.js",
+    "static/css/2.7785af68.chunk.css",
+    "static/js/2.49bc8608.chunk.js",
+    "static/css/main.b1114c9e.chunk.css",
+    "static/js/main.e716b02e.chunk.js"
+  ]
+}
