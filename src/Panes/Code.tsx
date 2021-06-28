@@ -8,6 +8,17 @@ import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useRef, useState } from 'react'
 
+function Link() {
+  const [url, setUrl] = useState(window.location.href)
+  useEffect(() => {
+    const handleUrlChange = () => {
+      setUrl(window.location.href)
+    }
+    window.addEventListener('hashchange', handleUrlChange)
+    return () => window.removeEventListener('hashchange', handleUrlChange)
+  }, [])
+  return <>{'/* ' + url + ' */'}</>
+}
 export default function Code() {
   const codeContainerRef = useRef<HTMLPreElement>(null)
   return (
@@ -16,7 +27,9 @@ export default function Code() {
       <pre style={{ margin: 0 }} ref={codeContainerRef}>
         {`\
 void setup(){
-  /* ${window.location.href} */
+  `}
+        <Link />
+        {`
   noInterrupts();
 `}
         <TimerConfgCode />
