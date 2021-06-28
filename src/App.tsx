@@ -13,7 +13,7 @@ import {
   userConfigBitState
 } from './state/state'
 import { setHashFromObject } from './state/useHash'
-const gh = 'https://github.com/dbuezas/web-arduino-timers'
+const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
   const timerIdx = useRecoilValue(userConfigBitState('timer'))
   const mcu = useRecoilValue(userConfigBitState('mcu'))
