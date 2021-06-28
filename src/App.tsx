@@ -33,14 +33,26 @@ const App = () => {
             <Header>
               <Navbar appearance="inverse">
                 <Navbar.Header>
-                  &nbsp; &nbsp; &nbsp;
-                  <img src="./logo.png" alt="logo" style={{ height: 55.5 }} />
-                  <a
-                    href="github"
-                    style={{ padding: '18px 20px', display: 'inline-block' }}
-                  >
-                    Arduino Web Timers
-                  </a>
+                  &nbsp;
+                  <span>
+                    <img
+                      src="./logo.png"
+                      alt="logo"
+                      style={{ height: 55.5, float: 'left' }}
+                    />
+                    &nbsp;
+                    <span
+                      style={{
+                        float: 'left',
+                        marginTop: 7,
+                        textAlign: 'center'
+                      }}
+                    >
+                      ARDUINO WEB
+                      <br />
+                      TIMERS
+                    </span>
+                  </span>
                 </Navbar.Header>
                 <Navbar.Body>
                   <Nav>
@@ -122,8 +134,6 @@ const App = () => {
                         Report a bug
                       </Dropdown.Item>
                     </Dropdown>
-                  </Nav>
-                  <Nav pullRight>
                     <Dropdown
                       trigger="hover"
                       icon={<Icon icon="cog" />}
@@ -142,6 +152,15 @@ const App = () => {
                       ))}
                     </Dropdown>
                   </Nav>
+                  <iframe
+                    src="https://ghbtns.com/github-btn.html?user=dbuezas&repo=arduino-web-timers&type=star&count=true"
+                    frameBorder="0"
+                    scrolling="0"
+                    width="150"
+                    height="20"
+                    title="GitHub"
+                    style={{ marginTop: 18, float: 'right' }}
+                  ></iframe>
                 </Navbar.Body>
               </Navbar>
             </Header>
