@@ -105,6 +105,23 @@ const App = () => {
                   <Nav pullRight>
                     <Dropdown
                       trigger="hover"
+                      icon={<Icon icon="cog" />}
+                      title={panelMode}
+                      placement="bottomEnd"
+                    >
+                      {map(PanelModes, (mode) => (
+                        <Dropdown.Item
+                          // active={mode === panelMode}
+                          onSelect={setPanelMode}
+                          eventKey={mode}
+                          key={mode}
+                        >
+                          {mode}
+                        </Dropdown.Item>
+                      ))}
+                    </Dropdown>
+                    <Dropdown
+                      trigger="hover"
                       icon={<Icon icon="help-o" />}
                       title="About"
                       placement="bottomEnd"
@@ -133,23 +150,6 @@ const App = () => {
                       >
                         Report a bug
                       </Dropdown.Item>
-                    </Dropdown>
-                    <Dropdown
-                      trigger="hover"
-                      icon={<Icon icon="cog" />}
-                      title={panelMode}
-                      placement="bottomEnd"
-                    >
-                      {map(PanelModes, (mode) => (
-                        <Dropdown.Item
-                          // active={mode === panelMode}
-                          onSelect={setPanelMode}
-                          eventKey={mode}
-                          key={mode}
-                        >
-                          {mode}
-                        </Dropdown.Item>
-                      ))}
                     </Dropdown>
                   </Nav>
                   <iframe
