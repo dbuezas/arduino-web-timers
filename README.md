@@ -1,4 +1,40 @@
-# Getting Started with Create React App
+# Arduino Web Timers
+[Use it now: https://dbuezas.github.io/arduino-web-timers/](https://dbuezas.github.io/arduino-web-timers/) 
+<img src="./public/screenshot.png" alt="" width="800"/>
+
+Application to configure and visualise timers. All your changes are stored in the url, bookmark and share configured timers!
+
+## Supported microcontrollers:
+* Atmel atmega328p  (e.g Arduino Uno, Nano, Pro-mini)
+* Logic Green lgt8f328p [checkout this core](https://github.com/dbuezas/lgt8fx)
+
+## Supported timers
+* Timer0
+* Timer1
+* Timer2
+* Timer3
+
+## Supported modes (all!)
+* Normal 
+* Fast PWM 
+* CTC 
+* Phase Correct PWM
+* Frequency Phase Correct PWM
+
+## Supported features
+* Code Generation
+* Output Compare Match Interrupts
+* Input Compare Interrupt
+* All output generation modes
+* Select output pins
+* Clock prescalers
+* External clock
+* Dead Time
+* Timer clock doubling
+* ...
+
+--
+# The react stuff
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
