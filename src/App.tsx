@@ -128,25 +128,25 @@ const App = () => {
                     >
                       <Dropdown.Item
                         href={gh + '/discussions/categories/show-and-tell'}
-                        target="blank"
+                        target="_blank"
                       >
                         Share what you used this for!
                       </Dropdown.Item>
                       <Dropdown.Item
                         href={gh + '/discussions/categories/q-a'}
-                        target="blank"
+                        target="_blank"
                       >
                         Q&A
                       </Dropdown.Item>
                       <Dropdown.Item
                         href={gh + '/discussions/categories/ideas'}
-                        target="blank"
+                        target="_blank"
                       >
                         Propose a feature
                       </Dropdown.Item>
                       <Dropdown.Item
                         href={gh + '/issues/new/choose'}
-                        target="blank"
+                        target="_blank"
                       >
                         Report a bug
                       </Dropdown.Item>
@@ -156,7 +156,7 @@ const App = () => {
                     src="https://ghbtns.com/github-btn.html?user=dbuezas&repo=arduino-web-timers&type=star&count=true"
                     frameBorder="0"
                     scrolling="0"
-                    width="150"
+                    width="100"
                     height="20"
                     title="GitHub"
                     style={{ marginTop: 18, float: 'right' }}
