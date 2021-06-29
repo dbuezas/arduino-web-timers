@@ -7,8 +7,9 @@ import { suggestedAssignmentState, suggestedBitAssignmentState } from './state'
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useRef, useState } from 'react'
+const omitRegisterZeros = true
 
-function Link() {
+function LinkToThisPage() {
   const [url, setUrl] = useState(window.location.href)
   useEffect(() => {
     const handleUrlChange = () => {
@@ -17,7 +18,7 @@ function Link() {
     window.addEventListener('hashchange', handleUrlChange)
     return () => window.removeEventListener('hashchange', handleUrlChange)
   }, [])
-  return <>{'/* ' + url + ' */'}</>
+  return <>{'/* ' + url + ' */\n'}</>
 }
 export default function Code() {
   const codeContainerRef = useRef<HTMLPreElement>(null)
@@ -28,16 +29,12 @@ export default function Code() {
         {`\
 void setup(){
   `}
-        <Link />
-        {`
-  noInterrupts();
-`}
+        <LinkToThisPage />
+        {`  noInterrupts();\n`}
         <TimerConfgCode />
-        {'\n'}
         <CompareRegsCode />
-        {'\n'}
-        {`\
-  interrupts();
+        <PortDir />
+        {`  interrupts();
 }
 `}
         <Interrupts />
@@ -45,8 +42,16 @@ void setup(){
     </>
   )
 }
+const PortDir = () => {
+  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
+  const code = getAllCompareRegTraits(suggestedConfig)
+    .filter(({ isActiveOutput }) => isActiveOutput)
+    .flatMap(({ pinModeCode }) => pinModeCode)
+  let str = code.join('\n  ')
+  if (str.length) str = '  ' + str + '\n'
+  return <>{str}</>
+}
 const TimerConfgCode = () => {
-  const omitRegisterZeros = true
   const omitBitZeros = true
   const { registers } = useRecoilValue(timerState)
   const code = map(registers, (bitNames, regName) => {
@@ -67,21 +72,19 @@ const TimerConfgCode = () => {
   })
     .flat()
     .filter(isTruthy)
-
-  return <>{code.join('\n')}</>
+  let str = code.join('\n')
+  if (str.length) str += '\n'
+  return <>{str}</>
 }
 function CompareRegsCode() {
   const suggestedConfig = useRecoilValue(suggestedAssignmentState)
 
-  const compareRegsCode = getAllCompareRegTraits(suggestedConfig)
+  const code = getAllCompareRegTraits(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
     .map(({ code }) => code)
-  return (
-    <>
-      {'  '}
-      {compareRegsCode.join('\n  ')}
-    </>
-  )
+  let str = code.join('\n  ')
+  if (str.length) str = '  ' + str + '\n'
+  return <>{str}</>
 }
 function Interrupts() {
   const interruptBitNames = [
@@ -94,7 +97,7 @@ function Interrupts() {
   const interruptCommonSignature = useRecoilValue(
     suggestedBitAssignmentState('InterruptCommonSignature')
   )
-  let interrupts = interruptBitNames
+  let code = interruptBitNames
     .map(
       (bitName) =>
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -102,19 +105,16 @@ function Interrupts() {
     )
     .filter((bitValue) => bitValue !== '//nocode')
 
-  if (interrupts.length && interruptCommonSignature) {
-    interrupts = [
+  if (code.length && interruptCommonSignature) {
+    code = [
       interruptCommonSignature + ' {',
-      ...interrupts.map((code) => '    ' + code.split('\n').join('\n    ')),
+      ...code.map((code) => '    ' + code.split('\n').join('\n    ')),
       '}'
     ]
   }
-  return (
-    <>
-      {interrupts.join('\n')}
-      {'\n'}
-    </>
-  )
+  let str = code.join('\n')
+  if (str.length) str += '\n'
+  return <>{str}</>
 }
 
 const CopyToClipboard = React.memo(

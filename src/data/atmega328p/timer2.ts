@@ -93,6 +93,14 @@ TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF
 0	off  	//nocode
 1	on	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}
 `),
+  tsv(`
+OCnA_OutputPort
+B3
+`),
+  tsv(`
+OCnB_OutputPort
+D3
+`),
   // [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR2B: Math.round((255 * 1) / 3) + '' }]
   [{ OCR2A: '' }],

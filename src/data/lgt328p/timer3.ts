@@ -152,28 +152,27 @@ ICNC3	InputCaptureNoiseSupression
 `),
   tsv(`
 C3AC	WCE	OCnA_OutputPort
-0	0	PF1
-0	1	PF1
-1	1	AC0P
+0	0	F1
+0	1	F1
+1	1	D6
 `),
   tsv(`
 OCnB_OutputPort
-PF2
-PF3-broken
+F2
 `),
   tsv(`
 OCnC_OutputPort
-PF3
+F3
 `),
   tsv(`
 HDR2	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
-1	PF1	80mA
+1	F1	80mA
 `),
   tsv(`
 HDR3	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
-1	PF2	80mA
+1	F2	80mA
 `),
   tsv(`
 OCnC_OutputCurrent

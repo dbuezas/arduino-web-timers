@@ -89,8 +89,8 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 3	0	1	1	64	N/A
 4	1	0	0	256	N/A
 5	1	0	1	1024	N/A
-6	1	1	0	external clock falling edge	PD5
-7	1	1	1	external clock rising edge	PD5
+6	1	1	0	external clock falling edge	D5
+7	1	1	1	external clock rising edge	D5
 0	0	0	0	disconnect	N/A
 `),
   tsv(`
@@ -123,6 +123,14 @@ ICNC1	InputCaptureNoiseSupression
 ICES1	InputCaptureEdgeSelect
 0	falling
 1	rising
+`),
+  tsv(`
+OCnB_OutputPort
+B2
+`),
+  tsv(`
+OCnA_OutputPort
+B1
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],

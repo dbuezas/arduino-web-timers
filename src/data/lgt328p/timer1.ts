@@ -89,8 +89,8 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 3	0	1	1	64	N/A
 4	1	0	0	256	N/A
 5	1	0	1	1024	N/A
-6	1	1	0	external clock falling edge	PD5
-7	1	1	1	external clock rising edge	PD5
+6	1	1	0	external clock falling edge	D5
+7	1	1	1	external clock rising edge	D5
 0	0	0	0	disconnect	N/A
 `),
   tsv(`
@@ -132,25 +132,25 @@ F2XEN	TC2XS1	clockDoubler	ExternalClockInput
 `),
   tsv(`
 C1BF4	WCE	OCnB_OutputPort
-0	0	PB2
-0	1	PB2
-1	1	PF4
+0	0	B2
+0	1	B2
+1	1	F4
 `),
   tsv(`
 C1AF5	WCE	OCnA_OutputPort
-0	0	PB1
-0	1	PB1
-1	1	PF5
+0	0	B1
+0	1	B1
+1	1	F5
 `),
   tsv(`
 HDR4	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
-1	PF4	80mA
+1	F4	80mA
 `),
   tsv(`
 HDR5	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
-1	PF5	80mA
+1	F5	80mA
 `),
   tsv(`
 DTEN1	DeadTime

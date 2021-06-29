@@ -73,8 +73,8 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 3	0	1	1	64	N/A
 4	1	0	0	256	N/A
 5	1	0	1	1024	N/A
-6	1	1	0	external clock falling edge	PD4
-7	1	1	1	external clock rising edge	PD4
+6	1	1	0	external clock falling edge	D4
+7	1	1	1	external clock rising edge	D4
 0	0	0	0	disconnect	N/A
 `),
   tsv(`
@@ -92,6 +92,14 @@ OCIE0B	interruptB	interruptVectorCodeB
 TOIE0	InterruptOnTimerOverflow	interruptVectorCodeOVF
 0	off	//nocode
 1	on	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}
+`),
+  tsv(`
+OCnA_OutputPort
+D6
+`),
+  tsv(`
+OCnB_OutputPort
+D5
 `),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]
