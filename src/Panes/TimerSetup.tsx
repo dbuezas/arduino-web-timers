@@ -173,7 +173,8 @@ function TimerSetup() {
           bottom: 0,
           flexGrow: 0,
           borderTop: '1px solid lightgrey',
-          height: 200
+          height: 200,
+          touchAction: 'none'
         }}
       >
         <Plot style={{ minHeight: 300 }} />

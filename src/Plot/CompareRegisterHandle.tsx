@@ -1,6 +1,7 @@
 import {
   forwardRef,
   MouseEventHandler,
+  useCallback,
   useImperativeHandle,
   useState
 } from 'react'
@@ -41,16 +42,28 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
         setDraggingTV(false)
       },
       onMouseMove(e) {
-        // onMouseMove(e)
         if (draggingTV) {
-          let scaled = yScale.invert(e.nativeEvent.offsetY)
+          const evt = e.nativeEvent as any
+          const y = evt.pageY || evt.targetTouches[0].clientY
+          const targetEl = evt.path.find((el: Element) => el.tagName === 'svg')
+          if (!targetEl) return
+          const targetY = targetEl.getBoundingClientRect().y
+          const offsetY = y - targetY
+          let scaled = yScale.invert(offsetY)
           scaled = constrain(Math.round(scaled), ...yExtent)
           setCompareRegisterValue(scaled)
         }
       }
     }))
     let scaledY = yScale(constrain(compareRegisterValue, ...yExtent))
-
+    const onMouseDown = useCallback(
+      (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setDraggingTV(true)
+      },
+      [setDraggingTV]
+    )
     return (
       <>
         <line
@@ -62,11 +75,8 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
         ></line>
         <line
           className={`OCRHandle ${name}`}
-          onMouseDown={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setDraggingTV(true)
-          }}
+          onMouseDown={onMouseDown}
+          onTouchStart={onMouseDown}
           x1={margin.left}
           x2={width}
           // x2={width - margin.right}
@@ -76,11 +86,8 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
         <text
           className={`OCRText ${name}`}
           fill="currentColor"
-          onMouseDown={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setDraggingTV(true)
-          }}
+          onMouseDown={onMouseDown}
+          onTouchStart={onMouseDown}
           y={scaledY}
           x={width - margin.right}
           dy=".32em"

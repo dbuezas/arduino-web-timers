@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import useSize from '@react-hook/size'
 
 // import TriggerVoltageHandle, { TriggerVoltageRef } from './TriggerVoltageHandle'
@@ -109,21 +109,26 @@ export default function Plot({ style }: Props) {
   useEffect(() => {
     const handleMouseUp = (e: Event) => {
       IOCR_states.forEach(({ ref }) => ref.current?.onMouseUp(undefined as any))
-      e.preventDefault()
+      console.log('up')
+      // e.preventDefault()
     }
     document.addEventListener('mouseup', handleMouseUp)
-    return () => document.removeEventListener('mouseup', handleMouseUp)
+    document.addEventListener('touchend', handleMouseUp)
+    return () => {
+      document.removeEventListener('mouseup', handleMouseUp)
+      document.removeEventListener('touchend', handleMouseUp)
+    }
   }, [IOCR_states])
-
+  const onMouseMove = useCallback(
+    (e) => {
+      IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(e))
+      // e.preventDefault()
+    },
+    [IOCR_states]
+  )
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <svg
-        className="plot"
-        onMouseMove={(e) => {
-          IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(e))
-          e.preventDefault()
-        }}
-      >
+      <svg className="plot" onMouseMove={onMouseMove} onTouchMove={onMouseMove}>
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
         <Curve

@@ -57,7 +57,7 @@ const App = () => {
                 <Navbar.Body>
                   <Nav>
                     <Dropdown
-                      trigger="hover"
+                      trigger="click"
                       icon={<Icon icon="microchip" />}
                       title={mcu}
                       placement="bottomEnd"
@@ -104,7 +104,7 @@ const App = () => {
                   </Nav>
                   <Nav pullRight>
                     <Dropdown
-                      trigger="hover"
+                      trigger="click"
                       icon={<Icon icon="cog" />}
                       title={panelMode}
                       placement="bottomEnd"
@@ -121,7 +121,7 @@ const App = () => {
                       ))}
                     </Dropdown>
                     <Dropdown
-                      trigger="hover"
+                      trigger="click"
                       icon={<Icon icon="help-o" />}
                       title="About"
                       placement="bottomEnd"
