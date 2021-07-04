@@ -7,15 +7,16 @@ import {
 } from 'react'
 import { margin } from './margin'
 import './CompareRegisterHandle.css'
+import { ScaleLinear } from 'd3-scale'
 
 export type CompareRegisterHandleRef = {
   onMouseUp: MouseEventHandler
-  onMouseMove: MouseEventHandler
+  onMouseMove: (n: number, e: MouseEvent | TouchEvent) => void
 }
 type Props = {
   width: number
   yExtent: [number, number]
-  yScale: d3.ScaleLinear<number, number>
+  yScale: ScaleLinear<number, number>
   setCompareRegisterValue: (n: number) => void
   compareRegisterValue: number
   name: string
@@ -41,15 +42,10 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
       onMouseUp() {
         setDraggingTV(false)
       },
-      onMouseMove(e) {
+      onMouseMove(y, e) {
+        e.preventDefault()
         if (draggingTV) {
-          const evt = e.nativeEvent as any
-          const y = evt.pageY || evt.targetTouches[0].clientY
-          const targetEl = evt.path.find((el: Element) => el.tagName === 'svg')
-          if (!targetEl) return
-          const targetY = targetEl.getBoundingClientRect().y
-          const offsetY = y - targetY
-          let scaled = yScale.invert(offsetY)
+          let scaled = yScale.invert(y)
           scaled = constrain(Math.round(scaled), ...yExtent)
           setCompareRegisterValue(scaled)
         }
@@ -58,8 +54,8 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
     let scaledY = yScale(constrain(compareRegisterValue, ...yExtent))
     const onMouseDown = useCallback(
       (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+        // e.preventDefault()
+        // e.stopPropagation()
         setDraggingTV(true)
       },
       [setDraggingTV]
@@ -79,7 +75,6 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
           onTouchStart={onMouseDown}
           x1={margin.left}
           x2={width}
-          // x2={width - margin.right}
           y1={scaledY}
           y2={scaledY}
         ></line>

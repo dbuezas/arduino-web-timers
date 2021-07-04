@@ -1,8 +1,6 @@
-import * as d3 from 'd3'
+import { ScaleLinear, ticks, select, axisBottom } from 'd3'
 import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
-import { Simulation } from '../helpers/simulator'
-// @ts-ignore
 // import useD3Transition from 'use-d3-transition'
 
 type ohNoItIsAny = any
@@ -34,23 +32,22 @@ export function formatTime(s: ohNoItIsAny) {
 
 type Props = {
   height: number
-  xScale: d3.ScaleLinear<number, number>
+  xScale: ScaleLinear<number, number>
 }
 export default function XAxis({ height, xScale }: Props) {
   const nodeRef = useRef<SVGSVGElement>(null)
   const gEl = nodeRef.current
   useLayoutEffect(() => {
     if (!gEl) return
-    const xTicks = d3.ticks(xScale.domain()[0], xScale.domain()[1], 10)
+    const xTicks = ticks(xScale.domain()[0], xScale.domain()[1], 10)
 
-    d3.select(gEl).call((g) => {
+    select(gEl).call((g) => {
       g.attr('transform', `translate(0,${height - margin.bottom})`)
         // .transition()
-        // .ease(d3.easeLinear)
+        // .ease(easeLinear)
         // .duration(100)
         .call(
-          d3
-            .axisBottom(xScale)
+          axisBottom(xScale)
             .tickValues(xTicks)
             .tickPadding(10)
             .tickSize(-height + margin.top + margin.bottom)

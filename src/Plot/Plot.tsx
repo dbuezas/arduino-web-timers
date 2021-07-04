@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import useSize from '@react-hook/size'
 
-// import TriggerVoltageHandle, { TriggerVoltageRef } from './TriggerVoltageHandle'
 import XAxis from './XAxis'
 import YAxis from './YAxis'
-import * as d3 from 'd3'
+import { scaleLinear, extent } from 'd3'
 import { margin } from './margin'
 import simTimer from '../helpers/simulator'
 
@@ -98,37 +97,44 @@ export default function Plot({ style }: Props) {
   const activeOCnXs = IOCR_states.filter(({ isActiveOutput }) => isActiveOutput)
   const height_timer =
     height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
-  const xScale = d3
-    .scaleLinear()
-    .domain(d3.extent(simulation.t) as [number, number])
+  const xScale = scaleLinear()
+    .domain(extent(simulation.t) as [number, number])
     .range([margin.left, width - margin.right])
-  const yScale = d3
-    .scaleLinear()
+  const yScale = scaleLinear()
     .domain([0, ocrMax])
     .rangeRound([height_timer - margin.bottom, margin.top])
+
   useEffect(() => {
+    const containerEl = containerRef.current
+
     const handleMouseUp = (e: Event) => {
       IOCR_states.forEach(({ ref }) => ref.current?.onMouseUp(undefined as any))
-      console.log('up')
-      // e.preventDefault()
+    }
+    const handleMouseMove = (e: MouseEvent | TouchEvent) => {
+      if (!containerEl) return
+      let y = e instanceof MouseEvent ? e.clientY : e.targetTouches[0].clientY
+      const targetY = containerEl.getBoundingClientRect().y
+      const offsetY = y - targetY
+      IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(offsetY, e))
     }
     document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('touchend', handleMouseUp)
+    containerEl?.addEventListener('mousemove', handleMouseMove, {
+      passive: false
+    })
+    containerEl?.addEventListener('touchmove', handleMouseMove, {
+      passive: false
+    })
     return () => {
       document.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('touchend', handleMouseUp)
+      containerEl?.removeEventListener('mousemove', handleMouseMove)
+      containerEl?.removeEventListener('touchmove', handleMouseMove)
     }
   }, [IOCR_states])
-  const onMouseMove = useCallback(
-    (e) => {
-      IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(e))
-      // e.preventDefault()
-    },
-    [IOCR_states]
-  )
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <svg className="plot" onMouseMove={onMouseMove} onTouchMove={onMouseMove}>
+      <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
         <Curve
@@ -138,12 +144,12 @@ export default function Plot({ style }: Props) {
             width,
             height: height_timer,
             data: simulation.t.map((t, i) => [t, simulation.TCNT[i]]),
-            idx: 'TCNT'
+            idx: 'TCNT',
+            key: 'TCNT'
           }}
         />
         {activeOCnXs.map(({ isActiveOutput, i }, k) => {
-          const yScale = d3
-            .scaleLinear()
+          const yScale = scaleLinear()
             .domain([0, 1])
             .rangeRound([
               height_timer + height_ouputCompare * (k + 1),
@@ -154,7 +160,7 @@ export default function Plot({ style }: Props) {
               {isActiveOutput && (
                 <Curve
                   {...{
-                    key: i,
+                    key: 'OC' + i,
                     idx: i,
                     name: 'OC' + param.timerNr + 'ABC'[i],
                     xScale,
@@ -169,6 +175,7 @@ export default function Plot({ style }: Props) {
               {param.deadTimeEnable && (
                 <Curve
                   {...{
+                    key: 'DeadTime-' + i,
                     idx: 'DeadTime-' + i,
                     name: '',
                     xScale,
@@ -193,7 +200,7 @@ export default function Plot({ style }: Props) {
             IOCR_states[i].isInterrupt && (
               <InterruptArrow
                 {...{
-                  key: i,
+                  key: i + 'interrupt',
                   flagValues: matches,
                   TCNT: simulation.TCNT,
                   t: simulation.t,
@@ -212,7 +219,8 @@ export default function Plot({ style }: Props) {
               t: simulation.t,
               xScale,
               yScale,
-              label: 'Capture interrupt'
+              label: 'Capture interrupt',
+              key: 'Capture interrupt'
             }}
           />
         )}
@@ -224,7 +232,8 @@ export default function Plot({ style }: Props) {
               t: simulation.t,
               xScale,
               yScale,
-              label: 'Overflow interrupt'
+              label: 'Overflow interrupt',
+              key: 'Overflow interrupt'
             }}
           />
         )}
@@ -237,8 +246,7 @@ export default function Plot({ style }: Props) {
           const yExtent2: [number, number] = name.startsWith('DTR')
             ? [0, Math.sqrt(counterMax + 1) - 1]
             : [0, ocrMax]
-          const yScale = d3
-            .scaleLinear()
+          const yScale = scaleLinear()
             .domain(yExtent2)
             .rangeRound([height_timer - margin.bottom, margin.top])
           return (

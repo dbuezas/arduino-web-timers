@@ -1,23 +1,22 @@
-import * as d3 from 'd3'
+import { ScaleLinear, line } from 'd3'
 import { margin } from './margin'
 
 import './Curve.css'
 
 type CurvesProps = {
   data: [number, number][]
-  xScale: d3.ScaleLinear<number, number>
-  yScale: d3.ScaleLinear<number, number>
+  xScale: ScaleLinear<number, number>
+  yScale: ScaleLinear<number, number>
   idx: any
   name?: string
 }
 
 export function Curve({ xScale, yScale, data, idx, name }: CurvesProps) {
-  const line = d3
-    .line<[number, number]>()
+  const theLine = line<[number, number]>()
     .x(([t, datum]) => xScale(t)!)
     .y(([t, datum]) => yScale(datum)!)
 
-  const d = line(data)
+  const d = theLine(data)
   return (
     <>
       <path className={`curve-${idx}`} d={d || undefined}></path>

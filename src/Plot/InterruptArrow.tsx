@@ -1,12 +1,12 @@
-import * as d3 from 'd3'
+import { ScaleLinear, line } from 'd3'
 
 type Props = {
   label: string
   flagValues: number[]
   t: number[]
   TCNT: number[]
-  xScale: d3.ScaleLinear<number, number>
-  yScale: d3.ScaleLinear<number, number>
+  xScale: ScaleLinear<number, number>
+  yScale: ScaleLinear<number, number>
 }
 export default function InterruptArrow({
   label,
@@ -27,7 +27,7 @@ export default function InterruptArrow({
             >
               <path
                 d={
-                  d3.line()([
+                  line()([
                     [-3, -5],
                     [0, 0],
                     [3, -5],
