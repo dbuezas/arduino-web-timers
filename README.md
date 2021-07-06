@@ -37,7 +37,7 @@ Application to configure and visualise timers. All your changes are stored in th
 - Dead Time
 - Timer clock speed doubling
 - High current output
-- Port mixing
+- Port muxing
 - ...
 
 --
