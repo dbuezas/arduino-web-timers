@@ -8,7 +8,7 @@ const getHashParams = () => {
 const setFullHash = (hash: string) => {
   const currentHash = window.location.hash.slice(1)
   if (hash !== currentHash) {
-    window.location.replace(`${window.location.pathname}#${hash}`)
+    window.location.hash = hash
   }
 }
 export const setHashFromObject = (
@@ -34,12 +34,19 @@ export const useHashParams = () => {
   const [hashParams, setHashParams] = useState<URLSearchParams>(
     new URLSearchParams(window.location.hash.slice(1))
   )
+  // console.log('upd', hashParams.toString())
   useEffect(() => {
+    let lastState = ''
     const handleHashChange = () => {
-      setHashParams(getHashParams())
+      const hash = getHashParams()
+      const newState = hash.toString()
+      if (lastState === newState) return
+      lastState = newState
+      setHashParams(hash) //  your update function returns the exact same value as the current state, the subsequent rerender will be skipped completely.
+      // console.log(newState)
     }
 
-    handleHashChange()
+    // handleHashChange()
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])

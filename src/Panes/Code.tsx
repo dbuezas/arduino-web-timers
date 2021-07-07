@@ -11,13 +11,21 @@ const omitRegisterZeros = true
 
 function LinkToThisPage() {
   const [url, setUrl] = useState(window.location.href)
+
   useEffect(() => {
-    const handleUrlChange = () => {
-      setUrl(window.location.href)
+    let lastUrl = ''
+    const handleHashChange = () => {
+      const newUrl = window.location.href
+      if (lastUrl === newUrl) return
+      lastUrl = newUrl
+      setUrl(newUrl)
     }
-    window.addEventListener('hashchange', handleUrlChange)
-    return () => window.removeEventListener('hashchange', handleUrlChange)
+
+    // handleHashChange()
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
+
   return <>{'/* ' + url + ' */\n'}</>
 }
 export default function Code() {

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import useSize from '@react-hook/size'
 
 import XAxis from './XAxis'
@@ -104,6 +104,11 @@ export default function Plot({ style }: Props) {
     .domain([0, ocrMax])
     .rangeRound([height_timer - margin.bottom, margin.top])
 
+  const targetY = useMemo(
+    () => containerRef.current?.getBoundingClientRect().y || 0,
+    [width, height_, containerRef.current]
+  )
+
   useEffect(() => {
     const containerEl = containerRef.current
 
@@ -113,7 +118,6 @@ export default function Plot({ style }: Props) {
     const handleMouseMove = (e: MouseEvent | TouchEvent) => {
       if (!containerEl) return
       let y = e instanceof MouseEvent ? e.clientY : e.targetTouches[0].clientY
-      const targetY = containerEl.getBoundingClientRect().y
       const offsetY = y - targetY
       IOCR_states.forEach(({ ref }) => ref.current?.onMouseMove(offsetY, e))
     }
@@ -131,7 +135,7 @@ export default function Plot({ style }: Props) {
       containerEl?.removeEventListener('mousemove', handleMouseMove)
       containerEl?.removeEventListener('touchmove', handleMouseMove)
     }
-  }, [IOCR_states])
+  }, [IOCR_states, targetY])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
       <svg className="plot">

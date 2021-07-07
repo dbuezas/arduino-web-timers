@@ -45,9 +45,11 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
       onMouseMove(y, e) {
         e.preventDefault()
         if (draggingTV) {
-          let scaled = yScale.invert(y)
-          scaled = constrain(Math.round(scaled), ...yExtent)
-          setCompareRegisterValue(scaled)
+          requestAnimationFrame(() => {
+            let scaled = yScale.invert(y)
+            scaled = constrain(Math.round(scaled), ...yExtent)
+            setCompareRegisterValue(scaled)
+          })
         }
       }
     }))
