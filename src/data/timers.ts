@@ -78,15 +78,31 @@ export const bitValueDescriptions: Record<string, Record<string, string>> = {
     ICR3: 'If ICR3 is not used as top, the input capture pin (ICP3) is PF4.\nIf ICR3 is used as top, ICP3 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.'
   },
   OCnA_OutputPort: {
-    PF1: 'Wired to PD1 in QFP32',
-    AC0P: 'Wired to PD6 in QFP32 and SSOP20'
+    'E4+C0': 'Both at the same time',
+    AC0P: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	15 \nQFP32:	D6	10 \nSSOP20:	D6	9',
+    B1: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	19 \nQFP32:	D9	13 \nSSOP20:	D9	11',
+    B3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	23 \nQFP32:	D11	15 \nSSOP20:	D11	12',
+    C0: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	35 \nQFP32:	A0	25 \nSSOP20:	A0	17',
+    D3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	1 \nQFP32:	D3	1 \nSSOP20:	D3	3',
+    D6: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	14 \nQFP32:	D6	10 \nSSOP20:	D6	9',
+    E4: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	3 \nQFP32:	-	3 \nSSOP20:	-	-',
+    F1: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	46 \nQFP32:	D1	31 \nSSOP20:	D1	1',
+    F5: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	9 \nQFP32:	-	6 \nSSOP20:	D?	6',
+    F6: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	10 \nQFP32:	-	- \nSSOP20:	-	-',
+    F7: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	17 \nQFP32:	-	- \nSSOP20:	D7	10'
   },
   OCnB_OutputPort: {
-    PF2: 'Wired to PD2 in QFP32 and SSOP20',
-    'PF3-broken':
-      "DONT USE, I can't find the way to redirect output B of Timer3 to this pin in the datasheet"
+    F2: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	48 \nQFP32:	D2	32 \nSSOP20:	D2	2',
+    F7: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	17 \nQFP32:	-	- \nSSOP20:	D7	10',
+    D3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	1 \nQFP32:	D3	1 \nSSOP20:	D3	3',
+    F4: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	5 \nQFP32:	-	5 \nSSOP20:	D3	3',
+    B2: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	20 \nQFP32:	D10	14 \nSSOP20:	D10	12',
+    F3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	4 \nQFP32:	-	- \nSSOP20:	-	-',
+    D5: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	13 \nQFP32:	D5	9 \nSSOP20:	D5	8'
   },
-  OCnC_OutputPort: {},
+  OCnC_OutputPort: {
+    F3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	4 \nQFP32:	-	- \nSSOP20:	-	-'
+  },
   updateOcrMoment: {
     TOP: 'OCR registers are updated whenever the timer reaches its top. Can be a fixed number or the value of some register',
     BOTTOM: 'OCR registers are updated when the timer resets to zero',

@@ -52,3 +52,8 @@
 .TimerSetup p {
   font-weight: bold;
 }
+.rs-tooltip * {
+  white-space: pre-wrap;
+  text-align: left !important;
+  font-family: monospace;
+}
