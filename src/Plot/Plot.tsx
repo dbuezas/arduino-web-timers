@@ -31,7 +31,9 @@ export default function Plot({ style }: Props) {
     timerNr: bitValues.timerNr,
     timerMode: bitValues.timerMode as any,
     prescaler: parseInt(bitValues.clockPrescalerOrSource!),
-    cpuHz: bitValues.clockDoubler === 'on' ? 32000000 * 2 : 32000000,
+    cpuHz:
+      parseInt(bitValues.FCPU || '1') *
+      (bitValues.clockDoubler === 'on' ? 2 : 1),
     top: 0,
     counterMax: parseInt(bitValues.counterMax!),
     tovTime: bitValues.setTovMoment as any,
