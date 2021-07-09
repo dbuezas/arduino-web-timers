@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/arduino-web-timers/static/css/main.59a07396.chunk.css",
-    "main.js": "/arduino-web-timers/static/js/main.d93797ae.chunk.js",
-    "main.js.map": "/arduino-web-timers/static/js/main.d93797ae.chunk.js.map",
+    "main.js": "/arduino-web-timers/static/js/main.e8038701.chunk.js",
+    "main.js.map": "/arduino-web-timers/static/js/main.e8038701.chunk.js.map",
     "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.0cc8aaac.js",
     "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.0cc8aaac.js.map",
     "static/css/2.7785af68.chunk.css": "/arduino-web-timers/static/css/2.7785af68.chunk.css",
@@ -20,6 +20,6 @@
     "static/css/2.7785af68.chunk.css",
     "static/js/2.2db4b882.chunk.js",
     "static/css/main.59a07396.chunk.css",
-    "static/js/main.d93797ae.chunk.js"
+    "static/js/main.e8038701.chunk.js"
   ]
 }
