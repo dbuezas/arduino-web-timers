@@ -38,7 +38,7 @@ const App = () => {
                     <img
                       src="./logo.png"
                       alt="logo"
-                      style={{ height: 55.5, float: 'left' }}
+                      style={{ width: 55.5, height: 55.5, float: 'left' }}
                     />
                     &nbsp;
                     <span
