@@ -7,7 +7,7 @@ type ohNoItIsAny = any
 
 const toFixed = (float: number, digits = 0) => {
   const padding = Math.pow(10, digits)
-  return (Math.round(float * padding) / padding).toFixed(digits)
+  return Math.round(float * padding) / padding
 }
 
 export function formatTime(s: ohNoItIsAny) {
@@ -20,9 +20,11 @@ export function formatTime(s: ohNoItIsAny) {
   const ms = s * 1000
   const us = ms * 1000
   const ns = us * 1000
-  if (ns < 1000) return toFixed(ns, 0) + 'ns'
-  if (us < 1000) return toFixed(us, 0) + 'μs'
-  if (ms < 10) return toFixed(ms, 2) + 'ms'
+  if (ns < 10) return toFixed(ns, 1) + 'ns'
+  if (ns < 1000) return toFixed(ns) + 'ns'
+  if (us < 10) return toFixed(us, 1) + 'μs'
+  if (us < 1000) return toFixed(us) + 'μs'
+  if (ms < 10) return toFixed(ms, 1) + 'ms'
   if (ms < 1000) return toFixed(ms) + 'ms'
   if (s < 10) return toFixed(s, 1) + 's'
   if (h > 1) return toFixed(h, 0) + 'h' + toFixed(m % 60, 1) + 'm'
