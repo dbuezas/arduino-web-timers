@@ -29,7 +29,7 @@ WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment
 7	1	1	1	FPWM	OCR0A	TOP	TOP
   `),
   tsv(`
-COM0A	COM0A0	COM0A1	timerMode	CompareOutputModeA	WGM02	CompareOutputModeB
+COM0A	COM0A1	COM0A0	timerMode	CompareOutputModeA	WGM02	CompareOutputModeB
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
@@ -48,7 +48,7 @@ COM0A	COM0A0	COM0A1	timerMode	CompareOutputModeA	WGM02	CompareOutputModeB
 3	1	1	PCPWM	set-up, clear-down
 `),
   tsv(`
-COM0B	COM0B0	COM0B1	timerMode	CompareOutputModeB
+COM0B	COM0B1	COM0B0	timerMode	CompareOutputModeB
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear

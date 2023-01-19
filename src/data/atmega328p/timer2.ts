@@ -29,7 +29,7 @@ WGM2	WGM22	WGM21	WGM20	timerMode	topValue	updateOcrMoment	setTovMoment
 7	1	1	1	FPWM	OCR2A	TOP	TOP
   `),
   tsv(`
-COM2A	COM2A0	COM2A1	timerMode	CompareOutputModeA
+COM2A	COM2A1	COM2A0	timerMode	CompareOutputModeA
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
@@ -48,7 +48,7 @@ COM2A	COM2A0	COM2A1	timerMode	CompareOutputModeA
 3	1	1	PCPWM	set-up, clear-down
 `),
   tsv(`
-COM2B	COM2B0	COM2B1	timerMode	CompareOutputModeB
+COM2B	COM2B1	COM2B0	timerMode	CompareOutputModeB
 0	0	0	Normal	disconnect
 1	0	1	Normal	toggle
 2	1	0	Normal	clear
