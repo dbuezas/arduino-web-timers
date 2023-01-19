@@ -87,7 +87,8 @@ export default function simTimer({
     MATCH_Xs: OCRnXs.map(() => [] as number[]),
     OVF: [] as number[],
     CAPT: [] as number[],
-    deadTimes: [[], []] as number[][]
+    deadTimes: [[], []] as number[][],
+    freq: cpuHz / (getTimerLength(top, timerMode) + 1) / prescaler
   }
   if (isNaN(top)) return results
   let OCnXs = OCRnXs.map(() => 0)

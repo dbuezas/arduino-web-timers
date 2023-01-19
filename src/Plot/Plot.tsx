@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import useSize from '@react-hook/size'
+import { Tag } from 'rsuite'
 
 import XAxis from './XAxis'
 import YAxis from './YAxis'
@@ -91,7 +92,6 @@ export default function Plot({ style }: Props) {
   }
   /* --- */
   const simulation = simTimer(param)
-
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, height_] = useSize(containerRef)
   const height_ouputCompare = 30
@@ -136,6 +136,9 @@ export default function Plot({ style }: Props) {
   }, [IOCR_states])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
+      <Tag className="frequency">
+        Freq: {Math.round(simulation.freq * 100) / 100}Hz
+      </Tag>
       <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
