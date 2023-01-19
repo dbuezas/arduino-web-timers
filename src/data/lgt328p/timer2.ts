@@ -96,7 +96,7 @@ TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF
 `),
   tsv(`
 C2AF6	OCnA_OutputPort
-0	B3
+0	D11
 1	F6
 `),
   tsv(`

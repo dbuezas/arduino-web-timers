@@ -95,11 +95,11 @@ TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF
 `),
   tsv(`
 OCnA_OutputPort
-B3
+11
 `),
   tsv(`
 OCnB_OutputPort
-D3
+3
 `),
   // [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR2B: Math.round((255 * 1) / 3) + '' }]

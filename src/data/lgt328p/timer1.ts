@@ -132,14 +132,14 @@ F2XEN	TC2XS1	clockDoubler	ExternalClockInput
 `),
   tsv(`
 C1BF4	WCE	OCnB_OutputPort
-0	0	B2
-0	1	B2
+0	0	D10
+0	1	D10
 1	1	F4
 `),
   tsv(`
 C1AF5	WCE	OCnA_OutputPort
-0	0	B1
-0	1	B1
+0	0	D9
+0	1	D9
 1	1	F5
 `),
   tsv(`

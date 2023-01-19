@@ -126,11 +126,11 @@ ICES1	InputCaptureEdgeSelect
 `),
   tsv(`
 OCnB_OutputPort
-B2
+10
 `),
   tsv(`
 OCnA_OutputPort
-B1
+9
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],
