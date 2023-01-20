@@ -111,14 +111,14 @@ C2BF7	OCnB_OutputPort
   tsv(`
 CompareOutputModeA	OCnA_OutputPort	DDRB3	DDRF6
 disconnect		0	0
-	B3	1	
-	F6		1
+!disconnect	B3	1	
+!disconnect	F6		1
 `),
   tsv(`
 CompareOutputModeB	OCnB_OutputPort	DDRD3	DDRF7
 disconnect		0	0
-	D3	1	
-	F7		1
+!disconnect	D3	1	
+!disconnect	F7		1
 `),
   // [{ OCR2A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR2B: Math.round((255 * 1) / 3) + '' }]

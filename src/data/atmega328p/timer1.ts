@@ -139,12 +139,12 @@ B1
   tsv(`		
 CompareOutputModeA	OCnA_OutputPort	DDRB1
 disconnect		0
-	B1	1
+!disconnect	B1	1
 `),
   tsv(`		
 CompareOutputModeB	OCnB_OutputPort	DDRB2
 disconnect		0
-	B2	1
+!disconnect	B2	1
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],

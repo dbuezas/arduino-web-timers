@@ -148,16 +148,16 @@ DTEN0	COM0B
   tsv(`
 CompareOutputModeA	OCnA_OutputPort	DDRD6	DDRE4	DDRC0
 disconnect		0	0	0
-	D6	1		
-	E4		1	
-	C0			1
-	E4+C0		1	1
+!disconnect	D6	1		
+!disconnect	E4		1	
+!disconnect	C0			1
+!disconnect	E4+C0		1	1
 `),
   tsv(`
 CompareOutputModeB	OCnB_OutputPort	DDRD5	DDRF3
 disconnect		0	0
-	D5	1		
-	F3		1
+!disconnect	D5	1		
+!disconnect	F3		1
 `),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]

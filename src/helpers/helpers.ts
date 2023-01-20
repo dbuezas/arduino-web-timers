@@ -63,7 +63,38 @@ const negatedMatch = (a: string, b: string) => {
   }
   return false
 }
-const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
+const _joinTables = ([joined, ...tables]: TTable[]): TTable => {
+  while (tables.length) {
+    const right = tables.shift()!
+    const r: TTable = []
+    for (let i = 0; i < joined.length; i++) {
+      const leftRow = joined[i]
+      for (let j = 0; j < right.length; j++) {
+        const rightRow = right[j]
+        const row = { ...leftRow }
+        let keep = true
+        for (let key in rightRow) {
+          const rightVal = rightRow[key]
+          const leftVal = leftRow[key]
+          const negMatch = negatedMatch(leftVal || '', rightVal || '')
+          if (!leftVal && !rightVal) {
+          } else if (!leftVal) row[key] = rightVal
+          else if (!rightVal) row[key] = leftVal
+          else if (negMatch !== false) row[key] = negMatch
+          else if (leftVal !== rightVal) {
+            keep = false
+            break
+          }
+        }
+        if (keep) r.push(row)
+      }
+    }
+
+    joined = r
+  }
+  return joined
+}
+const _joinTables2 = ([left, right, ...tables]: TTable[]): TTable => {
   if (!right) return left
   const joined = left.flatMap((leftRow) =>
     right
@@ -89,5 +120,8 @@ const _joinTables = ([left, right, ...tables]: TTable[]): TTable => {
 export const joinTables = (tables: TTable[]): TTable => {
   // first remove empty bitValues to improve speed (bitValue=''|undefined means the value is not constrained)
   const cleanTables = tables.map((table) => table.map((row) => pickBy(row)))
-  return _joinTables(cleanTables)
+  console.time('joinTables')
+  const r = _joinTables(cleanTables)
+  console.timeEnd('joinTables')
+  return r
 }

@@ -169,22 +169,6 @@ OCnC_OutputPort
 F3
 `),
   tsv(`
-CompareOutputModeA	OCnA_OutputPort	DDRF1	DDRD6
-disconnect		0	0
-	F1	1	
-	D6		1
-`),
-  tsv(`			
-CompareOutputModeB	OCnB_OutputPort	DDRF2
-disconnect		0
-	F2	1
-`),
-  tsv(`			
-CompareOutputModeC	OCnC_OutputPort	DDRF3
-disconnect		0
-	F3	1
-`),
-  tsv(`
 HDR2	OCnA_OutputPort	OCnA_OutputCurrent
 0		12mA
 1	F1	80mA
@@ -226,18 +210,18 @@ DTEN3	COM3B
   tsv(`
 CompareOutputModeA	OCnA_OutputPort	DDRF1	DDRD6
 disconnect		0	0
-	F1	1	
-	D6		1
+!disconnect	F1	1	
+!disconnect	D6		1
 `),
   tsv(`			
 CompareOutputModeB	OCnB_OutputPort	DDRF2
 disconnect		0
-	F2	1
+!disconnect	F2	1
 `),
   tsv(`			
 CompareOutputModeC	OCnC_OutputPort	DDRF3
 disconnect		0
-	F3	1
+!disconnect	F3	1
 `),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]

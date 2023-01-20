@@ -184,14 +184,14 @@ DTEN1	COM1B
   tsv(`
 CompareOutputModeA	OCnA_OutputPort	DDRB1	DDRF5
 disconnect		0	0
- 	B1	1	
- 	F5		1
+!disconnect	B1	1	
+!disconnect	F5		1
 `),
   tsv(`
 CompareOutputModeB	OCnB_OutputPort	DDRB2	DDRF4
 disconnect		0	0
- 	B2	1	
- 	F4		1
+!disconnect	B2	1	
+!disconnect	F4		1
 `),
   [{ DTR1L: '' }],
   [{ DTR1H: '' }],
