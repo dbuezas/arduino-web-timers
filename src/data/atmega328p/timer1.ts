@@ -1,7 +1,9 @@
 import { tsv, tsvRegisters } from '../timers'
 import { TTimerConfig } from '../../helpers/types'
+import { pin_direction_registers } from '../pin_direction_registers'
 
-const registers = tsvRegisters(`
+const registers = {
+  ...tsvRegisters(`
 TCCR1A	TCCR1B	TCCR1C	TIMSK1	DTR1	TIFR1
 COM1A1	ICNC1	FOC1A	-		-
 COM1A0	ICES1	FOC1B	-		-
@@ -11,7 +13,9 @@ COM1B0	WGM13	-	-		-
 -	CS12	-	OCIE1A		OCF1B
 WGM11	CS11	-	OCIE1B		OCF1A
 WGM10	CS10	-	TOIE1		TOV1
-`)
+`),
+  ...pin_direction_registers
+}
 const configs: TTimerConfig = [
   tsv(`
 timerNr	timerBits	counterMax	FCPU
@@ -102,7 +106,7 @@ OCIE1A	interruptA	interruptVectorCodeA
 OCIE1B	interruptB	interruptVectorCodeB
 0	off	//nocode
 1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}
-    
+		
 `),
   tsv(`
 TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF
@@ -126,11 +130,21 @@ ICES1	InputCaptureEdgeSelect
 `),
   tsv(`
 OCnB_OutputPort
-10
+B2
 `),
   tsv(`
 OCnA_OutputPort
-9
+B1
+`),
+  tsv(`		
+CompareOutputModeA	OCnA_OutputPort	DDRB1
+disconnect		0
+	B1	1
+`),
+  tsv(`		
+CompareOutputModeB	OCnB_OutputPort	DDRB2
+disconnect		0
+	B2	1
 `),
   // [{ ICR1: Math.round((65535 * 3) / 4) + '' }],
   // [{ OCR1A: Math.round((65535 * 2) / 4) + '' }],

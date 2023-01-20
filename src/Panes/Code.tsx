@@ -33,7 +33,6 @@ void setup(){
         {`  noInterrupts();\n`}
         <TimerConfgCode />
         <CompareRegsCode />
-        <PortDir />
         {`  interrupts();
 }
 `}
@@ -41,15 +40,6 @@ void setup(){
       </pre>
     </>
   )
-}
-const PortDir = () => {
-  const suggestedConfig = useRecoilValue(suggestedAssignmentState)
-  const code = getAllCompareRegTraits(suggestedConfig)
-    .filter(({ isActiveOutput }) => isActiveOutput)
-    .flatMap(({ pinModeCode }) => pinModeCode)
-  let str = code.join('\n  ')
-  if (str.length) str = '  ' + str + '\n'
-  return <>{str}</>
 }
 const TimerConfgCode = () => {
   const omitBitZeros = true

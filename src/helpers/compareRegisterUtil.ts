@@ -31,17 +31,6 @@ const getIsInterrupt = (genericName: GenericCompRegName, bitValues: TRow) =>
       DeadTimeB: `DTRH${bitValues.timerNr}`
     }[genericName]
   ] === '1'
-const getPinName = (genericName: GenericCompRegName, bitValues: TRow) =>
-  bitValues[
-    {
-      OutputA: `OCnA_OutputPort`,
-      OutputB: `OCnB_OutputPort`,
-      OutputC: `OCnC_OutputPort`,
-      Input: ``,
-      DeadTimeA: ``,
-      DeadTimeB: ``
-    }[genericName]
-  ]
 const getIsActiveOutput = (genericName: GenericCompRegName, bitValues: TRow) =>
   (bitValues[
     {
@@ -122,9 +111,6 @@ export const getCompareRegTraits = (
     name,
     value,
     code: `${name} = ${value};`,
-    pinModeCode: (getPinName(genericName, bitValues) || '')
-      .split('+')
-      .map((pinName) => `pinMode(${pinName}, OUTPUT);`),
     isInput: getIsInput(genericName),
     isOutput: getIsOutput(genericName),
     isDeadTime: getIsDeadTime(genericName),

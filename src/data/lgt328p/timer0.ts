@@ -1,7 +1,9 @@
 import { tsv, tsvRegisters } from '../timers'
 import { TTimerConfig } from '../../helpers/types'
+import { pin_direction_registers } from '../pin_direction_registers'
 
-const registers = tsvRegisters(`
+const registers = {
+  ...tsvRegisters(`
 TCCR0A	TCCR0B	TCCR0C	TIMSK0	DTR0	TIFR0	TCKCSR	PMX0	HDR
 COM0A1	FOC0A	DSX07	-	DTR07	OC0A	-	WCE	-
 COM0A0	FOC0B	DSX06	-	DTR06	OC0B	F2XEN	C1BF4	-
@@ -11,7 +13,9 @@ DOC0B	WGM02	-	-	DTR03	-	-	C0AC0	HDR3
 DOC0A	CS02	-	OCIE0B	DTR02	OCF0B	AFCKS	SSB1	HDR2
 WGM01	CS01	DSX01	OCIE0A	DTR01	OCF0A	TC2XS1	TXD6	HDR1
 WGM00	CS00	DSX00	TOIE0	DTR00	TOV0	TC2XS0	RXD5	HDR0
-`)
+`),
+  ...pin_direction_registers
+}
 const configs: TTimerConfig = [
   tsv(`
 timerNr	timerBits	counterMax	FCPU
@@ -108,12 +112,6 @@ C0AC0	OC0AS	WCE	OCnA_OutputPort
 1	1	1	E4+C0
 `),
   tsv(`
-C0BF3	WCE	OCnB_OutputPort
-0	0	D5
-0	1	D5
-1	1	F3
-`),
-  tsv(`
 HDR0	OCnB_OutputPort	OCnB_OutputCurrent
 0		12mA
 1	D5	80mA
@@ -147,6 +145,20 @@ DTEN0	COM0B
 1	2
 1	3
 `),
+  tsv(`
+CompareOutputModeA	OCnA_OutputPort	DDRD6	DDRE4	DDRC0
+disconnect		0	0	0
+	D6	1		
+	E4		1	
+	C0			1
+	E4+C0		1	1
+`),
+  tsv(`
+CompareOutputModeB	OCnB_OutputPort	DDRD5	DDRF3
+disconnect		0	0
+	D5	1		
+	F3		1
+`),
   // [{ OCR0A: Math.round((255 * 2) / 3) + '' }],
   // [{ OCR0B: Math.round((255 * 1) / 3) + '' }]
   [{ DTR0L: '' }],
@@ -154,5 +166,6 @@ DTEN0	COM0B
   [{ OCR0A: '' }],
   [{ OCR0B: '' }]
 ]
+
 const timer = { registers, configs }
 export default timer
