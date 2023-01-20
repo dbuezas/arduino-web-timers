@@ -33,7 +33,8 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
     topValue: 'Top value of timer',
     clockPrescalerOrSource: 'Clock prescaler or external source',
     clockDoubler: 'Double timer clock speed',
-    ExternalClockInput: 'External clock input port'
+    ExternalClockInput: 'External clock input port',
+    FCPU_UI: 'CPU Clock'
   },
   'Output A': {
     CompareOutputModeA: 'Behaviour',

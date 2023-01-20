@@ -14,8 +14,8 @@ WGM00	CS00	DSX00	TOIE0	DTR00	TOV0	TC2XS0	RXD5	HDR0
 `)
 const configs: TTimerConfig = [
   tsv(`
-timerNr	timerBits	counterMax	FCPU
-0	8	255	32000000
+timerNr	timerBits	counterMax
+0	8	255
 `),
   tsv(`
 WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment
