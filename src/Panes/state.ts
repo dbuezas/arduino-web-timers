@@ -1,6 +1,10 @@
-import { uniq } from 'lodash'
+import { mapValues, uniq } from 'lodash'
 import { selector, selectorFamily } from 'recoil'
-import { isTruthy, joinTables, splitTables } from '../helpers/helpers'
+import {
+  isTruthy,
+  getConstrainedDomains,
+  splitTables
+} from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
 import { timerState, userConfigBitState } from '../state/state'
 
@@ -13,6 +17,28 @@ const getBitNames = (group: TTable[]) => {
   if (group === undefined) debugger
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
+export const suggestedGroupAssignmentState = selectorFamily({
+  key: 'suggestedGroupAssignmentState',
+  get:
+    (groupIdx: number) =>
+    ({ get }) => {
+      const userState = get(groupConfigState(groupIdx))
+      const tableSets = get(groupsState)
+      const group = tableSets[groupIdx]
+      let domains = getConstrainedDomains([[userState], ...group])
+      const instantiations: Record<string, string> = {}
+      for (const variable of Object.keys(domains)) {
+        if (domains[variable][0] === undefined) continue // todo handle numerics
+        instantiations[variable] = domains[variable][0]
+        domains = getConstrainedDomains([
+          [instantiations],
+          [userState],
+          ...group
+        ])
+      }
+      return mapValues(domains, (domain) => domain[0])
+    }
+})
 
 export const suggestedBitAssignmentState = selectorFamily({
   key: 'suggestedBitAssignmentState',
@@ -21,19 +47,20 @@ export const suggestedBitAssignmentState = selectorFamily({
     ({ get }) => {
       const groupIdx = get(groupIdxFromBitNameState(bitName))
       if (groupIdx === -1) return undefined
-      const fullAssignments = get(groupAssignmentsState(groupIdx))
-      return fullAssignments[0][bitName]
+
+      return get(suggestedGroupAssignmentState(groupIdx))[bitName]
     }
 })
 export const suggestedAssignmentState = selector<TRow>({
   key: 'suggestedAssignmentState',
   get: ({ get }) => {
     const assignments = get(groupsState)
-      .map((_, i) => get(groupAssignmentsState(i))[0])
+      .map((_, i) => get(suggestedGroupAssignmentState(i)))
       .flat()
     return Object.assign({}, ...assignments)
   }
 })
+
 export const groupConfigState = selectorFamily({
   key: 'groupConfigState',
   get:
@@ -73,15 +100,15 @@ export const groupFromBitNameState = selectorFamily({
       return tableSets[idx]
     }
 })
-export const groupAssignmentsState = selectorFamily({
-  key: 'groupAssignmentsState',
+export const groupDomainsState = selectorFamily({
+  key: 'groupDomainsState',
   get:
     (groupIdx: number) =>
     ({ get }) => {
       const tableSets = get(groupsState)
       const group = tableSets[groupIdx]
       const userState = get(groupConfigState(groupIdx))
-      return joinTables([[userState], ...group])
+      return getConstrainedDomains([[userState], ...group])
     }
 })
 export const allBitOptionsState = selectorFamily({
@@ -104,20 +131,12 @@ export const enabledBitOptionsState = selectorFamily({
     (bitName: string) =>
     ({ get }) => {
       // todo, cleanup, perf
-      const group = get(groupFromBitNameState(bitName))
       const groupIdx = get(groupIdxFromBitNameState(bitName))
-      const userState = get(groupConfigState(groupIdx))
-      const fullAssignments = get(groupAssignmentsState(groupIdx))
-      let enabledAssignments = fullAssignments
-      if (userState[bitName]) {
-        const selectedWithout = { ...userState, [bitName]: undefined }
-        enabledAssignments = joinTables([[selectedWithout], ...group])
-      }
-      return uniq(
-        enabledAssignments.map((col) => col[bitName]).filter(isTruthy)
-      )
+      const domains = get(groupDomainsState(groupIdx))
+      return domains[bitName]
     }
 })
+
 export const bitOptionsState = selectorFamily({
   key: 'bitOptionsState',
   get:
@@ -125,16 +144,24 @@ export const bitOptionsState = selectorFamily({
     ({ get }) => {
       const groupIdx = get(groupIdxFromBitNameState(bitName))
       const userState = get(groupConfigState(groupIdx))
-      const fullAssignments = get(groupAssignmentsState(groupIdx))
       const allBitOptions = get(allBitOptionsState(bitName))
-      const enabledOptions = get(enabledBitOptionsState(bitName))
+
+      const tableSets = get(groupsState)
+      const group = tableSets[groupIdx]
+
+      const { [bitName]: _discarded, ...selectedWithout } = userState
+      const enabledOptions = getConstrainedDomains([
+        [selectedWithout],
+        ...group
+      ])[bitName]
+      const defaultValue = get(suggestedBitAssignmentState(bitName))
       const forcedOption =
         !userState[bitName] && enabledOptions.length === 1
-          ? fullAssignments[0][bitName]
+          ? enabledOptions[0]
           : undefined
       const suggestedOption =
         !userState[bitName] && enabledOptions.length > 1
-          ? fullAssignments[0][bitName]
+          ? defaultValue
           : undefined
       return {
         bitName,
