@@ -181,7 +181,7 @@ export default function Plot({ style }: Props) {
                   }}
                 />
               )}
-              {param.deadTimeEnable && (
+              {param.deadTimeEnable && i < 2 && (
                 <Curve
                   {...{
                     key: 'DeadTime-' + i,
