@@ -53,7 +53,9 @@ export const getConstrainedDomains = (
   tables: TTable[],
   domains_?: Record<string, string[]>
 ): Record<string, string[]> => {
-  const domains = domains_ || getFullDomains(tables)
+  const domains: Record<string, string[]> = domains_
+    ? { ...domains_ }
+    : getFullDomains(tables)
   let done = false
   while (!done) {
     done = true

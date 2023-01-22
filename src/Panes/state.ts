@@ -12,6 +12,15 @@ export const groupsState = selector({
   key: 'groupsState',
   get: ({ get }) => splitTables(get(timerState).configs)
 })
+export const groupState = selectorFamily({
+  key: 'groupsState',
+  get:
+    (groupIdx: number) =>
+    ({ get }) => {
+      const tableSets = get(groupsState)
+      return tableSets[groupIdx]
+    }
+})
 
 const getVariables = (group: TTable[]) => {
   if (group === undefined) debugger
@@ -23,12 +32,11 @@ export const suggestedGroupAssignmentState = selectorFamily({
     (groupIdx: number) =>
     ({ get }) => {
       const userState = get(groupConfigState(groupIdx))
-      const tableSets = get(groupsState)
-      const group = tableSets[groupIdx]
-      let domains = { ...get(groupDomainsState(groupIdx)) }
+      const group = get(groupState(groupIdx))
+      let domains = get(constrainedGroupDomainsState(groupIdx))
       const instantiations: Record<string, string> = {}
       for (const variable of Object.keys(domains)) {
-        if (domains[variable].length < 2) continue // if there is only one option, no need to fix it
+        if (domains[variable].length < 2) continue // if the domain of a var is only one element, there's no need to assign it.
         instantiations[variable] = domains[variable][0]
         domains = getConstrainedDomains(
           [[instantiations], [userState], ...group],
@@ -65,8 +73,7 @@ export const groupConfigState = selectorFamily({
   get:
     (groupIdx: number) =>
     ({ get }) => {
-      const tableSets = get(groupsState)
-      const group = tableSets[groupIdx]
+      const group = get(groupState(groupIdx))
       const relevantVariables = getVariables(group)
       const userConfig: TRow = {}
       for (const variable of relevantVariables) {
@@ -99,35 +106,42 @@ export const groupFromVariableState = selectorFamily({
       return tableSets[idx]
     }
 })
-export const groupDomainsState = selectorFamily({
-  key: 'groupDomainsState',
+export const constrainedGroupDomainsState = selectorFamily({
+  key: 'constrainedGroupDomainsState',
   get:
     (groupIdx: number) =>
     ({ get }) => {
-      const tableSets = get(groupsState)
-      const group = tableSets[groupIdx]
+      const group = get(groupState(groupIdx))
       const userState = get(groupConfigState(groupIdx))
       return getConstrainedDomains([[userState], ...group])
     }
 })
-export const variableDomainsState = selectorFamily({
-  key: 'variableDomainsState',
+export const fullGroupDomainsState = selectorFamily({
+  key: 'fullGroupDomainsState',
   get:
-    (variable: string) =>
+    (groupIdx: number) =>
     ({ get }) => {
-      const group = get(groupFromVariableState(variable))
-      return getFullDomains(group)[variable]
+      const group = get(groupState(groupIdx))
+      const userState = get(groupConfigState(groupIdx))
+      return getFullDomains([...group, [userState]])
     }
 })
-export const enabledValuesState = selectorFamily({
-  key: 'enabledValuesState',
+export const constrainedDomainState = selectorFamily({
+  key: 'constrainedDomainState',
   get:
     (variable: string) =>
     ({ get }) => {
-      // todo, cleanup, perf
       const groupIdx = get(groupIdxFromVariableState(variable))
-      const domains = get(groupDomainsState(groupIdx))
-      return domains[variable]
+      return get(constrainedGroupDomainsState(groupIdx))[variable]
+    }
+})
+export const fullDomainState = selectorFamily({
+  key: 'fullDomainState',
+  get:
+    (variable: string) =>
+    ({ get }) => {
+      const groupIdx = get(groupIdxFromVariableState(variable))
+      return get(fullGroupDomainsState(groupIdx))[variable]
     }
 })
 
@@ -138,24 +152,24 @@ export const variableOptionsState = selectorFamily({
     ({ get }) => {
       const groupIdx = get(groupIdxFromVariableState(variable))
       const userState = get(groupConfigState(groupIdx))
-      const variableDomains = get(variableDomainsState(variable))
+      const fullDomains = get(fullDomainState(variable))
 
-      const tableSets = get(groupsState)
-      const group = tableSets[groupIdx]
-      let enabledOptions = get(groupDomainsState(groupIdx))[variable]
+      const group = get(groupState(groupIdx))
+      let constrainedDomain = get(constrainedDomainState(variable))
       if (userState[variable]) {
         const { [variable]: _discarded, ...selectedWithout } = userState
-        enabledOptions = getConstrainedDomains([[selectedWithout], ...group])[
-          variable
-        ]
+        constrainedDomain = getConstrainedDomains([
+          [selectedWithout],
+          ...group
+        ])[variable]
       }
       const defaultValue = get(suggestedVariableAssignmentState(variable))
       const forcedOption =
-        !userState[variable] && enabledOptions.length === 1
-          ? enabledOptions[0]
+        !userState[variable] && constrainedDomain.length === 1
+          ? constrainedDomain[0]
           : undefined
       const suggestedOption =
-        !userState[variable] && enabledOptions.length > 1
+        !userState[variable] && constrainedDomain.length > 1
           ? defaultValue
           : undefined
       return {
@@ -163,10 +177,10 @@ export const variableOptionsState = selectorFamily({
         selectedOption: userState[variable],
         suggestedOption: suggestedOption || forcedOption || userState[variable],
         forcedOption: forcedOption,
-        options: variableDomains.map((value) => ({
+        options: fullDomains.map((value) => ({
           isSuggested: value === suggestedOption,
           value,
-          isDisabled: !enabledOptions.includes(value) || !!forcedOption
+          isDisabled: !constrainedDomain.includes(value) || !!forcedOption
         }))
       }
     }
