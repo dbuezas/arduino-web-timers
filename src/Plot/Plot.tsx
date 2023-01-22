@@ -27,16 +27,20 @@ type Props = {
 }
 export default function Plot({ style }: Props) {
   const bitValues = useRecoilValue(suggestedAssignmentState)
-  const counterMax = parseInt(bitValues.counterMax!)
+  const counterMax = parseInt(bitValues.counterMax)
   const param = {
     timerNr: bitValues.timerNr,
     timerMode: bitValues.timerMode as any,
-    prescaler: parseInt(bitValues.clockPrescalerOrSource!),
+    prescaler:
+      bitValues.clockPrescalerOrSource === 'disconnect'
+        ? NaN
+        : parseInt(bitValues.clockPrescalerOrSource) ||
+          parseInt(bitValues.FCPU) / 1000,
     cpuHz:
       parseInt(bitValues.FCPU || '1') *
       (bitValues.clockDoubler === 'on' ? 2 : 1),
     top: 0,
-    counterMax: parseInt(bitValues.counterMax!),
+    counterMax: parseInt(bitValues.counterMax),
     tovTime: bitValues.setTovMoment as any,
     OCRnXs: [] as number[],
     OCRnXs_behaviour: [
@@ -65,8 +69,8 @@ export default function Plot({ style }: Props) {
 
   param.top =
     IOCR_states.find(({ isTop }) => isTop)?.value ??
-    parseInt(bitValues.topValue!)
-  const ocrMax = parseInt(bitValues.topValue!) || counterMax
+    parseInt(bitValues.topValue)
+  const ocrMax = parseInt(bitValues.topValue) || counterMax
 
   /* TODO: put somewhere else */
   /* DEFAULTS FOR COMPARE REGISTERS */
@@ -78,7 +82,7 @@ export default function Plot({ style }: Props) {
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const setReg = useSetRecoilState(userConfigBitState(iocr.name))
-      const top = param.top || Number.parseInt(bitValues.counterMax!)
+      const top = param.top || Number.parseInt(bitValues.counterMax)
       if (prev && !prev[i].isUsed && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.sqrt(counterMax) / 2
