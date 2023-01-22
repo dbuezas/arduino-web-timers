@@ -10,13 +10,13 @@ import {
   panelModeState,
   RegisterLocationState,
   mcuTimers,
-  userConfigBitState
+  userConfigState
 } from './state/state'
 import { setHashFromObject } from './state/useHash'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
-  const timerIdx = useRecoilValue(userConfigBitState('timer'))
-  const mcu = useRecoilValue(userConfigBitState('mcu'))
+  const timerIdx = useRecoilValue(userConfigState('timer'))
+  const mcu = useRecoilValue(userConfigState('mcu'))
   const timers = useRecoilValue(mcuTimers)
   const [panelMode, setPanelMode] = useRecoilState(panelModeState)
   const isLoading = mcuTimers === undefined || timerIdx === undefined

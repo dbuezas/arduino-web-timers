@@ -32,7 +32,7 @@ export const RegisterLocationStateChange = () => {
   for (const key in { ...params, ...prev }) {
     withNulls[key] = params[key]
   }
-  useSetRecoilState(userConfigBitBulkState)(withNulls)
+  useSetRecoilState(userConfigBulkState)(withNulls)
   return <></>
 }
 export const RegisterLocationState = () => {
@@ -46,8 +46,8 @@ const userConfigState_internal = atomFamily<string | undefined, string>({
   key: 'userConfigState_internal',
   default: (param) => undefined
 })
-const userConfigBitBulkState = selector<Record<string, string | undefined>>({
-  key: 'userConfigBitBulkState',
+const userConfigBulkState = selector<Record<string, string | undefined>>({
+  key: 'userConfigBulkState',
   get: ({ get }) => {
     throw new Error('Dont use')
   },
@@ -60,20 +60,20 @@ const userConfigBitBulkState = selector<Record<string, string | undefined>>({
   }
 })
 
-export const userConfigBitState = selectorFamily<string | undefined, string>({
-  key: 'userConfigBitState',
+export const userConfigState = selectorFamily<string | undefined, string>({
+  key: 'userConfigState',
   get:
-    (bitName: string) =>
+    (variable: string) =>
     ({ get }) =>
-      get(userConfigState_internal(bitName)),
+      get(userConfigState_internal(variable)),
   set:
-    (bitName: string) =>
+    (variable: string) =>
     ({ get, set }, value) => {
       if (value instanceof DefaultValue) value = undefined
-      const current = get(userConfigState_internal(bitName))
+      const current = get(userConfigState_internal(variable))
       if (current !== value) {
-        set(userConfigState_internal(bitName), value)
-        setHashParam(bitName, value)
+        set(userConfigState_internal(variable), value)
+        setHashParam(variable, value)
       }
     }
 })
@@ -81,11 +81,11 @@ export const userConfigBitState = selectorFamily<string | undefined, string>({
 export const mcuTimers = selector({
   key: 'mcuTimers',
   get: ({ get }) => {
-    const micro = get(userConfigBitState('mcu')) as MicroControllers
+    const micro = get(userConfigState('mcu')) as MicroControllers
     return timers[micro]
   }
 })
 export const timerState = selector({
   key: 'timerState',
-  get: ({ get }) => get(mcuTimers)[+(get(userConfigBitState('timer')) || 0)]
+  get: ({ get }) => get(mcuTimers)[+(get(userConfigState('timer')) || 0)]
 })

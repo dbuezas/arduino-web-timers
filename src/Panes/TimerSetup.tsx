@@ -8,37 +8,37 @@ import {
   Whisper
 } from 'rsuite'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { bitNameDescriptions, bitValueDescriptions } from '../data/timers'
+import { variableDescriptions, valueDescriptions } from '../data/timers'
 import { difference, map, uniq } from 'lodash'
 import './TimerSetup.css'
 
 import Plot from '../Plot/Plot'
 import Code from './Code'
 import ResizePanel from 'react-resize-panel-ts'
-import { panelModeState, userConfigBitState } from '../state/state'
-import { bitOptionsState, groupsState } from './state'
+import { panelModeState, userConfigState } from '../state/state'
+import { variableOptionsState, groupsState } from './state'
 import { TTable, PanelModes } from '../helpers/types'
-const BitConfig = ({
-  bitName,
+const VariableConfig = ({
+  variable,
   humanName
 }: {
-  bitName: string
+  variable: string
   humanName?: string
 }) => {
-  const setUserConfigBit = useSetRecoilState(userConfigBitState(bitName))
+  const setUserConfigValue = useSetRecoilState(userConfigState(variable))
   const { selectedOption, forcedOption, options } = useRecoilValue(
-    bitOptionsState(bitName)
+    variableOptionsState(variable)
   )
-  const descr = bitValueDescriptions[bitName]
+  const descr = valueDescriptions[variable]
   const descrTitle = descr?.title
   return (
     <CheckboxGroup
       inline
       value={[selectedOption || forcedOption]}
-      onChange={(val: string[]) => setUserConfigBit(val[1])}
+      onChange={(val: string[]) => setUserConfigValue(val[1])}
     >
       <p>
-        {humanName || bitName}{' '}
+        {humanName || variable}{' '}
         {descrTitle && (
           <Whisper
             placement="right"
@@ -53,7 +53,7 @@ const BitConfig = ({
         )}
       </p>
       {options.map(({ value, isSuggested, isDisabled }, i) => {
-        const bitValueDescr = descr?.[value]
+        const valueDescription = descr?.[value]
 
         return (
           <span key={i}>
@@ -64,11 +64,11 @@ const BitConfig = ({
             >
               {value}
             </Checkbox>{' '}
-            {bitValueDescr && (
+            {valueDescription && (
               <Whisper
                 placement="right"
                 trigger="hover"
-                speaker={<Tooltip>{bitValueDescr}</Tooltip>}
+                speaker={<Tooltip>{valueDescription}</Tooltip>}
               >
                 <Icon
                   icon="info-circle"
@@ -85,21 +85,21 @@ const BitConfig = ({
 
 type TPanel = {
   panelName: string
-  bitNames: {
-    bitName: string
+  namedVariables: {
+    variable: string
     humanName?: string
   }[]
 }
 const getPanesByGroup = (groups: TTable[][]): TPanel[] =>
   groups.map((group, i) => ({
     panelName: `Group ${i}`,
-    bitNames: group
+    namedVariables: group
       .map((table) => Object.keys(table[0]))
       .flat()
-      .map((bitName) => ({ bitName }))
+      .map((variable) => ({ variable }))
   }))
 
-const getAllBitnamesInGroups = (groups: TTable[][]) =>
+const getAllVariablesInGroups = (groups: TTable[][]) =>
   uniq(
     groups
       .flat()
@@ -107,26 +107,28 @@ const getAllBitnamesInGroups = (groups: TTable[][]) =>
       .flat()
   )
 const getPanesGroupedByDescription = (groups: TTable[][]): TPanel[] => {
-  const allBitnamesInGroups = getAllBitnamesInGroups(groups)
-  return map(bitNameDescriptions, (bitDescriptions, panelName) => ({
+  const allVariablesInGroups = getAllVariablesInGroups(groups)
+  return map(variableDescriptions, (variableDescription, panelName) => ({
     panelName,
-    bitNames: map(bitDescriptions, (humanName, bitName) => ({
-      bitName,
+    namedVariables: map(variableDescription, (humanName, variable) => ({
+      variable,
       humanName
-    })).filter(({ bitName }) => allBitnamesInGroups.includes(bitName))
-  })).filter(({ bitNames }) => bitNames.length)
+    })).filter(({ variable }) => allVariablesInGroups.includes(variable))
+  })).filter(({ namedVariables }) => namedVariables.length)
 }
 const getHiddenPane = (groups: TTable[][]): TPanel => {
-  const allBitnames = getAllBitnamesInGroups(groups)
+  const allVariables = getAllVariablesInGroups(groups)
 
-  const visibleBitnames: string[] = Object.values(bitNameDescriptions)
+  const visibleVariables: string[] = Object.values(variableDescriptions)
     .map(Object.values)
     .flat()
   return {
     panelName: 'Internals',
-    bitNames: difference(allBitnames, visibleBitnames).map((bitName) => ({
-      bitName
-    }))
+    namedVariables: difference(allVariables, visibleVariables).map(
+      (variable) => ({
+        variable
+      })
+    )
   }
 }
 
@@ -151,11 +153,15 @@ function TimerSetup() {
   const r = (
     <div className="TimerSetup">
       <FlexboxGrid style={{ flexGrow: 1, overflow: 'scroll' }}>
-        {panels.map(({ panelName, bitNames }, i) => (
+        {panels.map(({ panelName, namedVariables }, i) => (
           <FlexboxGrid.Item key={panelName} style={style}>
             <Panel header={panelName} bordered shaded defaultExpanded>
-              {bitNames.map(({ bitName, humanName }, i) => (
-                <BitConfig key={i} bitName={bitName} humanName={humanName} />
+              {namedVariables.map(({ variable, humanName }, i) => (
+                <VariableConfig
+                  key={i}
+                  variable={variable}
+                  humanName={humanName}
+                />
               ))}
             </Panel>
           </FlexboxGrid.Item>

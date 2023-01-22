@@ -19,42 +19,41 @@ import {
   getCompareRegTraits
 } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { usePrevious, userConfigBitState } from '../state/state'
+import { usePrevious, userConfigState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
 
 type Props = {
   style: Object
 }
 export default function Plot({ style }: Props) {
-  const bitValues = useRecoilValue(suggestedAssignmentState)
-  const counterMax = parseInt(bitValues.counterMax)
+  const values = useRecoilValue(suggestedAssignmentState)
+  const counterMax = parseInt(values.counterMax)
   const param = {
-    timerNr: bitValues.timerNr,
-    timerMode: bitValues.timerMode as any,
+    timerNr: values.timerNr,
+    timerMode: values.timerMode as any,
     prescaler:
-      bitValues.clockPrescalerOrSource === 'disconnect'
+      values.clockPrescalerOrSource === 'disconnect'
         ? NaN
-        : parseInt(bitValues.clockPrescalerOrSource) ||
-          parseInt(bitValues.FCPU) / 1000,
+        : parseInt(values.clockPrescalerOrSource) ||
+          parseInt(values.FCPU) / 1000,
     cpuHz:
-      parseInt(bitValues.FCPU || '1') *
-      (bitValues.clockDoubler === 'on' ? 2 : 1),
+      parseInt(values.FCPU || '1') * (values.clockDoubler === 'on' ? 2 : 1),
     top: 0,
-    counterMax: parseInt(bitValues.counterMax),
-    tovTime: bitValues.setTovMoment as any,
+    counterMax: parseInt(values.counterMax),
+    tovTime: values.setTovMoment as any,
     OCRnXs: [] as number[],
     OCRnXs_behaviour: [
-      bitValues.CompareOutputModeA as any,
-      bitValues.CompareOutputModeB as any,
-      bitValues.CompareOutputModeC as any
+      values.CompareOutputModeA as any,
+      values.CompareOutputModeB as any,
+      values.CompareOutputModeC as any
     ],
     ICRn: 0,
-    deadTimeEnable: bitValues.DeadTime === 'on',
-    deadTimeA: getCompareRegTraits('DeadTimeA', bitValues).value,
-    deadTimeB: getCompareRegTraits('DeadTimeB', bitValues).value
+    deadTimeEnable: values.DeadTime === 'on',
+    deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
+    deadTimeB: getCompareRegTraits('DeadTimeB', values).value
   }
 
-  const IOCR_states = getAllCompareRegTraits(bitValues).map((traits, i) => ({
+  const IOCR_states = getAllCompareRegTraits(values).map((traits, i) => ({
     ...traits,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     ref: useRef<CompareRegisterHandleRef>(null),
@@ -68,9 +67,8 @@ export default function Plot({ style }: Props) {
   param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
 
   param.top =
-    IOCR_states.find(({ isTop }) => isTop)?.value ??
-    parseInt(bitValues.topValue)
-  const ocrMax = parseInt(bitValues.topValue) || counterMax
+    IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
+  const ocrMax = parseInt(values.topValue) || counterMax
 
   /* TODO: put somewhere else */
   /* DEFAULTS FOR COMPARE REGISTERS */
@@ -81,8 +79,8 @@ export default function Plot({ style }: Props) {
     ).length
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const setReg = useSetRecoilState(userConfigBitState(iocr.name))
-      const top = param.top || Number.parseInt(bitValues.counterMax)
+      const setReg = useSetRecoilState(userConfigState(iocr.name))
+      const top = param.top || Number.parseInt(values.counterMax)
       if (prev && !prev[i].isUsed && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.sqrt(counterMax) / 2
@@ -215,7 +213,7 @@ export default function Plot({ style }: Props) {
                   t: simulation.t,
                   xScale,
                   yScale,
-                  label: 'OCR' + bitValues.timerNr + 'ABC'[i] + ' interrupt'
+                  label: 'OCR' + values.timerNr + 'ABC'[i] + ' interrupt'
                 }}
               />
             )
@@ -233,7 +231,7 @@ export default function Plot({ style }: Props) {
             }}
           />
         )}
-        {bitValues.InterruptOnTimerOverflow === 'on' && (
+        {values.InterruptOnTimerOverflow === 'on' && (
           <InterruptArrow
             {...{
               flagValues: simulation.OVF,
@@ -249,7 +247,7 @@ export default function Plot({ style }: Props) {
 
         {IOCR_states.map(({ isUsed, ref, value, name }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          const setUserConfigBit = useSetRecoilState(userConfigBitState(name))
+          const setUserConfigValue = useSetRecoilState(userConfigState(name))
 
           // TODO: redo the extent thing with DTRs
           const yExtent2: [number, number] = name.startsWith('DTR')
@@ -270,7 +268,7 @@ export default function Plot({ style }: Props) {
                   compareRegisterValue: value,
                   setCompareRegisterValue: (val: number) =>
                     // eslint-disable-next-line react-hooks/rules-of-hooks
-                    setUserConfigBit(val + ''),
+                    setUserConfigValue(val + ''),
                   name
                 }}
               />

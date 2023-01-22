@@ -3,7 +3,10 @@ import { useRecoilValue } from 'recoil'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { isTruthy } from '../helpers/helpers'
 import { timerState } from '../state/state'
-import { suggestedAssignmentState, suggestedBitAssignmentState } from './state'
+import {
+  suggestedAssignmentState,
+  suggestedVariableAssignmentState
+} from './state'
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useRef, useState } from 'react'
@@ -42,23 +45,23 @@ void setup(){
   )
 }
 const TimerConfgCode = () => {
-  const omitBitZeros = true
+  const omitZeroValues = true
   const { registers } = useRecoilValue(timerState)
-  const code = map(registers, (bitNames, regName) => {
-    const bitAssignments = bitNames
-      .map((bitName) => {
-        const bitValue =
+  const code = map(registers, (variables, regName) => {
+    const assignments = variables
+      .map((variable) => {
+        const value =
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          useRecoilValue(suggestedBitAssignmentState(bitName)) || '0'
-        if (omitBitZeros && bitValue === '0') return ''
-        return `${bitValue} << ${bitName}`
+          useRecoilValue(suggestedVariableAssignmentState(variable)) || '0'
+        if (omitZeroValues && value === '0') return ''
+        return `${value} << ${variable}`
       })
       .filter(isTruthy)
-    const bitAssignmentsStr = bitAssignments.length
-      ? `\n    ${bitAssignments.join(' |\n    ')}`
+    const assignmentsStr = assignments.length
+      ? `\n    ${assignments.join(' |\n    ')}`
       : '0'
-    if (omitRegisterZeros && bitAssignmentsStr === '0') return ''
-    return `  ${regName} = ${bitAssignmentsStr};`
+    if (omitRegisterZeros && assignmentsStr === '0') return ''
+    return `  ${regName} = ${assignmentsStr};`
   })
     .flat()
     .filter(isTruthy)
@@ -77,7 +80,7 @@ function CompareRegsCode() {
   return <>{str}</>
 }
 function Interrupts() {
-  const interruptBitNames = [
+  const interruptVariables = [
     'interruptVectorCodeA',
     'interruptVectorCodeB',
     'interruptVectorCodeC',
@@ -85,15 +88,15 @@ function Interrupts() {
     'interruptVectorCaptureCode'
   ]
   const interruptCommonSignature = useRecoilValue(
-    suggestedBitAssignmentState('InterruptCommonSignature')
+    suggestedVariableAssignmentState('InterruptCommonSignature')
   )
-  let code = interruptBitNames
+  let code = interruptVariables
     .map(
-      (bitName) =>
+      (variable) =>
         // eslint-disable-next-line react-hooks/rules-of-hooks
-        useRecoilValue(suggestedBitAssignmentState(bitName)) || '//nocode'
+        useRecoilValue(suggestedVariableAssignmentState(variable)) || '//nocode'
     )
-    .filter((bitValue) => bitValue !== '//nocode')
+    .filter((value) => value !== '//nocode')
 
   if (code.length && interruptCommonSignature) {
     code = [

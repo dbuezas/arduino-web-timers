@@ -1,23 +1,8 @@
 import { TTable } from './types'
 
 import uniq from 'lodash/uniq'
-import mapValues from 'lodash/mapValues'
 import intersection from 'lodash/intersection'
 import { remove } from 'lodash'
-
-export const getValuesPerBitName = (configs: TTable[]) => {
-  let valuesPerBitName: Record<string, string[]> = {}
-  for (const table of configs) {
-    for (const row of table) {
-      for (const col in row) {
-        const val = row[col]
-        valuesPerBitName[col] = valuesPerBitName[col] || []
-        if (val) valuesPerBitName[col].push(val)
-      }
-    }
-  }
-  return mapValues(valuesPerBitName, uniq)
-}
 
 export const splitTables = ([left, ...tables]: TTable[]): TTable[][] => {
   if (!left) return []

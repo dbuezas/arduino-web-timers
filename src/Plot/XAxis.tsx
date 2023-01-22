@@ -1,7 +1,6 @@
 import { ScaleLinear, ticks, select, axisBottom } from 'd3'
 import { useRef, useLayoutEffect } from 'react'
 import { margin } from './margin'
-// import useD3Transition from 'use-d3-transition'
 
 type ohNoItIsAny = any
 

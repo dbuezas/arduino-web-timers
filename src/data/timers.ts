@@ -41,7 +41,7 @@ export const tsvRegisters = (str: string) => {
   )
 }
 
-export const bitNameDescriptions: Record<string, Record<string, string>> = {
+export const variableDescriptions: Record<string, Record<string, string>> = {
   Timer: {
     timerMode: 'Timer mode',
     topValue: 'Top value of timer',
@@ -78,7 +78,7 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
     DeadTime: 'Insert dead time'
   }
 }
-export const bitValueDescriptions: Record<string, Record<string, string>> = {
+export const valueDescriptions: Record<string, Record<string, string>> = {
   timerMode: {
     Normal: 'Counts always up, overflowing to zero. Duty is always 50%.',
     PCPWM:
