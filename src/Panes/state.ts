@@ -3,7 +3,8 @@ import { selector, selectorFamily } from 'recoil'
 import {
   isTruthy,
   getConstrainedDomains,
-  splitTables
+  splitTables,
+  getFullDomains
 } from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
 import { timerState, userConfigBitState } from '../state/state'
@@ -117,12 +118,7 @@ export const allBitOptionsState = selectorFamily({
     (bitName: string) =>
     ({ get }) => {
       const group = get(groupFromBitNameState(bitName))
-      return uniq(
-        group
-          .flat()
-          .map((col) => col[bitName])
-          .filter(isTruthy)
-      )
+      return getFullDomains(group)[bitName]
     }
 })
 export const enabledBitOptionsState = selectorFamily({

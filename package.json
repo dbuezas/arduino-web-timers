@@ -24,6 +24,7 @@
     "copy-to-clipboard": "^3.3.1",
     "d3": "^6.7.0",
     "lodash": "^4.17.21",
+    "raw.macro": "^0.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-resize-panel-ts": "0.0.5",

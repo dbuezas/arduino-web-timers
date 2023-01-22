@@ -1,26 +1,41 @@
 export const tsv = (str: string) => {
+  str = str
+    .trim()
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n')
+  const [registers, ...constraints] = str.trim().split('\n\n')
+  console.log(str.trim().split('\n\n'))
+  return {
+    registers: tsvRegisters(registers),
+    configs: constraints.map(tsvConstraints)
+  }
+}
+const tsvConstraints = (str: string) => {
   const table = str
     .trim()
     .split('\n')
-    .map((line) => line.split('\t'))
+    .filter((line) => !line.startsWith('//'))
+    .map((line) => line.trim().split('\t'))
   const [header, ...rows] = table
   return rows
     .map((row) =>
       Object.fromEntries(
         header.map((colName, i) => [
           colName,
-          (row[i] || '').trim().replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+          row[i].trim().replace(/\\n/g, '\n').replace(/\\t/g, '\t')
         ])
       )
     )
     .filter((row) => !Object.values(row).includes('-'))
 }
 
-export const tsvRegisters = (str: string) => {
+const tsvRegisters = (str: string) => {
   const table = str
     .trim()
     .split('\n')
-    .map((line) => line.split('\t'))
+    .filter((line) => !line.startsWith('//'))
+    .map((line) => line.trim().split('\t'))
   const [header, ...rows] = table
   return Object.fromEntries(
     header.map((register, column) => [register, rows.map((row) => row[column])])
