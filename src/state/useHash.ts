@@ -13,9 +13,9 @@ const setFullHash = debounce(
       window.location.replace(`${window.location.pathname}#${hash}`)
     }
   },
-  50,
+  100,
   // chrome doesn't like too many url changes
-  { maxWait: 500, leading: true, trailing: true }
+  { leading: true, trailing: true }
 )
 export const setHashFromObject = (
   record: Record<string, string | undefined>
