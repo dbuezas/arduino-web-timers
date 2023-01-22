@@ -1,7 +1,6 @@
 import { mapValues, uniq } from 'lodash'
 import { selector, selectorFamily } from 'recoil'
 import {
-  isTruthy,
   getConstrainedDomains,
   splitTables,
   getFullDomains
@@ -26,7 +25,7 @@ export const suggestedGroupAssignmentState = selectorFamily({
       const userState = get(groupConfigState(groupIdx))
       const tableSets = get(groupsState)
       const group = tableSets[groupIdx]
-      let domains = getConstrainedDomains([[userState], ...group])
+      let domains = { ...get(groupDomainsState(groupIdx)) }
       const instantiations: Record<string, string> = {}
       for (const variable of Object.keys(domains)) {
         if (domains[variable].length < 2) continue // if there is only one option, no need to fix it
@@ -143,12 +142,13 @@ export const bitOptionsState = selectorFamily({
 
       const tableSets = get(groupsState)
       const group = tableSets[groupIdx]
-
-      const { [bitName]: _discarded, ...selectedWithout } = userState
-      const enabledOptions = getConstrainedDomains([
-        [selectedWithout],
-        ...group
-      ])[bitName]
+      let enabledOptions = get(groupDomainsState(groupIdx))[bitName]
+      if (userState[bitName]) {
+        const { [bitName]: _discarded, ...selectedWithout } = userState
+        enabledOptions = getConstrainedDomains([[selectedWithout], ...group])[
+          bitName
+        ]
+      }
       const defaultValue = get(suggestedBitAssignmentState(bitName))
       const forcedOption =
         !userState[bitName] && enabledOptions.length === 1
