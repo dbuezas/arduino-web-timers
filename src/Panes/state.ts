@@ -29,13 +29,12 @@ export const suggestedGroupAssignmentState = selectorFamily({
       let domains = getConstrainedDomains([[userState], ...group])
       const instantiations: Record<string, string> = {}
       for (const variable of Object.keys(domains)) {
-        if (domains[variable][0] === undefined) continue // todo handle numerics
+        if (domains[variable].length < 2) continue // if there is only one option, no need to fix it
         instantiations[variable] = domains[variable][0]
-        domains = getConstrainedDomains([
-          [instantiations],
-          [userState],
-          ...group
-        ])
+        domains = getConstrainedDomains(
+          [[instantiations], [userState], ...group],
+          domains
+        )
       }
       return mapValues(domains, (domain) => domain[0])
     }

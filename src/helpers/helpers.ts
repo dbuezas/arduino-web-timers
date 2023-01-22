@@ -64,17 +64,18 @@ export const getFullDomains = (tables: TTable[]): Record<string, string[]> => {
   }
   return domains
 }
+
 export const getConstrainedDomains = (
-  tables: TTable[]
+  tables: TTable[],
+  domains = getFullDomains(tables)
 ): Record<string, string[]> => {
-  const domains = getFullDomains(tables)
   let done = false
   while (!done) {
     done = true
     for (const table_ of tables) {
       const table = table_.filter((row) => {
         return Object.entries(row).every(([variable, value]) => {
-          if (value === WILDCARD) return true //domains[variable].length > 0
+          if (value === WILDCARD) return true
           if (value.startsWith('!')) {
             const negated = value.slice(1)
             return domains[variable].some((value) => value !== negated)
@@ -85,18 +86,19 @@ export const getConstrainedDomains = (
       for (const variable of Object.keys(table[0] || {})) {
         // todo handle numerics
         const values = table.map((row) => row[variable])
-        const wildcards = remove(values, (val) => val === WILDCARD)
+        const hasWildcards = values.includes(WILDCARD)
+        if (hasWildcards) continue
         const negatedVals = remove(values, (val) => val?.startsWith('!')).map(
           (val) => val?.slice(1)
         )
         const positiveVals = values.filter(isTruthy) // Todo: remove the filter after replacing the wildcard with asterisks
         const miniDomain = uniq([
           ...positiveVals,
-          ...(wildcards.length ? domains[variable] : []),
           ...negatedVals.flatMap((negated) =>
             domains[variable].filter((value) => value !== negated)
           )
         ])
+        if (domains[variable].length === miniDomain.length) continue
         const sizeBefore = domains[variable].length
         domains[variable] = intersection(domains[variable], miniDomain)
         const sizeAfter = domains[variable].length
