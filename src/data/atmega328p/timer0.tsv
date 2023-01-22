@@ -10,8 +10,8 @@ WGM01	CS01	DSX01	OCIE0A	OCF0A	DDRA6	DDRB6	DDRC6	DDRD6	DDRE6	DDRF6
 WGM00	CS00	DSX00	TOIE0	TOV0	DDRA7	DDRB7	DDRC7	DDRD7	DDRE7	DDRF7						
 																
 //CONSTRAINTS																
-timerNr	timerBits	counterMax	FCPU													
-0	8	255	16000000													
+timerNr	timerBits	counterMax													
+0	8	255							
 																
 WGM0	WGM02	WGM01	WGM00	timerMode	topValue	updateOcrMoment	setTovMoment									
 0	0	0	0	Normal	0xFF	immediate	MAX									

@@ -5,13 +5,12 @@ export const tsv = (str: string) => {
     .map((line) => line.trim())
     .join('\n')
   const [registers, ...constraints] = str.trim().split('\n\n')
-  console.log(str.trim().split('\n\n'))
   return {
     registers: tsvRegisters(registers),
     configs: constraints.map(tsvConstraints)
   }
 }
-const tsvConstraints = (str: string) => {
+export const tsvConstraints = (str: string) => {
   const table = str
     .trim()
     .split('\n')
@@ -30,7 +29,7 @@ const tsvConstraints = (str: string) => {
     .filter((row) => !Object.values(row).includes('-'))
 }
 
-const tsvRegisters = (str: string) => {
+export const tsvRegisters = (str: string) => {
   const table = str
     .trim()
     .split('\n')
@@ -48,7 +47,8 @@ export const bitNameDescriptions: Record<string, Record<string, string>> = {
     topValue: 'Top value of timer',
     clockPrescalerOrSource: 'Clock prescaler or external source',
     clockDoubler: 'Double timer clock speed',
-    ExternalClockInput: 'External clock input port'
+    ExternalClockInput: 'External clock input port',
+    FCPU_UI: 'CPU Clock'
   },
   'Output A': {
     CompareOutputModeA: 'Behaviour',

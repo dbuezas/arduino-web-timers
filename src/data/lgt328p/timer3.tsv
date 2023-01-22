@@ -10,8 +10,8 @@ WGM31	CS31	DOC3C	DSX31	-	OCIE3A	OCF3A	TXD6	C2BF7	-	HDR1	DDRA6	DDRB6	DDRC6	DDRD6	
 WGM30	CS30	FOC3C	DSX30	-	TOIE3	TOV3	RXD5	C2AF6	-	HDR0	DDRA7	DDRB7	DDRC7	DDRD7	DDRE7	DDRF7
 																
 // CONSTRAINTS																
-timerNr	timerBits	counterMax	FCPU													
-3	16	65535	32000000													
+timerNr	timerBits	counterMax														
+3	16	65535														
 																
 WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment								
 0	0	0	0	0	Normal	0xFFFF	Immediately	MAX								
