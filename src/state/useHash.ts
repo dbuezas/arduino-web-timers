@@ -1,3 +1,4 @@
+import { debounce } from 'lodash'
 import { useState, useEffect } from 'react'
 
 const getHashParams = () => {
@@ -5,12 +6,17 @@ const getHashParams = () => {
   return new URLSearchParams(hash)
 }
 
-const setFullHash = (hash: string) => {
-  const currentHash = window.location.hash.slice(1)
-  if (hash !== currentHash) {
-    window.location.replace(`${window.location.pathname}#${hash}`)
-  }
-}
+const setFullHash = debounce(
+  (hash: string) => {
+    const currentHash = window.location.hash.slice(1)
+    if (hash !== currentHash) {
+      window.location.replace(`${window.location.pathname}#${hash}`)
+    }
+  },
+  50,
+  // chrome doesn't like too many url changes
+  { maxWait: 500, leading: true, trailing: true }
+)
 export const setHashFromObject = (
   record: Record<string, string | undefined>
 ) => {

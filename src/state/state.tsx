@@ -72,6 +72,7 @@ export const userConfigBitState = selectorFamily<string | undefined, string>({
       if (value instanceof DefaultValue) value = undefined
       const current = get(userConfigState_internal(bitName))
       if (current !== value) {
+        set(userConfigState_internal(bitName), value)
         setHashParam(bitName, value)
       }
     }
