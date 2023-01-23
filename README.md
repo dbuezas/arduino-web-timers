@@ -1,7 +1,8 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dbuezas)
 # Arduino Web Timers
 
-[Use it now: https://dbuezas.github.io/arduino-web-timers/](https://dbuezas.github.io/arduino-web-timers/)
+## [Click here to open the Web App](https://dbuezas.github.io/arduino-web-timers/)
+
 <img src="./public/screenshot.png" alt="" width="800"/>
 
 Application to configure and visualise timers. All your changes are stored in the url, bookmark and share configured timers!
