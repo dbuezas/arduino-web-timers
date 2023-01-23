@@ -152,7 +152,7 @@ DTEN1	COM1B
 1	2										
 1	3										
 											
-*	OCnA_OutputPort	DDRB1	DDRF5								
+CompareOutputModeA	OCnA_OutputPort	DDRB1	DDRF5								
 disconnect	*	0	0								
 !disconnect	B1	1	*								
 !disconnect	F5	*	1								
