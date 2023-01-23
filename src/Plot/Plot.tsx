@@ -82,9 +82,7 @@ export default function Plot({ style }: Props) {
       const setReg = useSetRecoilState(userConfigState(iocr.name))
       const top = param.top || Number.parseInt(values.counterMax)
       if (prev && !prev[i].isUsed && iocr.isUsed) {
-        const n = iocr.isDeadTime
-          ? Math.sqrt(counterMax) / 2
-          : (top / (ioCount + 1)) * (i + 1)
+        const n = iocr.isDeadTime ? 32 : (top / (ioCount + 1)) * (i + 1)
         setReg('' + Math.round(n))
       }
       if (prev?.[i].isUsed && !iocr.isUsed) {
