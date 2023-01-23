@@ -1,3 +1,4 @@
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dbuezas)
 # Arduino Web Timers
 
 [Use it now: https://dbuezas.github.io/arduino-web-timers/](https://dbuezas.github.io/arduino-web-timers/)
