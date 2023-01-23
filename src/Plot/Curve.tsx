@@ -1,4 +1,4 @@
-import { ScaleLinear, line } from 'd3'
+import { ScaleLinear, line, CurveFactory, curveLinear } from 'd3'
 import { margin } from './margin'
 
 import './Curve.css'
@@ -9,12 +9,21 @@ type CurvesProps = {
   yScale: ScaleLinear<number, number>
   idx: any
   name?: string
+  curve?: CurveFactory
 }
 
-export function Curve({ xScale, yScale, data, idx, name }: CurvesProps) {
+export function Curve({
+  xScale,
+  yScale,
+  data,
+  idx,
+  name,
+  curve = curveLinear
+}: CurvesProps) {
   const theLine = line<[number, number]>()
     .x(([t, datum]) => xScale(t)!)
     .y(([t, datum]) => yScale(datum)!)
+    .curve(curve)
 
   const d = theLine(data)
   return (

@@ -4,7 +4,7 @@ import { Tag } from 'rsuite'
 
 import XAxis from './XAxis'
 import YAxis from './YAxis'
-import { scaleLinear, extent } from 'd3'
+import { scaleLinear, extent, curveStepAfter } from 'd3'
 import { margin } from './margin'
 import simTimer from '../helpers/simulator'
 
@@ -169,6 +169,7 @@ export default function Plot({ style }: Props) {
                   {...{
                     key: 'OC' + i,
                     idx: i,
+                    curve: curveStepAfter,
                     name: 'OC' + param.timerNr + 'ABC'[i],
                     xScale,
                     yScale,
@@ -184,6 +185,7 @@ export default function Plot({ style }: Props) {
                   {...{
                     key: 'DeadTime-' + i,
                     idx: 'DeadTime-' + i,
+                    curve: curveStepAfter,
                     name: '',
                     xScale,
                     yScale,
