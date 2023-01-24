@@ -50,9 +50,13 @@ Application to configure and visualise timers. All your changes are stored in th
   - Registers: One register per column, each cell is the name of a bit.
   - Constraints: Each column represents a variable (can be a bit of a register or some UI input or output). Each row is a possible valid combination of values assigned to variables.
 - When the user selects any checkbox, the possible values of the variable it represents is reduced to only what's selected
-- A custom constraint solver finds out what values are possible for each of the other variables and the rest is disabled in the UI.
+- A custom constraint solver finds out what values are possible for each of the other variables and the rest is disabled in the UI (note that tables are interconnected when they share variables)
+- Given the user selection, a suggestion for all other variables is created one by one by:
+  - Computing the viable values of a variable
+  - Picking the first viable value for that variable 
+  - Repeating until all variables have only one viable value
 - Finally the values of variables are used to run the simulation (plot) and write the code.
-- The code is written by going through each regiser and checking which of their bits were set to one.
+- The code output is generared by iterating over each regiser and picking the bits that are set to one.
 
 A fun fact: I learned a lot about timers myself while creating this web app, but even more by playing with it!
 
