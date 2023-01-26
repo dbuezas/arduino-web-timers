@@ -1,13 +1,13 @@
 // REGISTERS												
 TCCR3A	TCCR3B	TCCR3C	TCCR3D	DTR3	TIMSK3	TIFR3	PMX0	PMX1	PMX2	HDR	DDRD	DDRF
-COM3A1	ICNC3	FOC3A	DSX37	-	-	-	WCE	-	-	-	DDRD0	DDRF0
-COM3A0	ICES3	FOC3B	DSX36	-	-	-	C1BF4	-	-	-	DDRD1	DDRF1
-COM3B1	-	DOC3B	DSX35	-	ICIE3	ICF3	C1AF5	-	-	HDR5	DDRD2	DDRF2
-COM3B0	WGM33	DOC3A	DSX34	-	-	-	C0BF3	-	-	HDR4	DDRD3	DDRF3
-COM3C1	WGM32	DTEN3	-	-	OCIE3C	OCF3C	C0AC0	-	-	HDR3	DDRD4	DDRF4
-COM3C0	CS32	-	-	-	OCIE3B	OCF3B	SSB1	C3AC	-	HDR2	DDRD5	DDRF5
-WGM31	CS31	DOC3C	DSX31	-	OCIE3A	OCF3A	TXD6	C2BF7	-	HDR1	DDRD6	DDRF6
-WGM30	CS30	FOC3C	DSX30	-	TOIE3	TOV3	RXD5	C2AF6	-	HDR0	DDRD7	DDRF7
+COM3A1	ICNC3	FOC3A	DSX37	-	-	-	WCE	-	-	-	DDD0	DDF0
+COM3A0	ICES3	FOC3B	DSX36	-	-	-	C1BF4	-	-	-	DDD1	DDF1
+COM3B1	-	DOC3B	DSX35	-	ICIE3	ICF3	C1AF5	-	-	HDR5	DDD2	DDF2
+COM3B0	WGM33	DOC3A	DSX34	-	-	-	C0BF3	-	-	HDR4	DDD3	DDF3
+COM3C1	WGM32	DTEN3	-	-	OCIE3C	OCF3C	C0AC0	-	-	HDR3	DDD4	DDF4
+COM3C0	CS32	-	-	-	OCIE3B	OCF3B	SSB1	C3AC	-	HDR2	DDD5	DDF5
+WGM31	CS31	DOC3C	DSX31	-	OCIE3A	OCF3A	TXD6	C2BF7	-	HDR1	DDD6	DDF6
+WGM30	CS30	FOC3C	DSX30	-	TOIE3	TOV3	RXD5	C2AF6	-	HDR0	DDD7	DDF7
 												
 // CONSTRAINTS												
 timerNr	timerBits	counterMax										
@@ -177,16 +177,16 @@ DTEN3	COM3B
 1	2											
 1	3											
 												
-CompareOutputModeA	OCnA_OutputPort	DDRF1	DDRD6									
+CompareOutputModeA	OCnA_OutputPort	DDF1	DDD6									
 disconnect	*	0	0									
 !disconnect	F1	1	*									
 !disconnect	D6	*	1									
 												
-CompareOutputModeB	OCnB_OutputPort	DDRF2										
+CompareOutputModeB	OCnB_OutputPort	DDF2										
 disconnect	*	0										
 !disconnect	F2	1										
 												
-CompareOutputModeC	OCnC_OutputPort	DDRF3										
+CompareOutputModeC	OCnC_OutputPort	DDF3										
 disconnect	*	0										
 !disconnect	F3	1										
 												

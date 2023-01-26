@@ -1,13 +1,13 @@
 //REGISTERS								
 TCCR1A	TCCR1B	TCCR1C	TIMSK1	DTR1	TIFR1	DDRB		
-COM1A1	ICNC1	FOC1A	-	-	-	DDRB0		
-COM1A0	ICES1	FOC1B	-	-	-	DDRB1		
-COM1B1	-	-	ICIE1	-	ICF1	DDRB2		
-COM1B0	WGM13	-	-	-	-	DDRB3		
--	WGM12	-	-	-	-	DDRB4		
--	CS12	-	OCIE1A	-	OCF1B	DDRB5		
-WGM11	CS11	-	OCIE1B	-	OCF1A	DDRB6		
-WGM10	CS10	-	TOIE1	-	TOV1	DDRB7		
+COM1A1	ICNC1	FOC1A	-	-	-	DDB0		
+COM1A0	ICES1	FOC1B	-	-	-	DDB1		
+COM1B1	-	-	ICIE1	-	ICF1	DDB2		
+COM1B0	WGM13	-	-	-	-	DDB3		
+-	WGM12	-	-	-	-	DDB4		
+-	CS12	-	OCIE1A	-	OCF1B	DDB5		
+WGM11	CS11	-	OCIE1B	-	OCF1A	DDB6		
+WGM10	CS10	-	TOIE1	-	TOV1	DDB7		
 								
 //CONSTRAINTS								
 timerNr	timerBits	counterMax						
@@ -116,11 +116,11 @@ B2
 OCnA_OutputPort								
 B1								
 								
-CompareOutputModeA	OCnA_OutputPort	DDRB1						
+CompareOutputModeA	OCnA_OutputPort	DDB1						
 disconnect	*	0						
 !disconnect	B1	1						
 								
-CompareOutputModeB	OCnB_OutputPort	DDRB2						
+CompareOutputModeB	OCnB_OutputPort	DDB2						
 disconnect	*	0						
 !disconnect	B2	1						
 								

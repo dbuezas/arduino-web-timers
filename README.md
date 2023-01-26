@@ -1,4 +1,5 @@
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/dbuezas)
+
 # Arduino Web Timers
 
 ## [Click here to open the Web App](https://dbuezas.github.io/arduino-web-timers/)
@@ -59,6 +60,7 @@ Application to configure and visualise timers. All your changes are stored in th
 - The code output is generared by iterating over each regiser and picking the bits that are set to one.
 
 A fun fact: I learned a lot about timers myself while creating this web app, but even more by playing with it!
+You can see all internal variables the constraint solver sees by switching to "With internals" at the top right of the screen.
 
 --
 
