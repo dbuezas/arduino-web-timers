@@ -24,7 +24,7 @@ export function usePrevious<T>(value: T) {
   })
   return ref.current
 }
-const defaultState = { mcu: MicroControllers.LGT8F328P, timer: '0' }
+const defaultState = { mcu: MicroControllers.ATMEGA328P, timer: '0' }
 export const RegisterLocationStateChange = () => {
   const params = useHashParams()
   const prev = usePrevious(params)
