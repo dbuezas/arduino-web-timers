@@ -61,7 +61,9 @@ const TimerConfgCode = () => {
       ? `\n    ${assignments.join(' |\n    ')}`
       : '0'
     if (omitRegisterZeros && assignmentsStr === '0') return ''
-    return `  ${regName} = ${assignmentsStr};`
+    // register names like PMX0_0 and PMX0_1 are actually all the same register,
+    // but they have to be set in two steps
+    return `  ${regName.split('_')[0]} = ${assignmentsStr};`
   })
     .flat()
     .filter(isTruthy)
