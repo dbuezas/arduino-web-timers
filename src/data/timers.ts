@@ -94,7 +94,7 @@ export const valueDescriptions: Record<string, Record<string, string>> = {
   },
   OCnA_OutputPort: {
     'E4+C0': 'Both at the same time',
-    'ACOP(D6)':
+    'AC0P(D6)':
       'Package	Silk	IC\n───────	────	──\nQFP48:	D?	15 \nQFP32:	D6	10 \nSSOP20:	D6	9',
     B1: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	19 \nQFP32:	D9	13 \nSSOP20:	D9	11',
     B3: 'Package	Silk	IC\n───────	────	──\nQFP48:	D?	23 \nQFP32:	D11	15 \nSSOP20:	D11	12',

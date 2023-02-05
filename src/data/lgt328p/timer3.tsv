@@ -137,7 +137,7 @@ ICNC3	InputCaptureNoiseSupression
 C3AC	WCE	OCnA_OutputPort											
 0	0	F1											
 0	1	F1											
-1	1	ACOP(D6)											
+1	1	AC0P(D6)											
 													
 OCnB_OutputPort													
 F2													
@@ -180,7 +180,7 @@ DTEN3	COM3B
 CompareOutputModeA	OCnA_OutputPort	DDF1											
 disconnect	*	0											
 !disconnect	F1	1											
-!disconnect	ACOP(D6)	*											
+!disconnect	AC0P(D6)	*											
 													
 CompareOutputModeB	OCnB_OutputPort	DDF2											
 disconnect	*	0											
