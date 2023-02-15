@@ -37,15 +37,11 @@ export const setHashParam = (key: string, value: string | undefined) => {
 }
 
 export const useHashParams = () => {
-  const [hashParams, setHashParams] = useState<URLSearchParams>(
-    new URLSearchParams(window.location.hash.slice(1))
-  )
+  const [hashParams, setHashParams] = useState<URLSearchParams>(getHashParams())
   useEffect(() => {
     const handleHashChange = () => {
       setHashParams(getHashParams())
     }
-
-    handleHashChange()
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])

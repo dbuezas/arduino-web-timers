@@ -18,7 +18,7 @@ import {
   getAllCompareRegTraits,
   getCompareRegTraits
 } from '../helpers/compareRegisterUtil'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { usePrevious, userConfigState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
 
@@ -75,19 +75,19 @@ export default function Plot({ style }: Props) {
   {
     const prev = usePrevious(IOCR_states)
     const ioCount = IOCR_states.filter(
-      ({ isDeadTime, isUsed }) => !isDeadTime
+      ({ isDeadTime, isUsed }) => !isDeadTime && isUsed
     ).length
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const setReg = useSetRecoilState(userConfigState(iocr.name))
+      const [regVal, setReg] = useRecoilState(userConfigState(iocr.name))
       const top = param.top || Number.parseInt(values.counterMax)
-      if ((!prev || !prev[i].isUsed) && iocr.isUsed) {
+      if (prev && !prev[i].isUsed && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.pow(counterMax, 0.3)
           : (top / (ioCount + 1)) * (i + 1)
         setReg('' + Math.round(n))
       }
-      if (prev?.[i].isUsed && !iocr.isUsed) {
+      if (regVal !== undefined && prev?.[i].isUsed && !iocr.isUsed) {
         setReg(undefined)
       }
     })

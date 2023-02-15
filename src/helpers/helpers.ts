@@ -60,6 +60,7 @@ export const getConstrainedDomains = (
   while (!done) {
     done = true
     for (const table_ of tables) {
+      // first remove all rows containing a value out of a variable's domain
       const table = table_.filter((row) => {
         return Object.entries(row).every(([variable, value]) => {
           if (value === WILDCARD) return true
@@ -70,6 +71,7 @@ export const getConstrainedDomains = (
           return domains[variable].includes(value)
         })
       })
+      // then update the domain of each variable to only the values avalable in the current table
       for (const variable of Object.keys(table[0] || {})) {
         // todo handle numerics
         const values = table.map((row) => row[variable])
@@ -78,14 +80,13 @@ export const getConstrainedDomains = (
         const negatedVals = remove(values, (val) => val?.startsWith('!')).map(
           (val) => val?.slice(1)
         )
-        const positiveVals = values.filter(isTruthy) // Todo: remove the filter after replacing the wildcard with asterisks
+        const positiveVals = values // there are no wildcards, and negateds were already removed
         const miniDomain = uniq([
           ...positiveVals,
           ...negatedVals.flatMap((negated) =>
             domains[variable].filter((value) => value !== negated)
           )
         ])
-        if (domains[variable].length === miniDomain.length) continue
         const sizeBefore = domains[variable].length
         domains[variable] = intersection(domains[variable], miniDomain)
         const sizeAfter = domains[variable].length
