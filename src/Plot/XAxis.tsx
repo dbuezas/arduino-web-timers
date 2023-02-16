@@ -30,6 +30,21 @@ export function formatTime(s: ohNoItIsAny) {
   if (m > 5) return toFixed(m, 0) + 'm' + toFixed(s % 60, 1) + 's'
   return toFixed(s, 0) + 's'
 }
+export function formatFreq(hz: ohNoItIsAny) {
+  hz = Number(hz)
+  if (!Number.isFinite(hz)) return '--'
+  if (hz === 0) return '0'
+
+  const khz = hz / 1000
+  const mhz = khz / 1000
+  if (hz < 10) return toFixed(hz, 3) + 'Hz'
+  if (hz < 100) return toFixed(hz, 3) + 'Hz'
+  if (hz < 1000) return toFixed(hz, 1) + 'Hz'
+  if (khz < 100) return toFixed(khz, 2) + 'kHz'
+  if (khz < 1000) return toFixed(khz, 1) + 'kHz'
+  if (mhz < 100) return toFixed(mhz, 2) + 'MHz'
+  return toFixed(mhz, 1) + 'MHz'
+}
 
 type Props = {
   height: number

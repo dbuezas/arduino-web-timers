@@ -4,6 +4,7 @@
 }
 .plotContainer .frequency {
   position: absolute;
+  cursor: pointer;
   right: 0;
 }
 .plotContainer svg.plot {

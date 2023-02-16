@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useSize from '@react-hook/size'
 import { Tag } from 'rsuite'
 
-import XAxis from './XAxis'
+import XAxis, { formatFreq, formatTime } from './XAxis'
 import YAxis from './YAxis'
 import { scaleLinear, extent, curveStepAfter } from 'd3'
 import { margin } from './margin'
@@ -24,6 +24,18 @@ import { suggestedAssignmentState } from '../Panes/state'
 
 type Props = {
   style: Object
+}
+function Freq({ freq }: { freq: number }) {
+  const [mode, setMode] = useState(true)
+  return (
+    <Tag onClick={() => setMode(!mode)} className="frequency">
+      {mode
+        ? `
+        Freq: ${formatFreq(freq)}
+        `
+        : `Period: ${formatTime(1 / freq)}`}
+    </Tag>
+  )
 }
 export default function Plot({ style }: Props) {
   const values = useRecoilValue(suggestedAssignmentState)
@@ -138,9 +150,7 @@ export default function Plot({ style }: Props) {
   }, [IOCR_states])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <Tag className="frequency">
-        Freq: {Math.round(simulation.freq * 100) / 100}Hz
-      </Tag>
+      <Freq freq={Math.round(simulation.freq * 100) / 100} />
       <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
