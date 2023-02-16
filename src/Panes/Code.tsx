@@ -54,6 +54,10 @@ const TimerConfgCode = () => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
           useRecoilValue(suggestedVariableAssignmentState(variable)) || '0'
         if (omitZeroValues && value === '0') return ''
+
+        // DTR0L/H are special because they are just 4 bytes of a single register
+        if (variable === 'DTR0L') return `${value}`
+        if (variable === 'DTR0H') return `${value} << 4`
         return `${value} << ${variable}`
       })
       .filter(isTruthy)
@@ -76,6 +80,8 @@ function CompareRegsCode() {
 
   const code = getAllCompareRegTraits(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
+    // DTR0L/H are special because they are just 4 bytes of a single register
+    .filter(({ name }) => !['DTR0L', 'DTR0H'].includes(name))
     .map(({ code }) => code)
   let str = code.join('\n  ')
   if (str.length) str = '  ' + str + '\n'
