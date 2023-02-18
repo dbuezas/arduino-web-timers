@@ -4,12 +4,12 @@ import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import { RecoilRoot } from 'recoil'
-import { RegisterHashWatcher } from './state/state'
+import { RegisterHashLink } from './state/state'
 
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
-      <RegisterHashWatcher />
+      <RegisterHashLink />
 
       <App />
     </RecoilRoot>

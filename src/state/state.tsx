@@ -4,6 +4,7 @@ import {
   DefaultValue,
   selector,
   selectorFamily,
+  useRecoilValue,
   useSetRecoilState
 } from 'recoil'
 import { setHashFromObject, useHashChangedExternally } from './useHash'
@@ -17,11 +18,25 @@ export const panelModeState = atom({
   default: PanelModes.Normal
 })
 
-export const RegisterHashWatcher = () => {
+export const RegisterHashUpdater = () => {
   const set = useSetRecoilState(userConfigStateBulk)
   const params = useHashChangedExternally()
   set(params)
   return <></>
+}
+export const RegisterHashWatcher = () => {
+  const obj = useRecoilValue(userConfigStateBulk)
+
+  setHashFromObject(obj)
+  return <></>
+}
+export const RegisterHashLink = () => {
+  return (
+    <>
+      <RegisterHashUpdater />
+      <RegisterHashWatcher />
+    </>
+  )
 }
 const defaultState: Record<string, string> = {
   mcu: MicroControllers.ATMEGA328P,
@@ -30,7 +45,12 @@ const defaultState: Record<string, string> = {
 
 const userConfigState_vars = atom<string[]>({
   key: 'userConfigState_vars',
-  default: [] //Object.keys(defaultState)
+  default: [],
+
+  // The hack is to instantly update the userConfigState_vars array
+  // otherwise it is imposible to accumulate the list of used variables in the family.
+  // This is because subsequent synchronous calls to set an atom don't update their previous state.
+  dangerouslyAllowMutability: true
 })
 
 const userConfigState_store = atomFamily<string | undefined, string>({
@@ -46,32 +66,33 @@ export const userConfigState = selectorFamily<string | undefined, string>({
       get(userConfigState_store(variable)),
   set:
     (variable: string) =>
-    ({ get, set }, value) => {
+    ({ set }, value) => {
       if (value instanceof DefaultValue) value = undefined
-      const current = get(userConfigState_store(variable))
-      if (current !== value) {
-        set(userConfigState_store(variable), value)
-        set(userConfigState_vars, (prev) => {
-          if (value === undefined) return without(prev, variable)
-          else return uniq([...prev, variable])
-        })
-        const obj = { ...get(userConfigStateBulk), [variable]: value }
-        console.log(get(userConfigStateBulk), obj)
-        setHashFromObject(obj)
-      }
+      set(userConfigState_store(variable), value)
+      set(userConfigState_vars, (vars_old) => {
+        let vars_new =
+          value === undefined
+            ? without(vars_old, variable)
+            : uniq([...vars_old, variable])
+        vars_old.length = 0
+        vars_old.push(...vars_new)
+        return vars_new
+      })
     }
 })
 
 export const userConfigStateBulk = selector<Record<string, string | undefined>>(
   {
     key: 'userConfigStateBulk',
-    get: ({ get }) =>
-      Object.fromEntries(
+    get: ({ get }) => {
+      const got = Object.fromEntries(
         get(userConfigState_vars).map((variable) => [
           variable,
           get(userConfigState_store(variable))
         ])
-      ) as Record<string, string>,
+      ) as Record<string, string>
+      return got
+    },
     set: ({ get, set }, value) => {
       if (value instanceof DefaultValue) return console.warn('why')
       const variables = uniq([

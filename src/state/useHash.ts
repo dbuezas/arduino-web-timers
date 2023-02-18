@@ -6,6 +6,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 let lock = false
 
 export const setHashFromObject = debounce(
+  // debounced to avoid chrome throttling
   async (record: Record<string, string | undefined>) => {
     const cleanRecord = Object.fromEntries(
       Object.entries(record).filter(([, val]) => val !== undefined)
@@ -20,7 +21,7 @@ export const setHashFromObject = debounce(
     }
   },
   100,
-  { leading: false, trailing: true }
+  { leading: false, trailing: true, maxWait: 100 }
 )
 
 export const getHashParams = () => {
