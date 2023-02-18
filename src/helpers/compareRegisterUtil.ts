@@ -56,7 +56,8 @@ const getIsActiveDeadTime = (genericName: GenericCompRegName, values: TRow) =>
 const getIsUsed = (genericName: GenericCompRegName, values: TRow) =>
   getIsTop(genericName, values) ||
   getIsInterrupt(genericName, values) ||
-  getIsActiveOutput(genericName, values) ||
+  (getIsActiveOutput(genericName, values) &&
+    !(genericName === 'OutputA' && values.DeadTime === 'on')) ||
   getIsActiveDeadTime(genericName, values)
 
 const getIsInput = (genericName: GenericCompRegName) =>
