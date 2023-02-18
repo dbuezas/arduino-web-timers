@@ -19,8 +19,16 @@ import {
   getCompareRegTraits
 } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { usePrevious, userConfigState } from '../state/state'
+import { userConfigState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
+
+function usePrevious<T>(value: T) {
+  const ref = useRef<T>()
+  useEffect(() => {
+    ref.current = value
+  })
+  return ref.current
+}
 
 type Props = {
   style: Object
@@ -93,7 +101,7 @@ export default function Plot({ style }: Props) {
       const setReg = useSetRecoilState(userConfigState(iocr.name))
       const top = param.top || Number.parseInt(values.counterMax)
       if (!iocr.isDeadTime) nth++
-      if (prev && !prev[i].isUsed && iocr.isUsed) {
+      if (Number.isNaN(iocr.value) && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.pow(counterMax, 0.3)
           : (top / (ioCount + 2)) * (nth + 1)

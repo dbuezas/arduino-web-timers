@@ -1,5 +1,5 @@
 import { map } from 'lodash'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 
@@ -8,15 +8,15 @@ import TimerSetup from './Panes/TimerSetup'
 import { PanelModes, MicroControllers } from './helpers/types'
 import {
   panelModeState,
-  RegisterLocationState,
   mcuTimers,
-  userConfigState
+  userConfigState,
+  userConfigStateBulk
 } from './state/state'
-import { setHashFromObject } from './state/useHash'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
   const timerIdx = useRecoilValue(userConfigState('timer'))
   const mcu = useRecoilValue(userConfigState('mcu'))
+  const setInBulk = useSetRecoilState(userConfigStateBulk)
   const timers = useRecoilValue(mcuTimers)
   const [panelMode, setPanelMode] = useRecoilState(panelModeState)
   const isLoading = mcuTimers === undefined || timerIdx === undefined
@@ -27,7 +27,7 @@ const App = () => {
         href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css"
       />
       <div>
-        <RegisterLocationState />
+        {/* Rerender everything when the hash changes */}
         {!isLoading && (
           <Container className="App">
             <Header>
@@ -66,7 +66,7 @@ const App = () => {
                         <Dropdown.Item
                           // active={aChip === mcu}
                           onSelect={(mcu) =>
-                            setHashFromObject({
+                            setInBulk({
                               mcu,
                               timer: '0'
                             })
@@ -82,7 +82,7 @@ const App = () => {
                   <Nav
                     activeKey={timerIdx}
                     onSelect={(timer) =>
-                      setHashFromObject({
+                      setInBulk({
                         mcu,
                         timer
                       })
