@@ -19,8 +19,16 @@ import {
   getCompareRegTraits
 } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { usePrevious, userConfigState } from '../state/state'
+import { userConfigState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
+
+function usePrevious<T>(value: T) {
+  const ref = useRef<T>()
+  useEffect(() => {
+    ref.current = value
+  })
+  return ref.current
+}
 
 type Props = {
   style: Object

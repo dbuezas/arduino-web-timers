@@ -1,44 +1,42 @@
+import { debounce } from 'lodash'
 import { useState, useEffect } from 'react'
 
-const getHashParams = () => {
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+let lock = false
+
+export const setHashFromObject = debounce(
+  async (record: Record<string, string | undefined>) => {
+    const cleanRecord = Object.fromEntries(
+      Object.entries(record).filter(([, val]) => val !== undefined)
+    ) as Record<string, string>
+    const newHash = new URLSearchParams(cleanRecord).toString()
+    const currentHash = window.location.hash.slice(1)
+    if (newHash !== currentHash) {
+      lock = true
+      window.location.replace(`${window.location.pathname}#${newHash}`)
+      await sleep(0)
+      lock = false
+    }
+  },
+  100,
+  { leading: false, trailing: true }
+)
+
+export const getHashParams = () => {
   const hash = window.location.hash.slice(1)
   return new URLSearchParams(hash)
 }
 
-const setFullHash = (hash: string) => {
-  const currentHash = window.location.hash.slice(1)
-  if (hash !== currentHash) {
-    window.location.replace(`${window.location.pathname}#${hash}`)
-  }
-}
-export const setHashFromObject = (
-  record: Record<string, string | undefined>
-) => {
-  const cleanRecord = Object.fromEntries(
-    Object.entries(record).filter(([, val]) => val !== undefined)
-  ) as Record<string, string>
-  const hashParams = new URLSearchParams(cleanRecord)
-  return setFullHash(hashParams.toString())
-}
-export const setHashParam = (key: string, value: string | undefined) => {
-  const hashParams = getHashParams()
-  if (value === undefined) {
-    hashParams.delete(key)
-  } else {
-    hashParams.set(key, value)
-  }
-  setFullHash(hashParams.toString())
-}
-
-export const useHashParams = () => {
-  const [hashParams, setHashParams] = useState<URLSearchParams>(getHashParams())
+export const useHashChangedExternally = () => {
+  const [state, setState] = useState<URLSearchParams>(getHashParams())
   useEffect(() => {
     const handleHashChange = () => {
-      setHashParams(getHashParams())
+      if (!lock) setState(getHashParams())
     }
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
-  return Object.fromEntries(hashParams.entries())
+  return Object.fromEntries(state.entries())
 }
