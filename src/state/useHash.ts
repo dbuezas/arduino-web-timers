@@ -12,13 +12,10 @@ export const setHashFromObject = debounce(
       Object.entries(record).filter(([, val]) => val !== undefined)
     ) as Record<string, string>
     const newHash = new URLSearchParams(cleanRecord).toString()
-    const currentHash = window.location.hash.slice(1)
-    if (newHash !== currentHash) {
-      lock = true
-      window.location.replace(`${window.location.pathname}#${newHash}`)
-      await sleep(0)
-      lock = false
-    }
+    lock = true
+    window.location.replace(`${window.location.pathname}#${newHash}`)
+    await sleep(0)
+    lock = false
   },
   100,
   { leading: false, trailing: true, maxWait: 100 }

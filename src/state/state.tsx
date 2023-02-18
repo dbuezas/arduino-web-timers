@@ -17,6 +17,10 @@ export const panelModeState = atom({
   key: 'PanelModeState',
   default: PanelModes.Normal
 })
+const defaultState: Record<string, string> = {
+  mcu: MicroControllers.ATMEGA328P,
+  timer: '0'
+}
 
 export const RegisterHashUpdater = () => {
   const set = useSetRecoilState(userConfigStateBulk)
@@ -26,21 +30,16 @@ export const RegisterHashUpdater = () => {
 }
 export const RegisterHashWatcher = () => {
   const obj = useRecoilValue(userConfigStateBulk)
-
-  setHashFromObject(obj)
+  setHashFromObject({ ...defaultState, ...obj })
   return <></>
 }
 export const RegisterHashLink = () => {
   return (
     <>
-      <RegisterHashUpdater />
       <RegisterHashWatcher />
+      <RegisterHashUpdater />
     </>
   )
-}
-const defaultState: Record<string, string> = {
-  mcu: MicroControllers.ATMEGA328P,
-  timer: '0'
 }
 
 const userConfigState_vars = atom<string[]>({
@@ -55,7 +54,7 @@ const userConfigState_vars = atom<string[]>({
 
 const userConfigState_store = atomFamily<string | undefined, string>({
   key: 'userConfigState_store',
-  default: (param) => defaultState[param]
+  default: (variable) => defaultState[variable]
 })
 
 export const userConfigState = selectorFamily<string | undefined, string>({
@@ -88,7 +87,7 @@ export const userConfigStateBulk = selector<Record<string, string | undefined>>(
       const got = Object.fromEntries(
         get(userConfigState_vars).map((variable) => [
           variable,
-          get(userConfigState_store(variable))
+          get(userConfigState(variable))
         ])
       ) as Record<string, string>
       return got

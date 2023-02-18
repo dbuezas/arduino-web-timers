@@ -101,7 +101,7 @@ export default function Plot({ style }: Props) {
       const setReg = useSetRecoilState(userConfigState(iocr.name))
       const top = param.top || Number.parseInt(values.counterMax)
       if (!iocr.isDeadTime) nth++
-      if (prev && !prev[i].isUsed && iocr.isUsed) {
+      if (Number.isNaN(iocr.value) && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.pow(counterMax, 0.3)
           : (top / (ioCount + 2)) * (nth + 1)
