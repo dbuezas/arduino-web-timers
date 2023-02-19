@@ -71,16 +71,16 @@ CS0	CS02	CS01	CS00	clockPrescalerOrSource	ExternalClockInput
 							
 OCIE0A	interruptA	interruptVectorCodeA					
 0	off	//nocode					
-1	on	ISR(TIMER0_COMPA_vect) {\\n    /* on OCR0A match */\\n}					
+1	on	ISR(TIMER0_COMPA_vect) {\n    /* on OCR0A match */\n}					
 							
 OCIE0B	interruptB	interruptVectorCodeB					
 0	off	//nocode					
-1	on	ISR(TIMER0_COMPB_vect) {\\n    /* on OCR0B match */\\n}					
+1	on	ISR(TIMER0_COMPB_vect) {\n    /* on OCR0B match */\n}					
 							
 							
 TOIE0	InterruptOnTimerOverflow	interruptVectorCodeOVF					
 0	off	//nocode					
-1	on	ISR(TIMER0_OVF_vect) {\\n    /* on overflow */\\n}					
+1	on	ISR(TIMER0_OVF_vect) {\n    /* on overflow */\n}					
 							
 OCnA_OutputPort							
 D6							

@@ -86,19 +86,19 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 												
 OCIE1A	interruptA	interruptVectorCodeA										
 0	off	//nocode										
-1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}										
+1	on	ISR(TIMER1_COMPA_vect) {\n    /* on OCR0A match */\n}										
 												
 OCIE1B	interruptB	interruptVectorCodeB										
 0	off	//nocode										
-1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}										
+1	on	ISR(TIMER1_COMPB_vect) {\n    /* on OCR0B match */\n}										
 												
 TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF										
 0	off	//nocode										
-1	on	ISR(TIMER1_OVF_vect) {\\n    /* on overflow */\\n}										
+1	on	ISR(TIMER1_OVF_vect) {\n    /* on overflow */\n}										
 												
 ICIE1	InterruptOnInputCapture	interruptVectorCaptureCode										
 0	off	//nocode										
-1	on	ISR(TIMER1_CAPT_vect) {\\n    /* on input capture */\\n}										
+1	on	ISR(TIMER1_CAPT_vect) {\n    /* on input capture */\n}										
 												
 ICNC1	InputCaptureNoiseSupression											
 0	off											

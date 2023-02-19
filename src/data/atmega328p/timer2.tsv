@@ -71,16 +71,16 @@ CS2	CS22	CS21	CS20	clockPrescalerOrSource
 							
 OCIE2A	interruptA	interruptVectorCodeA					
 0	off	//nocode					
-1	on	ISR(TIMER2_COMPA_vect) {\\n    /* on OCR2A match */\\n}					
+1	on	ISR(TIMER2_COMPA_vect) {\n    /* on OCR2A match */\n}					
 							
 OCIE2B	interruptB	interruptVectorCodeB					
 0	off	//nocode					
-1	on	ISR(TIMER2_COMPB_vect) {\\n    /* on OCR2B match */\\n}					
+1	on	ISR(TIMER2_COMPB_vect) {\n    /* on OCR2B match */\n}					
 							
 							
 TOIE2	InterruptOnTimerOverflow	interruptVectorCodeOVF					
 0	off	//nocode					
-1	on	ISR(TIMER2_OVF_vect) {\\n    /* on overflow */\\n}					
+1	on	ISR(TIMER2_OVF_vect) {\n    /* on overflow */\n}					
 							
 OCnA_OutputPort							
 B3							

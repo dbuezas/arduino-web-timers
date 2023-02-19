@@ -112,23 +112,23 @@ ISR(TIMER3_vect)
 													
 OCIE3A	interruptA	CompareOutputModeA	interruptVectorCodeA										
 0	off	*	//nocode										
-1	on	!disconnect	if (TIFR3 & (1 << OCF3A)) {\\n    TIFR3 = 1 << OCF3A;\\n    /* on OCR3A match */\\n}										
+1	on	!disconnect	if (TIFR3 & (1 << OCF3A)) {\n    TIFR3 = 1 << OCF3A;\n    /* on OCR3A match */\n}										
 													
 OCIE3B	interruptB	CompareOutputModeB	interruptVectorCodeB										
 0	off	*	//nocode										
-1	on	!disconnect	if (TIFR3 & (1 << OCF3B)) {\\n    TIFR3 = 1 << OCF3B;\\n    /* on OCR3B match */\\n}										
+1	on	!disconnect	if (TIFR3 & (1 << OCF3B)) {\n    TIFR3 = 1 << OCF3B;\n    /* on OCR3B match */\n}										
 													
 OCIE3C	interruptC	CompareOutputModeC	interruptVectorCodeC										
 0	off	*	//nocode										
-1	on	!disconnect	if (TIFR3 & (1 << OCF3C)) {\\n    TIFR3 = 1 << OCF3C;\\n    /* on OCR3C match */\\n}										
+1	on	!disconnect	if (TIFR3 & (1 << OCF3C)) {\n    TIFR3 = 1 << OCF3C;\n    /* on OCR3C match */\n}										
 													
 TOIE3	InterruptOnTimerOverflow	interruptVectorCodeOVF											
 0	off	//nocode											
-1	on	if (TIFR3 & (1 << TOV3)) {\\n    TIFR3 = 1 << TOV3;\\n    /* on overflow */\\n}											
+1	on	if (TIFR3 & (1 << TOV3)) {\n    TIFR3 = 1 << TOV3;\n    /* on overflow */\n}											
 													
 ICIE3	InterruptOnInputCapture	interruptVectorCaptureCode											
 0	off	//nocode											
-1	on	if (TIFR3 & (1 << ICF3)) {\\n    TIFR3 = 1 << ICF3;\\n    /* on capture */\\n}											
+1	on	if (TIFR3 & (1 << ICF3)) {\n    TIFR3 = 1 << ICF3;\n    /* on capture */\n}											
 													
 ICNC3	InputCaptureNoiseSupression												
 0	off												
