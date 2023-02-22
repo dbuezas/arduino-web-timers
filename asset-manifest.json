@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/arduino-web-timers/static/css/main.2803d531.chunk.css",
-    "main.js": "/arduino-web-timers/static/js/main.e8d9a5f9.chunk.js",
-    "main.js.map": "/arduino-web-timers/static/js/main.e8d9a5f9.chunk.js.map",
-    "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.a0d03983.js",
-    "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.a0d03983.js.map",
+    "main.js": "/arduino-web-timers/static/js/main.db433871.chunk.js",
+    "main.js.map": "/arduino-web-timers/static/js/main.db433871.chunk.js.map",
+    "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.b7c7b6ea.js",
+    "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.b7c7b6ea.js.map",
     "static/css/2.7785af68.chunk.css": "/arduino-web-timers/static/css/2.7785af68.chunk.css",
-    "static/js/2.725d2485.chunk.js": "/arduino-web-timers/static/js/2.725d2485.chunk.js",
-    "static/js/2.725d2485.chunk.js.map": "/arduino-web-timers/static/js/2.725d2485.chunk.js.map",
-    "static/js/3.75b85146.chunk.js": "/arduino-web-timers/static/js/3.75b85146.chunk.js",
-    "static/js/3.75b85146.chunk.js.map": "/arduino-web-timers/static/js/3.75b85146.chunk.js.map",
+    "static/js/2.02032c47.chunk.js": "/arduino-web-timers/static/js/2.02032c47.chunk.js",
+    "static/js/2.02032c47.chunk.js.map": "/arduino-web-timers/static/js/2.02032c47.chunk.js.map",
+    "static/js/3.dc103b55.chunk.js": "/arduino-web-timers/static/js/3.dc103b55.chunk.js",
+    "static/js/3.dc103b55.chunk.js.map": "/arduino-web-timers/static/js/3.dc103b55.chunk.js.map",
     "index.html": "/arduino-web-timers/index.html",
     "static/css/2.7785af68.chunk.css.map": "/arduino-web-timers/static/css/2.7785af68.chunk.css.map",
     "static/css/main.2803d531.chunk.css.map": "/arduino-web-timers/static/css/main.2803d531.chunk.css.map",
-    "static/js/2.725d2485.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.725d2485.chunk.js.LICENSE.txt"
+    "static/js/2.02032c47.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.02032c47.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.a0d03983.js",
+    "static/js/runtime-main.b7c7b6ea.js",
     "static/css/2.7785af68.chunk.css",
-    "static/js/2.725d2485.chunk.js",
+    "static/js/2.02032c47.chunk.js",
     "static/css/main.2803d531.chunk.css",
-    "static/js/main.e8d9a5f9.chunk.js"
+    "static/js/main.db433871.chunk.js"
   ]
 }
