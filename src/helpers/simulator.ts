@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 import { uniq } from 'lodash'
-
+import Fraction from 'fraction.js'
 /*
 PCPWM == updates at top
 PFCPWM == updates at bottom
@@ -78,7 +78,8 @@ export default function simTimer({
   deadTimeA,
   deadTimeB
 }: Props) {
-  const prescaledCPUEnd = getTimerLength(top, timerMode) * 4
+  const timerLength = getTimerLength(top, timerMode)
+  const prescaledCPUEnd = timerLength * 4
   const results = {
     t: [] as number[],
     cpu: [] as number[],
@@ -88,7 +89,10 @@ export default function simTimer({
     OVF: [] as number[],
     CAPT: [] as number[],
     deadTimes: [[], []] as number[][],
-    freq: cpuHz / (getTimerLength(top, timerMode) + 1) / prescaler
+    freq:
+      timerLength === 0
+        ? new Fraction(0)
+        : new Fraction(cpuHz).div(timerLength).div(prescaler)
   }
   if (isNaN(top)) return results
   let OCnXs = OCRnXs.map(() => 0)

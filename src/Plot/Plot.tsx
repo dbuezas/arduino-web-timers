@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import useSize from '@react-hook/size'
 import { Tag } from 'rsuite'
 
-import XAxis, { formatFreq, formatTime } from './XAxis'
+import XAxis from './XAxis'
 import YAxis from './YAxis'
 import { scaleLinear, extent, curveStepAfter } from 'd3'
 import { margin } from './margin'
@@ -21,6 +21,7 @@ import {
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { userConfigState } from '../state/state'
 import { suggestedAssignmentState } from '../Panes/state'
+import Fraction from 'fraction.js'
 
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()
@@ -33,7 +34,24 @@ function usePrevious<T>(value: T) {
 type Props = {
   style: Object
 }
-function Freq({ freq }: { freq: number }) {
+
+export function formatTime(s: Fraction) {
+  if (s.valueOf() >= 1) return `${s.round(5)} s`
+  const ms = s.mul(1000)
+  if (ms.valueOf() >= 1) return `${ms.round(5)} ms`
+  const us = ms.mul(1000)
+  if (us.valueOf() >= 1) return `${us.round(5)} us`
+  const ns = us.mul(1000)
+  return `${ns.round(5)} ns`
+}
+export function formatFreq(hz: Fraction) {
+  if (hz.valueOf() < 1000) return `${hz.round(5)} Hz`
+  const khz = hz.div(1000)
+  if (khz.valueOf() < 1000) return `${khz.round(5)} kHz`
+  const mhz = khz.div(1000)
+  return `${mhz.round(5)} MHz`
+}
+function Freq({ freq }: { freq: Fraction }) {
   const [mode, setMode] = useState(true)
   return (
     <Tag onClick={() => setMode(!mode)} className="frequency">
@@ -41,7 +59,7 @@ function Freq({ freq }: { freq: number }) {
         ? `
         Freq: ${formatFreq(freq)}
         `
-        : `Period: ${formatTime(1 / freq)}`}
+        : `Period: ${freq.equals(0) ? 0 : formatTime(freq.inverse())}`}
     </Tag>
   )
 }
@@ -158,7 +176,7 @@ export default function Plot({ style }: Props) {
   }, [IOCR_states])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <Freq freq={Math.round(simulation.freq * 100) / 100} />
+      <Freq freq={simulation.freq} />
       <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
