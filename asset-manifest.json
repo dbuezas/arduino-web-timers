@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/arduino-web-timers/static/css/main.2803d531.chunk.css",
-    "main.js": "/arduino-web-timers/static/js/main.a0b6b404.chunk.js",
-    "main.js.map": "/arduino-web-timers/static/js/main.a0b6b404.chunk.js.map",
+    "main.css": "/arduino-web-timers/static/css/main.89231b35.chunk.css",
+    "main.js": "/arduino-web-timers/static/js/main.d67db9fc.chunk.js",
+    "main.js.map": "/arduino-web-timers/static/js/main.d67db9fc.chunk.js.map",
     "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.db0a23bd.js",
     "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.db0a23bd.js.map",
     "static/css/2.7785af68.chunk.css": "/arduino-web-timers/static/css/2.7785af68.chunk.css",
-    "static/js/2.0a2d9ce2.chunk.js": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js",
-    "static/js/2.0a2d9ce2.chunk.js.map": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js.map",
+    "static/js/2.e97c49a2.chunk.js": "/arduino-web-timers/static/js/2.e97c49a2.chunk.js",
+    "static/js/2.e97c49a2.chunk.js.map": "/arduino-web-timers/static/js/2.e97c49a2.chunk.js.map",
     "static/js/3.4222d47e.chunk.js": "/arduino-web-timers/static/js/3.4222d47e.chunk.js",
     "static/js/3.4222d47e.chunk.js.map": "/arduino-web-timers/static/js/3.4222d47e.chunk.js.map",
     "index.html": "/arduino-web-timers/index.html",
     "static/css/2.7785af68.chunk.css.map": "/arduino-web-timers/static/css/2.7785af68.chunk.css.map",
-    "static/css/main.2803d531.chunk.css.map": "/arduino-web-timers/static/css/main.2803d531.chunk.css.map",
-    "static/js/2.0a2d9ce2.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js.LICENSE.txt"
+    "static/css/main.89231b35.chunk.css.map": "/arduino-web-timers/static/css/main.89231b35.chunk.css.map",
+    "static/js/2.e97c49a2.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.e97c49a2.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.db0a23bd.js",
     "static/css/2.7785af68.chunk.css",
-    "static/js/2.0a2d9ce2.chunk.js",
-    "static/css/main.2803d531.chunk.css",
-    "static/js/main.a0b6b404.chunk.js"
+    "static/js/2.e97c49a2.chunk.js",
+    "static/css/main.89231b35.chunk.css",
+    "static/js/main.d67db9fc.chunk.js"
   ]
 }
