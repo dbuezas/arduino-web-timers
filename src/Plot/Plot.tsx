@@ -6,7 +6,6 @@ import XAxis from './XAxis'
 import YAxis from './YAxis'
 import { scaleLinear, extent, curveStepAfter } from 'd3'
 import { margin } from './margin'
-import simTimer from '../helpers/simulator'
 
 import './Plot.css'
 import CompareRegisterHandle, {
@@ -14,14 +13,14 @@ import CompareRegisterHandle, {
 } from './CompareRegisterHandle'
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
-import {
-  getAllCompareRegTraits,
-  getCompareRegTraits
-} from '../helpers/compareRegisterUtil'
+import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { userConfigState } from '../state/state'
-import { suggestedAssignmentState } from '../Panes/state'
-import Fraction from 'fraction.js'
+import {
+  outputFrequencyState,
+  outputPeriodState,
+  simulationState
+} from '../helpers/helpers'
 
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()
@@ -31,65 +30,24 @@ function usePrevious<T>(value: T) {
   return ref.current
 }
 
-type Props = {
-  style: Object
-}
-
-export function formatTime(s: Fraction) {
-  if (s.valueOf() >= 1) return `${s.round(5)} s`
-  const ms = s.mul(1000)
-  if (ms.valueOf() >= 1) return `${ms.round(5)} ms`
-  const us = ms.mul(1000)
-  if (us.valueOf() >= 1) return `${us.round(5)} us`
-  const ns = us.mul(1000)
-  return `${ns.round(5)} ns`
-}
-export function formatFreq(hz: Fraction) {
-  if (hz.valueOf() < 1000) return `${hz.round(5)} Hz`
-  const khz = hz.div(1000)
-  if (khz.valueOf() < 1000) return `${khz.round(5)} kHz`
-  const mhz = khz.div(1000)
-  return `${mhz.round(5)} MHz`
-}
-function Freq({ freq }: { freq: Fraction }) {
+function Frequency() {
   const [mode, setMode] = useState(true)
+  const outputFrequency = useRecoilValue(outputFrequencyState)
+  const outputPeriod = useRecoilValue(outputPeriodState)
   return (
     <Tag onClick={() => setMode(!mode)} className="frequency">
-      {mode
-        ? `
-        Freq: ${formatFreq(freq)}
-        `
-        : `Period: ${freq.equals(0) ? 0 : formatTime(freq.inverse())}`}
+      {mode ? `Freq: ${outputFrequency}` : `Period: ${outputPeriod}`}
     </Tag>
   )
 }
-export default function Plot({ style }: Props) {
-  const values = useRecoilValue(suggestedAssignmentState)
-  const counterMax = parseInt(values.counterMax)
-  const param = {
-    timerNr: values.timerNr,
-    timerMode: values.timerMode as any,
-    prescaler:
-      values.clockPrescalerOrSource === 'disconnect'
-        ? NaN
-        : parseInt(values.clockPrescalerOrSource) ||
-          parseInt(values.FCPU) / 1000,
-    cpuHz:
-      parseInt(values.FCPU || '1') * (values.clockDoubler === 'on' ? 2 : 1),
-    top: 0,
-    counterMax: parseInt(values.counterMax),
-    tovTime: values.setTovMoment as any,
-    OCRnXs: [] as number[],
-    OCRnXs_behaviour: [
-      values.CompareOutputModeA as any,
-      values.CompareOutputModeB as any,
-      values.CompareOutputModeC as any
-    ],
-    ICRn: 0,
-    deadTimeEnable: values.DeadTime === 'on',
-    deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
-    deadTimeB: getCompareRegTraits('DeadTimeB', values).value
-  }
+
+export default function Plot({ style }: { style: Object }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [width, height_] = useSize(containerRef)
+  const height_ouputCompare = 30
+  const margin_ouputCompare = 10
+  const { simulation, ocrMax, param, counterMax, values } =
+    useRecoilValue(simulationState)
 
   const IOCR_states = getAllCompareRegTraits(values).map((traits, i) => ({
     ...traits,
@@ -97,17 +55,6 @@ export default function Plot({ style }: Props) {
     ref: useRef<CompareRegisterHandleRef>(null),
     i
   }))
-
-  param.OCRnXs = IOCR_states.filter(({ isOutput }) => isOutput).map(
-    ({ value }) => value
-  )
-
-  param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
-
-  param.top =
-    IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
-  const ocrMax = parseInt(values.topValue) || counterMax
-
   /* TODO: put somewhere else */
   /* DEFAULTS FOR COMPARE REGISTERS */
   {
@@ -131,11 +78,6 @@ export default function Plot({ style }: Props) {
     })
   }
   /* --- */
-  const simulation = simTimer(param)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [width, height_] = useSize(containerRef)
-  const height_ouputCompare = 30
-  const margin_ouputCompare = 10
   const activeOCnXs = IOCR_states.filter(({ isActiveOutput }) => isActiveOutput)
   const height_timer =
     height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
@@ -176,7 +118,7 @@ export default function Plot({ style }: Props) {
   }, [IOCR_states])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <Freq freq={simulation.freq} />
+      <Frequency />
       <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
@@ -191,53 +133,48 @@ export default function Plot({ style }: Props) {
             key: 'TCNT'
           }}
         />
-        {activeOCnXs.map(({ isActiveOutput, i }, k) => {
+        {activeOCnXs.flatMap(({ isActiveOutput, i }, k) => {
           const yScale = scaleLinear()
             .domain([0, 1])
             .rangeRound([
               height_timer + height_ouputCompare * (k + 1),
               height_timer + height_ouputCompare * k + margin_ouputCompare
             ])
-          return (
-            <>
-              {isActiveOutput && (
-                <Curve
-                  {...{
-                    key: 'OC' + i,
-                    idx: i,
-                    curve: curveStepAfter,
-                    name: 'OC' + param.timerNr + 'ABC'[i],
-                    xScale,
-                    yScale,
-                    data: simulation.t.map((t, j) => [
+          return [
+            isActiveOutput && (
+              <Curve
+                {...{
+                  key: 'OC' + i,
+                  idx: i,
+                  curve: curveStepAfter,
+                  name: 'OC' + param.timerNr + 'ABC'[i],
+                  xScale,
+                  yScale,
+                  data: simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])
+                }}
+              />
+            ),
+            param.deadTimeEnable && i < 2 && (
+              <Curve
+                {...{
+                  key: 'DeadTime-' + i,
+                  idx: 'DeadTime-' + i,
+                  curve: curveStepAfter,
+                  name: '',
+                  xScale,
+                  yScale,
+                  data: [
+                    [0, 0],
+                    ...simulation.t.map((t, j) => [
                       t,
-                      simulation.OCnXs[i][j]
-                    ])
-                  }}
-                />
-              )}
-              {param.deadTimeEnable && i < 2 && (
-                <Curve
-                  {...{
-                    key: 'DeadTime-' + i,
-                    idx: 'DeadTime-' + i,
-                    curve: curveStepAfter,
-                    name: '',
-                    xScale,
-                    yScale,
-                    data: [
-                      [0, 0],
-                      ...simulation.t.map((t, j) => [
-                        t,
-                        simulation.deadTimes[i][j]
-                      ]),
-                      [simulation.t[simulation.t.length - 1], 0]
-                    ] as [number, number][]
-                  }}
-                />
-              )}
-            </>
-          )
+                      simulation.deadTimes[i][j]
+                    ]),
+                    [simulation.t[simulation.t.length - 1], 0]
+                  ] as [number, number][]
+                }}
+              />
+            )
+          ]
         })}
 
         {simulation.MATCH_Xs.flatMap(

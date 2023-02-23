@@ -3,6 +3,14 @@ import { TTable } from './types'
 import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
 import { remove } from 'lodash'
+import Fraction from 'fraction.js'
+import { selector } from 'recoil'
+import { suggestedAssignmentState } from '../Panes/state'
+import {
+  getCompareRegTraits,
+  getAllCompareRegTraits
+} from './compareRegisterUtil'
+import simTimer from './simulator'
 
 export const splitTables = ([left, ...tables]: TTable[]): TTable[][] => {
   if (!left) return []
@@ -96,3 +104,93 @@ export const getConstrainedDomains = (
   }
   return domains
 }
+
+export const simulationState = selector({
+  key: 'simulationState',
+  get: ({ get }) => {
+    const values = get(suggestedAssignmentState)
+    const counterMax = parseInt(values.counterMax)
+    const param = {
+      timerNr: values.timerNr,
+      timerMode: values.timerMode as any,
+      prescaler:
+        values.clockPrescalerOrSource === 'disconnect'
+          ? NaN
+          : parseInt(values.clockPrescalerOrSource) ||
+            parseInt(values.FCPU) / 1000,
+      cpuHz:
+        parseInt(values.FCPU || '1') * (values.clockDoubler === 'on' ? 2 : 1),
+      top: 0,
+      counterMax,
+      tovTime: values.setTovMoment as any,
+      OCRnXs: [] as number[],
+      OCRnXs_behaviour: [
+        values.CompareOutputModeA as any,
+        values.CompareOutputModeB as any,
+        values.CompareOutputModeC as any
+      ],
+      ICRn: 0,
+      deadTimeEnable: values.DeadTime === 'on',
+      deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
+      deadTimeB: getCompareRegTraits('DeadTimeB', values).value
+    }
+
+    const IOCR_states = getAllCompareRegTraits(values)
+
+    param.OCRnXs = IOCR_states.filter(({ isOutput }) => isOutput).map(
+      ({ value }) => value
+    )
+
+    param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
+
+    param.top =
+      IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
+    const ocrMax = parseInt(values.topValue) || counterMax
+
+    return {
+      simulation: simTimer(param),
+      IOCR_states,
+      ocrMax,
+      param,
+      counterMax,
+      values
+    }
+  }
+})
+
+function formatTime(s: Fraction) {
+  if (s.valueOf() >= 1) return `${s.round(5)} s`
+  const ms = s.mul(1000)
+  if (ms.valueOf() >= 1) return `${ms.round(5)} ms`
+  const us = ms.mul(1000)
+  if (us.valueOf() >= 1) return `${us.round(5)} us`
+  const ns = us.mul(1000)
+  return `${ns.round(5)} ns`
+}
+export function formatFrequency(hz: Fraction) {
+  if (hz.valueOf() < 1000) return `${hz.round(5)} Hz`
+  const khz = hz.div(1000)
+  if (khz.valueOf() < 1000) return `${khz.round(5)} kHz`
+  const mhz = khz.div(1000)
+  return `${mhz.round(5)} MHz`
+}
+export function formatPeriod(freq: Fraction) {
+  return `${freq.equals(0) ? 0 : formatTime(freq.inverse())}`
+}
+
+export const outputFrequencyState = selector({
+  key: 'outputFrequencyState',
+  get: ({ get }) => {
+    const { simulation } = get(simulationState)
+    const { freq } = simulation
+    return formatFrequency(freq)
+  }
+})
+export const outputPeriodState = selector({
+  key: 'outputPeriodState',
+  get: ({ get }) => {
+    const { simulation } = get(simulationState)
+    const { freq } = simulation
+    return formatPeriod(freq)
+  }
+})

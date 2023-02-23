@@ -1,7 +1,11 @@
 import { map } from 'lodash'
 import { useRecoilValue } from 'recoil'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
-import { isTruthy } from '../helpers/helpers'
+import {
+  isTruthy,
+  outputFrequencyState,
+  outputPeriodState
+} from '../helpers/helpers'
 import { timerState } from '../state/state'
 import {
   suggestedAssignmentState,
@@ -21,7 +25,25 @@ function LinkToThisPage() {
     window.addEventListener('hashchange', handleUrlChange)
     return () => window.removeEventListener('hashchange', handleUrlChange)
   }, [])
-  return <>{'/* ' + url + ' */\n'}</>
+  return <>{'URL: ' + url + '\n'}</>
+}
+function Frequency() {
+  const outputFrequency = useRecoilValue(outputFrequencyState)
+  const outputPeriod = useRecoilValue(outputPeriodState)
+  const values = useRecoilValue(suggestedAssignmentState)
+  const { timerMode } = values
+  const IOCR_states = getAllCompareRegTraits(values)
+  const outputs = IOCR_states.filter(
+    ({ isActiveOutput }) => isActiveOutput
+  ).map(({ outputPin, outputMode }) => `${outputPin} ${outputMode}`)
+  return (
+    <>
+      {`Mode     : ${timerMode}\n`}
+      {`Period   : ${outputPeriod}\n`}
+      {`Frequency: ${outputFrequency}\n`}
+      {`Outputs  : \n   ${outputs.join('\n   ')}`}
+    </>
+  )
 }
 export default function Code() {
   const codeContainerRef = useRef<HTMLPreElement>(null)
@@ -29,10 +51,11 @@ export default function Code() {
     <>
       <CopyToClipboard codeContainerRef={codeContainerRef} />
       <pre style={{ margin: 0 }} ref={codeContainerRef}>
-        {`\
-void setup(){
-  `}
+        {'/*\n'}
         <LinkToThisPage />
+        <Frequency />
+        {'\n*/\n'}
+        {`\nvoid setup(){\n`}
         {`  noInterrupts();\n`}
         <TimerConfgCode />
         <CompareRegsCode />
