@@ -58,7 +58,7 @@ Application to configure and visualise timers. All your changes are stored in th
   - Repeating until all variables have only one viable value
 - Finally the values of variables are used to run the simulation (plot) and write the code & comments.
 - The code output is generared by iterating over each regiser and picking the bits that are set to one.
-- The computations of frequency and period is made in fractional math (not floats) to ensure the results are exactly correct.
+- The computation of frequency and period is made in fractional math (not floats) to ensure the results are exactly correct.
 
 A fun fact: I learned a lot about timers myself while creating this web app, but even more by playing with it!
 You can see all internal variables the constraint solver sees by switching to "With internals" at the top right of the screen.
