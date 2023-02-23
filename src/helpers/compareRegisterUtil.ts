@@ -8,6 +8,28 @@ export type GenericCompRegName =
   | 'DeadTimeA'
   | 'DeadTimeB'
 
+const getOutputPin = (genericName: GenericCompRegName, values: TRow) =>
+  values[
+    {
+      OutputA: `OCnA_OutputPort`,
+      OutputB: `OCnB_OutputPort`,
+      OutputC: `OCnC_OutputPort`,
+      Input: ``,
+      DeadTimeA: ``,
+      DeadTimeB: ``
+    }[genericName]
+  ]
+const getOutputPortMode = (genericName: GenericCompRegName, values: TRow) =>
+  values[
+    {
+      OutputA: `CompareOutputModeA`,
+      OutputB: `CompareOutputModeB`,
+      OutputC: `CompareOutputModeC`,
+      Input: ``,
+      DeadTimeA: ``,
+      DeadTimeB: ``
+    }[genericName]
+  ]
 const getName = (genericName: GenericCompRegName, values: TRow) =>
   ({
     OutputA: `OCR${values.timerNr}A`,
@@ -115,7 +137,9 @@ export const getCompareRegTraits = (
     isActiveOutput: getIsActiveOutput(genericName, values),
     isTop: getIsTop(genericName, values),
     isInterrupt: getIsInterrupt(genericName, values),
-    isUsed: getIsUsed(genericName, values)
+    isUsed: getIsUsed(genericName, values),
+    outputPin: getOutputPin(genericName, values),
+    outputMode: getOutputPortMode(genericName, values)
   }
 }
 export const getAllCompareRegTraits = (values: TRow) =>
