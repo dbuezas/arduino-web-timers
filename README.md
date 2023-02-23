@@ -4,7 +4,7 @@
 
 ## [Click here to open the Web App](https://dbuezas.github.io/arduino-web-timers/)
 
-<img src="./public/screenshot.png" alt="" width="800"/>
+<img width="800" alt="image" src="https://user-images.githubusercontent.com/777196/221049698-d2a51443-73c8-42d7-8e85-b46f25c42dc7.png">
 
 Application to configure and visualise timers. All your changes are stored in the url, bookmark and share configured timers!
 
