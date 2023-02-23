@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import useSize from '@react-hook/size'
-import { Tag } from 'rsuite'
 
 import XAxis from './XAxis'
 import YAxis from './YAxis'
@@ -16,11 +15,7 @@ import { Curve } from './Curve'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { userConfigState } from '../state/state'
-import {
-  outputFrequencyState,
-  outputPeriodState,
-  simulationState
-} from '../helpers/helpers'
+import { simulationState } from '../helpers/helpers'
 
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()
@@ -28,22 +23,6 @@ function usePrevious<T>(value: T) {
     ref.current = value
   })
   return ref.current
-}
-
-function FrequencyInner({ mode }: { mode: boolean }) {
-  // Tag is slow. Only updating content is faster
-  const outputFrequency = useRecoilValue(outputFrequencyState)
-  const outputPeriod = useRecoilValue(outputPeriodState)
-  return <>{mode ? `Freq: ${outputFrequency}` : `Period: ${outputPeriod}`}</>
-}
-function Frequency() {
-  const [mode, setMode] = useState(true)
-
-  return (
-    <Tag onClick={() => setMode(!mode)} className="frequency">
-      <FrequencyInner mode={mode} />
-    </Tag>
-  )
 }
 
 export default function Plot({ style }: { style: Object }) {
@@ -123,7 +102,6 @@ export default function Plot({ style }: { style: Object }) {
   }, [IOCR_states])
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
-      <Frequency />
       <svg className="plot">
         <XAxis {...{ xScale, height: height_timer, data: simulation }} />
         <YAxis {...{ yScale, width }} />
