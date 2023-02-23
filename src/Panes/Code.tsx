@@ -36,12 +36,12 @@ const codeCommentsState = selector({
     ).map(({ outputPin, outputMode }) => `${outputPin}: ${outputMode}`)
     outputs.unshift(outputs.length ? '' : 'none')
     return `\
-  /*
-    URL: ${window.location.href}
-    Mode     : ${timerMode}
-    Period   : ${outputPeriod}
-    Frequency: ${outputFrequency}
-    Outputs  : ${outputs.join('\n    ')}
+/**
+  * URL: ${window.location.href}
+  * Mode     : ${timerMode}
+  * Period   : ${outputPeriod}
+  * Frequency: ${outputFrequency}
+  * Outputs  : ${outputs.join('\n  *  - ')}
   */`
   }
 })

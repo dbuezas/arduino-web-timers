@@ -30,13 +30,18 @@ function usePrevious<T>(value: T) {
   return ref.current
 }
 
-function Frequency() {
-  const [mode, setMode] = useState(true)
+function FrequencyInner({ mode }: { mode: boolean }) {
+  // Tag is slow. Only updating content is faster
   const outputFrequency = useRecoilValue(outputFrequencyState)
   const outputPeriod = useRecoilValue(outputPeriodState)
+  return <>{mode ? `Freq: ${outputFrequency}` : `Period: ${outputPeriod}`}</>
+}
+function Frequency() {
+  const [mode, setMode] = useState(true)
+
   return (
     <Tag onClick={() => setMode(!mode)} className="frequency">
-      {mode ? `Freq: ${outputFrequency}` : `Period: ${outputPeriod}`}
+      <FrequencyInner mode={mode} />
     </Tag>
   )
 }
