@@ -167,7 +167,13 @@ function TimerSetup() {
           </FlexboxGrid.Item>
         ))}
         <FlexboxGrid.Item key="code" style={style}>
-          <Panel header="Code" bordered shaded defaultExpanded>
+          <Panel
+            header="Code"
+            bordered
+            shaded
+            defaultExpanded
+            className="code-pane"
+          >
             <Code />
           </Panel>
         </FlexboxGrid.Item>
