@@ -14,7 +14,7 @@ import {
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useState } from 'react'
-import { atomOneLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import c from 'react-syntax-highlighter/dist/esm/languages/hljs/c'
 import debounceRender from 'react-debounce-render'
@@ -66,7 +66,7 @@ const DebouncedCode = debounceRender(
         <CopyToClipboard />
         <SyntaxHighlighter
           language="cpp"
-          style={atomOneLight}
+          style={arduinoLight}
           customStyle={{ paddingLeft: '0' }}
         >
           {code}

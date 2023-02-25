@@ -49,9 +49,6 @@
 .TimerSetup .rs-panel-body {
   padding: 10px;
 }
-.TimerSetup .code-pane .rs-panel-body {
-  background: rgb(250, 250, 250);
-}
 .TimerSetup p {
   font-weight: bold;
 }
