@@ -16,10 +16,10 @@ import copy from 'copy-to-clipboard'
 import React, { useEffect, useState } from 'react'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
-import c from 'react-syntax-highlighter/dist/esm/languages/hljs/c'
+import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
 import debounceRender from 'react-debounce-render'
 
-SyntaxHighlighter.registerLanguage('c', c)
+SyntaxHighlighter.registerLanguage('cpp', cpp)
 
 const omitRegisterZeros = true
 
