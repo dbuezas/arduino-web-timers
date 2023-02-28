@@ -1,25 +1,25 @@
 {
   "files": {
     "main.css": "/arduino-web-timers/static/css/main.2803d531.chunk.css",
-    "main.js": "/arduino-web-timers/static/js/main.ffe8cd30.chunk.js",
-    "main.js.map": "/arduino-web-timers/static/js/main.ffe8cd30.chunk.js.map",
+    "main.js": "/arduino-web-timers/static/js/main.6c287230.chunk.js",
+    "main.js.map": "/arduino-web-timers/static/js/main.6c287230.chunk.js.map",
     "runtime-main.js": "/arduino-web-timers/static/js/runtime-main.db0a23bd.js",
     "runtime-main.js.map": "/arduino-web-timers/static/js/runtime-main.db0a23bd.js.map",
     "static/css/2.7785af68.chunk.css": "/arduino-web-timers/static/css/2.7785af68.chunk.css",
-    "static/js/2.0a2d9ce2.chunk.js": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js",
-    "static/js/2.0a2d9ce2.chunk.js.map": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js.map",
+    "static/js/2.9fc2b19b.chunk.js": "/arduino-web-timers/static/js/2.9fc2b19b.chunk.js",
+    "static/js/2.9fc2b19b.chunk.js.map": "/arduino-web-timers/static/js/2.9fc2b19b.chunk.js.map",
     "static/js/3.4222d47e.chunk.js": "/arduino-web-timers/static/js/3.4222d47e.chunk.js",
     "static/js/3.4222d47e.chunk.js.map": "/arduino-web-timers/static/js/3.4222d47e.chunk.js.map",
     "index.html": "/arduino-web-timers/index.html",
     "static/css/2.7785af68.chunk.css.map": "/arduino-web-timers/static/css/2.7785af68.chunk.css.map",
     "static/css/main.2803d531.chunk.css.map": "/arduino-web-timers/static/css/main.2803d531.chunk.css.map",
-    "static/js/2.0a2d9ce2.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.0a2d9ce2.chunk.js.LICENSE.txt"
+    "static/js/2.9fc2b19b.chunk.js.LICENSE.txt": "/arduino-web-timers/static/js/2.9fc2b19b.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.db0a23bd.js",
     "static/css/2.7785af68.chunk.css",
-    "static/js/2.0a2d9ce2.chunk.js",
+    "static/js/2.9fc2b19b.chunk.js",
     "static/css/main.2803d531.chunk.css",
-    "static/js/main.ffe8cd30.chunk.js"
+    "static/js/main.6c287230.chunk.js"
   ]
 }
