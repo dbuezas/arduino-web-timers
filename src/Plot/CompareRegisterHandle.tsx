@@ -4,7 +4,7 @@ import {
   useCallback,
   useImperativeHandle,
   useState
-} from 'react'
+} from 'preact/compat'
 import { margin } from './margin'
 import './CompareRegisterHandle.css'
 import { ScaleLinear } from 'd3-scale'

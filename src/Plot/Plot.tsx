@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'preact/compat'
 import useSize from '@react-hook/size'
 
 import XAxis from './XAxis'

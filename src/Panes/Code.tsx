@@ -13,7 +13,7 @@ import {
 } from './state'
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
