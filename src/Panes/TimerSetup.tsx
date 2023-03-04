@@ -9,7 +9,10 @@ import {
 } from 'rsuite'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { variableDescriptions, valueDescriptions } from '../data/timers'
-import { difference, map, uniq } from 'lodash'
+import uniq from 'lodash/uniq'
+import difference from 'lodash/difference'
+import map from 'lodash/map'
+
 import './TimerSetup.css'
 
 import Plot from '../Plot/Plot'

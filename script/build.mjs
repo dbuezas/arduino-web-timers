@@ -1,7 +1,7 @@
 // @ts-check
 import chokidar from 'chokidar'
 import { execSync } from 'child_process'
-import esbuild from 'esbuild'
+import esbuild, { context } from 'esbuild'
 import alias from 'esbuild-plugin-alias'
 
 const date = new Date().toString()
@@ -14,16 +14,24 @@ const watchOptn = {
   // awaitWriteFinish: {stabilityThreshold:100, pollInterval:50},
   ignoreInitial: true
 }
+const synchPublic = async () => {
+  execSync('cp public/* dist/')
+}
+
 async function build() {
-  // execSync('rm -rf dist/')
-  // execSync('mkdir dist')
+  execSync('rm -rf dist/')
+  execSync('mkdir dist')
   console.time('build')
+  await synchPublic()
+
   const ctx = await esbuild.context({
     entryPoints: ['src/index.tsx'],
     bundle: true,
     inject: ['src/preact-shim.js'],
     minify: isProd,
     metafile: true,
+    treeShaking: true,
+
     sourcemap: isProd ? false : 'inline',
     outfile: 'dist/bundle.js',
     define: {
@@ -44,6 +52,9 @@ async function build() {
   console.log(text)
 
   if (!isProd) {
+    chokidar.watch('public', { ignoreInitial: true }).on('all', () => {
+      synchPublic()
+    })
     chokidar.watch('src', watchOptn).on('all', async (...args) => {
       console.log(args)
       try {
@@ -52,6 +63,8 @@ async function build() {
         console.error(e)
       }
     })
+  } else {
+    ctx.dispose()
   }
 }
 

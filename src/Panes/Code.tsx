@@ -1,4 +1,5 @@
-import { map } from 'lodash'
+import debounce from 'lodash/debounce'
+import map from 'lodash/map'
 import { selector, useRecoilCallback, useRecoilValue } from 'recoil'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import {
@@ -59,7 +60,7 @@ ${get(compareRegsState)}
 ${get(interruptsCodeState)}`
 })
 
-const DebouncedCode = debounceRender(
+const DebouncedCode = debounce(
   ({ code }: { code: string }) => {
     return (
       <>

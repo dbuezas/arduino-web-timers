@@ -1,5 +1,5 @@
 /* eslint-disable no-loop-func */
-import { uniq } from 'lodash'
+import uniq from 'lodash/uniq'
 import Fraction from 'fraction.js'
 /*
 PCPWM == updates at top

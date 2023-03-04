@@ -1,4 +1,5 @@
-import { mapValues, uniq } from 'lodash'
+import mapValues from 'lodash/mapValues'
+import uniq from 'lodash/uniq'
 import { selector, selectorFamily } from 'recoil'
 import {
   getConstrainedDomains,

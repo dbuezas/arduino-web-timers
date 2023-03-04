@@ -11,7 +11,8 @@ import { setHashFromObject, useHashChangedExternally } from './useHash'
 
 import timers from '../data'
 import { MicroControllers, PanelModes } from '../helpers/types'
-import { uniq, without } from 'lodash'
+import without from 'lodash/without'
+import uniq from 'lodash/uniq'
 
 export const panelModeState = atom({
   key: 'PanelModeState',
