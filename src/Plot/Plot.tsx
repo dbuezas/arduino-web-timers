@@ -55,7 +55,7 @@ export default function Plot({ style }: { style: Object }) {
         fromVarToSelectedValue[iocr.name].value = '' + Math.round(n)
       }
       if (prev?.[i].isUsed && !iocr.isUsed) {
-        fromVarToSelectedValue[iocr.name].value = ''
+        fromVarToSelectedValue[iocr.name].value = undefined
       }
     })
   }

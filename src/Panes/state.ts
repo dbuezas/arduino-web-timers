@@ -3,19 +3,28 @@ import mapValues from 'lodash/mapValues'
 import uniq from 'lodash/uniq'
 import {
   getConstrainedDomains,
-  splitTables,
-  getFullDomains
+  getFullDomains,
+  splitTables
 } from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
-import { timerState, fromVarToSelectedValue } from '../state/state'
+import { fromVarToSelectedValue, timerState } from '../state/state'
 
 export const groups = computed(() => splitTables(timerState.value.configs))
 
-const getVariables = (group: TTable[]) => {
-  return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
-}
-
-const fromGroupToVars = computed(() => groups.value.map(getVariables))
+const fromGroupToDomains = computed(() =>
+  groups.value.map((group, groupIdx) =>
+    computed(() => {
+      const userState = fromGroupToUserConfig.value[groupIdx].value
+      return getConstrainedDomains([[userState], ...group])
+    })
+  )
+)
+const fromGroupToFullDomains = computed(() =>
+  groups.value.map((group, groupIdx) => {
+    const userState = fromGroupToUserConfig.value[groupIdx].value
+    return getFullDomains([...group, [userState]])
+  })
+)
 const fromGroupToSuggestions = computed(() =>
   groups.value.map((group, groupIdx) =>
     computed(() => {
@@ -34,24 +43,6 @@ const fromGroupToSuggestions = computed(() =>
     })
   )
 )
-
-export const fromVarToSuggestedValue = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables, groupIdx) =>
-      variables.map((variable) => [
-        variable,
-        computed(() => fromGroupToSuggestions.value[groupIdx].value[variable])
-      ])
-    )
-  )
-)
-export const fromVarToSuggestedValueInefficient = computed(() => {
-  const assignments = fromGroupToSuggestions.value
-    .map((assignment) => assignment.value)
-    .flat()
-  return Object.assign({}, ...assignments)
-})
-
 const fromGroupToUserConfig = computed(() =>
   groups.value.map((group) =>
     computed(() => {
@@ -66,30 +57,12 @@ const fromGroupToUserConfig = computed(() =>
     })
   )
 )
+const fromGroupToVars = computed(() => groups.value.map(getVariables))
 
-const fromVarToGroupIdx = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables, groupIdx) =>
-      variables.map((variable) => [variable, groupIdx])
-    )
-  )
-)
+const getVariables = (group: TTable[]) => {
+  return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
+}
 
-const fromGroupToDomains = computed(() =>
-  groups.value.map((group, groupIdx) =>
-    computed(() => {
-      const userState = fromGroupToUserConfig.value[groupIdx].value
-      return getConstrainedDomains([[userState], ...group])
-    })
-  )
-)
-
-const fromGroupToFullDomains = computed(() =>
-  groups.value.map((group, groupIdx) => {
-    const userState = fromGroupToUserConfig.value[groupIdx].value
-    return getFullDomains([...group, [userState]])
-  })
-)
 const fromVarToDomain = computed(() =>
   Object.fromEntries(
     fromGroupToVars.value.flatMap((variables) =>
@@ -115,7 +88,13 @@ const fromVarToFullDomain = computed(() =>
     )
   )
 )
-
+const fromVarToGroupIdx = computed(() =>
+  Object.fromEntries(
+    fromGroupToVars.value.flatMap((variables, groupIdx) =>
+      variables.map((variable) => [variable, groupIdx])
+    )
+  )
+)
 export const fromVarToOptions = computed(() =>
   Object.fromEntries(
     fromGroupToVars.value.flatMap((variables, groupIdx) =>
@@ -159,6 +138,22 @@ export const fromVarToOptions = computed(() =>
     )
   )
 )
+export const fromVarToSuggestedValue = computed(() =>
+  Object.fromEntries(
+    fromGroupToVars.value.flatMap((variables, groupIdx) =>
+      variables.map((variable) => [
+        variable,
+        computed(() => fromGroupToSuggestions.value[groupIdx].value[variable])
+      ])
+    )
+  )
+)
+export const fromVarToSuggestedValueInefficient = computed(() => {
+  const assignments = fromGroupToSuggestions.value
+    .map((assignment) => assignment.value)
+    .flat()
+  return Object.assign({}, ...assignments)
+})
 
 export type TCheckboxGroupData = {
   variable: string

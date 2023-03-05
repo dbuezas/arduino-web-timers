@@ -2,8 +2,6 @@ import { setHashFromObject, useHashChangedExternally } from './useHash'
 
 import timers from '../data'
 import { MicroControllers, PanelModes } from '../helpers/types'
-import without from 'lodash/without'
-import uniq from 'lodash/uniq'
 import { batch, computed, Signal, signal } from '@preact/signals'
 import mapValues from 'lodash/mapValues'
 export const panelModeState = signal(PanelModes.Normal)
@@ -21,17 +19,18 @@ export const setBulk = (obj: Record<string, string>) => {
       variable.value = undefined
     }
     for (const name in obj) {
+      fromVarToSelectedValue[name] ??= signal(undefined)
       fromVarToSelectedValue[name].value = obj[name]
     }
   })
 }
 
-export const RegisterHashUpdater = () => {
+export const RegisterHashToState = () => {
   const params = useHashChangedExternally()
   setBulk({ ...defaultState, ...params })
   return <></>
 }
-export const RegisterHashWatcher = () => {
+export const RegisterStateToHash = () => {
   const obj = getBulk()
   setHashFromObject({ ...defaultState, ...obj })
   return <></>
@@ -39,8 +38,8 @@ export const RegisterHashWatcher = () => {
 export const RegisterHashLink = () => {
   return (
     <>
-      <RegisterHashWatcher />
-      <RegisterHashUpdater />
+      <RegisterStateToHash />
+      <RegisterHashToState />
     </>
   )
 }
