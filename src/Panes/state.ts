@@ -63,38 +63,6 @@ const getVariables = (group: TTable[]) => {
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
 
-const fromVarToDomain = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables) =>
-      variables.map((variable) => [
-        variable,
-        computed(() => {
-          const groupIdx = fromVarToGroupIdx.value[variable]
-          return fromGroupToDomains.value[groupIdx].value[variable]
-        })
-      ])
-    )
-  )
-)
-const fromVarToFullDomain = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables) =>
-      variables.map((variable) => [
-        variable,
-        fromGroupToFullDomains.value[fromVarToGroupIdx.value[variable]][
-          variable
-        ]
-      ])
-    )
-  )
-)
-const fromVarToGroupIdx = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables, groupIdx) =>
-      variables.map((variable) => [variable, groupIdx])
-    )
-  )
-)
 export const fromVarToOptions = computed(() =>
   Object.fromEntries(
     fromGroupToVars.value.flatMap((variables, groupIdx) =>
@@ -103,8 +71,9 @@ export const fromVarToOptions = computed(() =>
         computed(() => {
           const group = groups.value[groupIdx]
           const userState = fromGroupToUserConfig.value[groupIdx].value
-          const fullDomains = fromVarToFullDomain.value[variable]
-          let constrainedDomain = fromVarToDomain.value[variable].value
+          const fullDomains = fromGroupToFullDomains.value[groupIdx][variable]
+          let constrainedDomain =
+            fromGroupToDomains.value[groupIdx].value[variable]
           if (userState[variable]) {
             const { [variable]: _discarded, ...selectedWithout } = userState
             constrainedDomain = getConstrainedDomains([
@@ -112,7 +81,8 @@ export const fromVarToOptions = computed(() =>
               ...group
             ])[variable]
           }
-          const defaultValue = fromVarToSuggestedValue.value[variable].value
+          const defaultValue =
+            fromGroupToSuggestions.value[groupIdx].value[variable]
           const forcedOption =
             !userState[variable] && constrainedDomain.length === 1
               ? constrainedDomain[0]
@@ -138,17 +108,11 @@ export const fromVarToOptions = computed(() =>
     )
   )
 )
-export const fromVarToSuggestedValue = computed(() =>
-  Object.fromEntries(
-    fromGroupToVars.value.flatMap((variables, groupIdx) =>
-      variables.map((variable) => [
-        variable,
-        computed(() => fromGroupToSuggestions.value[groupIdx].value[variable])
-      ])
-    )
-  )
-)
-export const fromVarToSuggestedValueInefficient = computed(() => {
+
+export const getValue = (variable: string) => {
+  return fromVarToOptions.value[variable]?.value.suggestedOption
+}
+export const allSuggestedValues = computed(() => {
   const assignments = fromGroupToSuggestions.value
     .map((assignment) => assignment.value)
     .flat()

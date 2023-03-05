@@ -11,7 +11,6 @@ import {
   fromVarToSelectedValue,
   setBulk
 } from './state/state'
-import { batch } from '@preact/signals'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
   const timerIdx = fromVarToSelectedValue.timer.value

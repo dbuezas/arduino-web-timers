@@ -4,13 +4,13 @@ import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
 import remove from 'lodash/remove'
 import Fraction from 'fraction.js'
-import { fromVarToSuggestedValueInefficient } from '../Panes/state'
 import {
   getCompareRegTraits,
   getAllCompareRegTraits
 } from './compareRegisterUtil'
 import simTimer from './simulator'
 import { computed } from '@preact/signals'
+import { allSuggestedValues, getValue } from '../Panes/state'
 
 export const splitTables = ([left, ...tables]: TTable[]): TTable[][] => {
   if (!left) return []
@@ -106,7 +106,7 @@ export const getConstrainedDomains = (
 }
 
 export const simulationState = computed(() => {
-  const values = fromVarToSuggestedValueInefficient.value
+  const values = allSuggestedValues.value
   const counterMax = parseInt(values.counterMax)
   const param = {
     timerNr: values.timerNr,
