@@ -16,7 +16,7 @@ const getVariables = (group: TTable[]) => {
 }
 
 const variablesState = computed(() => groupState.value.map(getVariables))
-export const suggestedGroupAssignmentState = computed(() =>
+const suggestedGroupAssignmentState = computed(() =>
   groupState.value.map((group, groupIdx) =>
     computed(() => {
       const userState = groupConfigState.value[groupIdx].value
@@ -54,7 +54,7 @@ export const suggestedAssignmentState = computed(() => {
   return Object.assign({}, ...assignments)
 })
 
-export const groupConfigState = computed(() =>
+const groupConfigState = computed(() =>
   groupState.value.map((group) =>
     computed(() => {
       const relevantVariables = getVariables(group)
@@ -69,7 +69,7 @@ export const groupConfigState = computed(() =>
   )
 )
 
-export const groupIdxFromVariableState = computed(() =>
+const groupIdxFromVariableState = computed(() =>
   Object.fromEntries(
     variablesState.value.flatMap((variables, groupIdx) =>
       variables.map((variable) => [variable, groupIdx])
@@ -77,15 +77,7 @@ export const groupIdxFromVariableState = computed(() =>
   )
 )
 
-export const groupFromVariableState = computed(() =>
-  Object.fromEntries(
-    variablesState.value.flatMap((vaiables, groupIdx) =>
-      vaiables.map((variable) => [variable, groupState.value[groupIdx]])
-    )
-  )
-)
-
-export const constrainedGroupDomainsState = computed(() =>
+const constrainedGroupDomainsState = computed(() =>
   groupState.value.map((group, groupIdx) =>
     computed(() => {
       const userState = groupConfigState.value[groupIdx].value
@@ -94,13 +86,13 @@ export const constrainedGroupDomainsState = computed(() =>
   )
 )
 
-export const fullGroupDomainsState = computed(() =>
+const fullGroupDomainsState = computed(() =>
   groupState.value.map((group, groupIdx) => {
     const userState = groupConfigState.value[groupIdx].value
     return getFullDomains([...group, [userState]])
   })
 )
-export const constrainedDomainState = computed(() =>
+const constrainedDomainState = computed(() =>
   Object.fromEntries(
     variablesState.value.flatMap((variables) =>
       variables.map((variable) => [
@@ -113,7 +105,7 @@ export const constrainedDomainState = computed(() =>
     )
   )
 )
-export const fullDomainState = computed(() =>
+const fullDomainState = computed(() =>
   Object.fromEntries(
     variablesState.value.flatMap((variables) =>
       variables.map((variable) => [
