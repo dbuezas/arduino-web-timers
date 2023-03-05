@@ -4,7 +4,7 @@ import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
 import remove from 'lodash/remove'
 import Fraction from 'fraction.js'
-import { suggestedAssignmentState } from '../Panes/state'
+import { fromVarToSuggestedValueInefficient } from '../Panes/state'
 import {
   getCompareRegTraits,
   getAllCompareRegTraits
@@ -106,7 +106,7 @@ export const getConstrainedDomains = (
 }
 
 export const simulationState = computed(() => {
-  const values = suggestedAssignmentState.value
+  const values = fromVarToSuggestedValueInefficient.value
   const counterMax = parseInt(values.counterMax)
   const param = {
     timerNr: values.timerNr,

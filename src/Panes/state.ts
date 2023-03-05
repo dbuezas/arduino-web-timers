@@ -7,20 +7,20 @@ import {
   getFullDomains
 } from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
-import { timerState, userConfigState } from '../state/state'
+import { timerState, fromVarToSelectedValue } from '../state/state'
 
-export const groupState = computed(() => splitTables(timerState.value.configs))
+export const groups = computed(() => splitTables(timerState.value.configs))
 
 const getVariables = (group: TTable[]) => {
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
 
-const variablesState = computed(() => groupState.value.map(getVariables))
-const suggestedGroupAssignmentState = computed(() =>
-  groupState.value.map((group, groupIdx) =>
+const fromGroupToVars = computed(() => groups.value.map(getVariables))
+const fromGroupToSuggestions = computed(() =>
+  groups.value.map((group, groupIdx) =>
     computed(() => {
-      const userState = groupConfigState.value[groupIdx].value
-      let domains = constrainedGroupDomainsState.value[groupIdx].value
+      const userState = fromGroupToUserConfig.value[groupIdx].value
+      let domains = fromGroupToDomains.value[groupIdx].value
       const instantiations: Record<string, string> = {}
       for (const variable of Object.keys(domains)) {
         if (domains[variable].length < 2) continue // if the domain of a var is only one element, there's no need to assign it.
@@ -35,33 +35,31 @@ const suggestedGroupAssignmentState = computed(() =>
   )
 )
 
-export const suggestedVariableAssignmentState = computed(() =>
+export const fromVarToSuggestedValue = computed(() =>
   Object.fromEntries(
-    variablesState.value.flatMap((variables, groupIdx) =>
+    fromGroupToVars.value.flatMap((variables, groupIdx) =>
       variables.map((variable) => [
         variable,
-        computed(
-          () => suggestedGroupAssignmentState.value[groupIdx].value[variable]
-        )
+        computed(() => fromGroupToSuggestions.value[groupIdx].value[variable])
       ])
     )
   )
 )
-export const suggestedAssignmentState = computed(() => {
-  const assignments = suggestedGroupAssignmentState.value
+export const fromVarToSuggestedValueInefficient = computed(() => {
+  const assignments = fromGroupToSuggestions.value
     .map((assignment) => assignment.value)
     .flat()
   return Object.assign({}, ...assignments)
 })
 
-const groupConfigState = computed(() =>
-  groupState.value.map((group) =>
+const fromGroupToUserConfig = computed(() =>
+  groups.value.map((group) =>
     computed(() => {
       const relevantVariables = getVariables(group)
       const userConfig: TRow = {}
       for (const variable of relevantVariables) {
-        userConfigState[variable] ??= signal(undefined) // TODO signal_init
-        const userValue = userConfigState[variable].value
+        fromVarToSelectedValue[variable] ??= signal(undefined) // TODO signal_init
+        const userValue = fromVarToSelectedValue[variable].value
         if (userValue !== undefined) userConfig[variable] = userValue
       }
       return userConfig
@@ -69,48 +67,48 @@ const groupConfigState = computed(() =>
   )
 )
 
-const groupIdxFromVariableState = computed(() =>
+const fromVarToGroupIdx = computed(() =>
   Object.fromEntries(
-    variablesState.value.flatMap((variables, groupIdx) =>
+    fromGroupToVars.value.flatMap((variables, groupIdx) =>
       variables.map((variable) => [variable, groupIdx])
     )
   )
 )
 
-const constrainedGroupDomainsState = computed(() =>
-  groupState.value.map((group, groupIdx) =>
+const fromGroupToDomains = computed(() =>
+  groups.value.map((group, groupIdx) =>
     computed(() => {
-      const userState = groupConfigState.value[groupIdx].value
+      const userState = fromGroupToUserConfig.value[groupIdx].value
       return getConstrainedDomains([[userState], ...group])
     })
   )
 )
 
-const fullGroupDomainsState = computed(() =>
-  groupState.value.map((group, groupIdx) => {
-    const userState = groupConfigState.value[groupIdx].value
+const fromGroupToFullDomains = computed(() =>
+  groups.value.map((group, groupIdx) => {
+    const userState = fromGroupToUserConfig.value[groupIdx].value
     return getFullDomains([...group, [userState]])
   })
 )
-const constrainedDomainState = computed(() =>
+const fromVarToDomain = computed(() =>
   Object.fromEntries(
-    variablesState.value.flatMap((variables) =>
+    fromGroupToVars.value.flatMap((variables) =>
       variables.map((variable) => [
         variable,
         computed(() => {
-          const groupIdx = groupIdxFromVariableState.value[variable]
-          return constrainedGroupDomainsState.value[groupIdx].value[variable]
+          const groupIdx = fromVarToGroupIdx.value[variable]
+          return fromGroupToDomains.value[groupIdx].value[variable]
         })
       ])
     )
   )
 )
-const fullDomainState = computed(() =>
+const fromVarToFullDomain = computed(() =>
   Object.fromEntries(
-    variablesState.value.flatMap((variables) =>
+    fromGroupToVars.value.flatMap((variables) =>
       variables.map((variable) => [
         variable,
-        fullGroupDomainsState.value[groupIdxFromVariableState.value[variable]][
+        fromGroupToFullDomains.value[fromVarToGroupIdx.value[variable]][
           variable
         ]
       ])
@@ -118,16 +116,16 @@ const fullDomainState = computed(() =>
   )
 )
 
-export const variableOptionsState = computed(() =>
+export const fromVarToOptions = computed(() =>
   Object.fromEntries(
-    variablesState.value.flatMap((variables, groupIdx) =>
+    fromGroupToVars.value.flatMap((variables, groupIdx) =>
       variables.map((variable) => [
         variable,
         computed(() => {
-          const group = groupState.value[groupIdx]
-          const userState = groupConfigState.value[groupIdx].value
-          const fullDomains = fullDomainState.value[variable]
-          let constrainedDomain = constrainedDomainState.value[variable].value
+          const group = groups.value[groupIdx]
+          const userState = fromGroupToUserConfig.value[groupIdx].value
+          const fullDomains = fromVarToFullDomain.value[variable]
+          let constrainedDomain = fromVarToDomain.value[variable].value
           if (userState[variable]) {
             const { [variable]: _discarded, ...selectedWithout } = userState
             constrainedDomain = getConstrainedDomains([
@@ -135,8 +133,7 @@ export const variableOptionsState = computed(() =>
               ...group
             ])[variable]
           }
-          const defaultValue =
-            suggestedVariableAssignmentState.value[variable].value
+          const defaultValue = fromVarToSuggestedValue.value[variable].value
           const forcedOption =
             !userState[variable] && constrainedDomain.length === 1
               ? constrainedDomain[0]

@@ -13,7 +13,7 @@ import CompareRegisterHandle, {
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
-import { userConfigState } from '../state/state'
+import { fromVarToSelectedValue } from '../state/state'
 import { simulationState } from '../helpers/helpers'
 
 function usePrevious<T>(value: T) {
@@ -52,10 +52,10 @@ export default function Plot({ style }: { style: Object }) {
         const n = iocr.isDeadTime
           ? Math.pow(counterMax, 0.3)
           : (top / (ioCount + 2)) * (nth + 1)
-        userConfigState[iocr.name].value = '' + Math.round(n)
+        fromVarToSelectedValue[iocr.name].value = '' + Math.round(n)
       }
       if (prev?.[i].isUsed && !iocr.isUsed) {
-        userConfigState[iocr.name].value = ''
+        fromVarToSelectedValue[iocr.name].value = ''
       }
     })
   }
@@ -222,7 +222,7 @@ export default function Plot({ style }: { style: Object }) {
                   compareRegisterValue: value,
                   setCompareRegisterValue: (val: number) =>
                     // eslint-disable-next-line react-hooks/rules-of-hooks
-                    (userConfigState[name].value = val + ''),
+                    (fromVarToSelectedValue[name].value = val + ''),
                   name
                 }}
               />

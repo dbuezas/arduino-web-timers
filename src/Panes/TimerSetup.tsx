@@ -18,8 +18,8 @@ import './TimerSetup.css'
 import Plot from '../Plot/Plot'
 import Code from './Code'
 import ResizePanel from 'react-resize-panel-ts'
-import { panelModeState, userConfigState } from '../state/state'
-import { variableOptionsState, groupState } from './state'
+import { panelModeState, fromVarToSelectedValue } from '../state/state'
+import { fromVarToOptions, groups } from './state'
 import { TTable, PanelModes } from '../helpers/types'
 
 const VariableConfig = ({
@@ -30,7 +30,7 @@ const VariableConfig = ({
   humanName?: string
 }) => {
   const { selectedOption, forcedOption, options } =
-    variableOptionsState.value[variable].value
+    fromVarToOptions.value[variable].value
 
   const descr = valueDescriptions[variable]
   const descrTitle = descr?.title
@@ -39,8 +39,8 @@ const VariableConfig = ({
       inline
       value={[selectedOption || forcedOption]}
       onChange={(val: string[]) => {
-        userConfigState[variable] ??= signal(undefined) // TODO signal_init
-        userConfigState[variable].value = val[1]
+        fromVarToSelectedValue[variable] ??= signal(undefined) // TODO signal_init
+        fromVarToSelectedValue[variable].value = val[1]
       }}
     >
       <p>
@@ -139,19 +139,20 @@ const getHiddenPane = (groups: TTable[][]): TPanel => {
 }
 
 function TimerSetup() {
-  const groups = groupState.value
-
   const panelMode = panelModeState.value
   let panels: TPanel[]
   switch (panelMode) {
     case PanelModes.Normal:
-      panels = getPanesGroupedByDescription(groups)
+      panels = getPanesGroupedByDescription(groups.value)
       break
     case PanelModes.Internal:
-      panels = [getHiddenPane(groups), ...getPanesGroupedByDescription(groups)]
+      panels = [
+        getHiddenPane(groups.value),
+        ...getPanesGroupedByDescription(groups.value)
+      ]
       break
     case PanelModes.ByDependencies:
-      panels = getPanesByGroup(groups)
+      panels = getPanesByGroup(groups.value)
       break
   }
   const style = { width: 100 / (panels.length + 1) + '%' }

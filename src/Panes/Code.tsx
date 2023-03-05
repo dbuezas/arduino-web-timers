@@ -7,8 +7,8 @@ import {
 } from '../helpers/helpers'
 import { timerState } from '../state/state'
 import {
-  suggestedAssignmentState,
-  suggestedVariableAssignmentState
+  fromVarToSuggestedValueInefficient,
+  fromVarToSuggestedValue
 } from './state'
 import { Button } from 'rsuite'
 import copy from 'copy-to-clipboard'
@@ -26,7 +26,7 @@ const omitRegisterZeros = true
 const codeCommentsState = computed(() => {
   const outputFrequency = outputFrequencyState
   const outputPeriod = outputPeriodState
-  const values = suggestedAssignmentState.value
+  const values = fromVarToSuggestedValueInefficient.value
   const { timerMode } = values
   const IOCR_states = getAllCompareRegTraits(values)
   const outputs = IOCR_states.filter(
@@ -83,9 +83,8 @@ const timerConfigCodeState = computed(() => {
   const code = map(registers, (variables, regName) => {
     const assignments = variables
       .map((variable) => {
-        suggestedVariableAssignmentState.value[variable] ??= signal(undefined) // TODO signal_init
-        const value =
-          suggestedVariableAssignmentState.value[variable].value || '0'
+        fromVarToSuggestedValue.value[variable] ??= signal(undefined) // TODO signal_init
+        const value = fromVarToSuggestedValue.value[variable].value || '0'
         if (omitZeroValues && value === '0') return ''
 
         // DTR0L/H are special because they are just 4 bytes of a single register
@@ -109,7 +108,7 @@ const timerConfigCodeState = computed(() => {
 })
 
 const compareRegsState = computed(() => {
-  const suggestedConfig = suggestedAssignmentState.value
+  const suggestedConfig = fromVarToSuggestedValueInefficient.value
 
   const code = getAllCompareRegTraits(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
@@ -128,18 +127,16 @@ const interruptsCodeState = computed(() => {
     'interruptVectorCodeOVF',
     'interruptVectorCaptureCode'
   ]
-  suggestedVariableAssignmentState.value['InterruptCommonSignature'] ??=
+  fromVarToSuggestedValue.value['InterruptCommonSignature'] ??=
     signal(undefined) // TODO signal_init
 
   const interruptCommonSignature =
-    suggestedVariableAssignmentState.value['InterruptCommonSignature'].value
+    fromVarToSuggestedValue.value['InterruptCommonSignature'].value
 
   let code = interruptVariables
     .map((variable) => {
-      suggestedVariableAssignmentState.value[variable] ??= signal(undefined) // TODO signal_init
-      return (
-        suggestedVariableAssignmentState.value[variable].value || '//nocode'
-      )
+      fromVarToSuggestedValue.value[variable] ??= signal(undefined) // TODO signal_init
+      return fromVarToSuggestedValue.value[variable].value || '//nocode'
     })
     .filter((value) => value !== '//nocode')
 

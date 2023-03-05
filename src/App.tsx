@@ -5,12 +5,18 @@ import 'rsuite/dist/styles/rsuite-default.css'
 import './App.css'
 import TimerSetup from './Panes/TimerSetup'
 import { PanelModes, MicroControllers } from './helpers/types'
-import { panelModeState, mcuTimers, userConfigState } from './state/state'
+import {
+  panelModeState,
+  mcuTimers,
+  fromVarToSelectedValue,
+  setBulk
+} from './state/state'
 import { batch } from '@preact/signals'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
-  const timerIdx = userConfigState.timer.value
-  const mcu = userConfigState.mcu.value
+  const timerIdx = fromVarToSelectedValue.timer.value
+  const mcu = fromVarToSelectedValue.mcu.value
+  if (mcu === undefined) throw new Error('MCU should always have a default')
   const timers = mcuTimers.value
   const isLoading = mcuTimers === undefined || timerIdx === undefined
   return (
@@ -58,17 +64,7 @@ const App = () => {
                       {map(MicroControllers, (aChip) => (
                         <Dropdown.Item
                           // active={aChip === mcu}
-                          onSelect={(mcu) =>
-                            batch(() => {
-                              for (const variable of Object.values(
-                                userConfigState
-                              )) {
-                                variable.value = undefined
-                              }
-                              userConfigState.mcu.value = mcu
-                              userConfigState.timer.value = '0'
-                            })
-                          }
+                          onSelect={(mcu) => setBulk({ mcu, timer: '0' })}
                           eventKey={aChip}
                           key={aChip}
                         >
@@ -79,15 +75,7 @@ const App = () => {
                   </Nav>
                   <Nav
                     activeKey={timerIdx}
-                    onSelect={(timer) =>
-                      batch(() => {
-                        for (const variable of Object.values(userConfigState)) {
-                          variable.value = undefined
-                        }
-                        userConfigState.mcu.value = mcu
-                        userConfigState.timer.value = timer
-                      })
-                    }
+                    onSelect={(timer) => setBulk({ mcu, timer })}
                   >
                     {timers.map((_: any, i) => (
                       <Nav.Item

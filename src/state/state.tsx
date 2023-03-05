@@ -4,7 +4,7 @@ import timers from '../data'
 import { MicroControllers, PanelModes } from '../helpers/types'
 import without from 'lodash/without'
 import uniq from 'lodash/uniq'
-import { computed, Signal, signal } from '@preact/signals'
+import { batch, computed, Signal, signal } from '@preact/signals'
 import mapValues from 'lodash/mapValues'
 export const panelModeState = signal(PanelModes.Normal)
 const defaultState: Record<string, string> = {
@@ -12,20 +12,29 @@ const defaultState: Record<string, string> = {
   timer: '0'
 }
 
+export const getBulk = () =>
+  mapValues(fromVarToSelectedValue, (variable) => variable.value)
+export const setBulk = (obj: Record<string, string>) => {
+  batch(() => {
+    const variables = Object.values(fromVarToSelectedValue)
+    for (const variable of variables) {
+      variable.value = undefined
+    }
+    for (const name in obj) {
+      fromVarToSelectedValue[name].value = obj[name]
+    }
+  })
+}
+
 export const RegisterHashUpdater = () => {
+  const params = useHashChangedExternally()
+  setBulk({ ...defaultState, ...params })
   return <></>
-  //TODO: impl hash
-  // const set = useSetRecoilState(userConfigStateBulk)
-  // const params = useHashChangedExternally()
-  // set(params)
-  // return <></>
 }
 export const RegisterHashWatcher = () => {
+  const obj = getBulk()
+  setHashFromObject({ ...defaultState, ...obj })
   return <></>
-  //TODO: impl hash
-  // const obj = useRecoilValue(userConfigStateBulk)
-  // setHashFromObject({ ...defaultState, ...obj })
-  // return <></>
 }
 export const RegisterHashLink = () => {
   return (
@@ -36,15 +45,15 @@ export const RegisterHashLink = () => {
   )
 }
 
-export const userConfigState: Record<
+export const fromVarToSelectedValue: Record<
   string,
   Signal<string | undefined>
 > = mapValues(defaultState, (value) => signal(value))
 
 export const mcuTimers = computed(
-  () => timers[userConfigState.mcu?.value as MicroControllers]
+  () => timers[fromVarToSelectedValue.mcu?.value as MicroControllers]
 )
 export const timerState = computed(() => {
-  const timer = userConfigState.timer?.value || '0'
+  const timer = fromVarToSelectedValue.timer?.value || '0'
   return mcuTimers.value?.[+timer]
 })
