@@ -1,4 +1,4 @@
-import map from 'lodash/map'
+import { map } from 'lodash-es'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 

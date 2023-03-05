@@ -1,8 +1,7 @@
 import { TTable } from './types'
 
-import uniq from 'lodash/uniq'
-import intersection from 'lodash/intersection'
-import remove from 'lodash/remove'
+import { uniq, intersection, remove } from 'lodash-es'
+
 import Fraction from 'fraction.js'
 import {
   getCompareRegTraits,

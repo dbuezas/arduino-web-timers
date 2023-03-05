@@ -3,7 +3,7 @@ import { setHashFromObject, useHashChangedExternally } from './useHash'
 import timers from '../data'
 import { MicroControllers, PanelModes } from '../helpers/types'
 import { batch, computed, Signal, signal } from '@preact/signals'
-import mapValues from 'lodash/mapValues'
+import { mapValues } from 'lodash-es'
 export const panelModeState = signal(PanelModes.Normal)
 const defaultState: Record<string, string> = {
   mcu: MicroControllers.ATMEGA328P,

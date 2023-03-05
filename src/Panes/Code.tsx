@@ -1,4 +1,5 @@
-import map from 'lodash/map'
+import { map, debounce } from 'lodash-es'
+
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import {
   isTruthy,
@@ -14,7 +15,6 @@ import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
 import { computed, signal } from '@preact/signals'
-import debounce from 'lodash/debounce'
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 

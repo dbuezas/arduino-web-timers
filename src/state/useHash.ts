@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce'
+import { debounce } from 'lodash-es'
 import { useState, useEffect } from 'preact/compat'
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))

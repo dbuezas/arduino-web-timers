@@ -8,9 +8,7 @@ import {
   Whisper
 } from 'rsuite'
 import { variableDescriptions, valueDescriptions } from '../data/timers'
-import uniq from 'lodash/uniq'
-import difference from 'lodash/difference'
-import map from 'lodash/map'
+import { uniq, difference, map } from 'lodash-es'
 import { signal, computed } from '@preact/signals'
 
 import './TimerSetup.css'

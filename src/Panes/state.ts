@@ -1,6 +1,5 @@
 import { computed, signal } from '@preact/signals'
-import mapValues from 'lodash/mapValues'
-import uniq from 'lodash/uniq'
+import { mapValues, uniq } from 'lodash-es'
 import {
   getConstrainedDomains,
   getFullDomains,
