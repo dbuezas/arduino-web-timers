@@ -9,7 +9,7 @@ import {
 } from 'rsuite'
 import { variableDescriptions, valueDescriptions } from '../data/timers'
 import { uniq, difference, map } from 'lodash-es'
-import { signal, computed } from '@preact/signals'
+import { signal } from '@preact/signals'
 
 import './TimerSetup.css'
 
