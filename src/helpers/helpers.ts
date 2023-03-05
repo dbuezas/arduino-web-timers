@@ -4,13 +4,13 @@ import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
 import remove from 'lodash/remove'
 import Fraction from 'fraction.js'
-import { selector } from 'recoil'
 import { suggestedAssignmentState } from '../Panes/state'
 import {
   getCompareRegTraits,
   getAllCompareRegTraits
 } from './compareRegisterUtil'
 import simTimer from './simulator'
+import { computed } from '@preact/signals'
 
 export const splitTables = ([left, ...tables]: TTable[]): TTable[][] => {
   if (!left) return []
@@ -105,56 +105,53 @@ export const getConstrainedDomains = (
   return domains
 }
 
-export const simulationState = selector({
-  key: 'simulationState',
-  get: ({ get }) => {
-    const values = get(suggestedAssignmentState)
-    const counterMax = parseInt(values.counterMax)
-    const param = {
-      timerNr: values.timerNr,
-      timerMode: values.timerMode as any,
-      prescaler:
-        values.clockPrescalerOrSource === 'disconnect'
-          ? NaN
-          : parseInt(values.clockPrescalerOrSource) ||
-            parseInt(values.FCPU) / 1000,
-      cpuHz:
-        parseInt(values.FCPU || '1') * (values.clockDoubler === 'on' ? 2 : 1),
-      top: 0,
-      counterMax,
-      tovTime: values.setTovMoment as any,
-      OCRnXs: [] as number[],
-      OCRnXs_behaviour: [
-        values.CompareOutputModeA as any,
-        values.CompareOutputModeB as any,
-        values.CompareOutputModeC as any
-      ],
-      ICRn: 0,
-      deadTimeEnable: values.DeadTime === 'on',
-      deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
-      deadTimeB: getCompareRegTraits('DeadTimeB', values).value
-    }
+export const simulationState = computed(() => {
+  const values = suggestedAssignmentState.value
+  const counterMax = parseInt(values.counterMax)
+  const param = {
+    timerNr: values.timerNr,
+    timerMode: values.timerMode as any,
+    prescaler:
+      values.clockPrescalerOrSource === 'disconnect'
+        ? NaN
+        : parseInt(values.clockPrescalerOrSource) ||
+          parseInt(values.FCPU) / 1000,
+    cpuHz:
+      parseInt(values.FCPU || '1') * (values.clockDoubler === 'on' ? 2 : 1),
+    top: 0,
+    counterMax,
+    tovTime: values.setTovMoment as any,
+    OCRnXs: [] as number[],
+    OCRnXs_behaviour: [
+      values.CompareOutputModeA as any,
+      values.CompareOutputModeB as any,
+      values.CompareOutputModeC as any
+    ],
+    ICRn: 0,
+    deadTimeEnable: values.DeadTime === 'on',
+    deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
+    deadTimeB: getCompareRegTraits('DeadTimeB', values).value
+  }
 
-    const IOCR_states = getAllCompareRegTraits(values)
+  const IOCR_states = getAllCompareRegTraits(values)
 
-    param.OCRnXs = IOCR_states.filter(({ isOutput }) => isOutput).map(
-      ({ value }) => value
-    )
+  param.OCRnXs = IOCR_states.filter(({ isOutput }) => isOutput).map(
+    ({ value }) => value
+  )
 
-    param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
+  param.ICRn = IOCR_states.find(({ isInput }) => isInput)!.value
 
-    param.top =
-      IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
-    const ocrMax = parseInt(values.topValue) || counterMax
+  param.top =
+    IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
+  const ocrMax = parseInt(values.topValue) || counterMax
 
-    return {
-      simulation: simTimer(param),
-      IOCR_states,
-      ocrMax,
-      param,
-      counterMax,
-      values
-    }
+  return {
+    simulation: simTimer(param),
+    IOCR_states,
+    ocrMax,
+    param,
+    counterMax,
+    values
   }
 })
 
@@ -178,19 +175,13 @@ export function formatPeriod(freq: Fraction) {
   return `${freq.equals(0) ? 0 : formatTime(freq.inverse())}`
 }
 
-export const outputFrequencyState = selector({
-  key: 'outputFrequencyState',
-  get: ({ get }) => {
-    const { simulation } = get(simulationState)
-    const { freq } = simulation
-    return formatFrequency(freq)
-  }
+export const outputFrequencyState = computed(() => {
+  const { simulation } = simulationState.value
+  const { freq } = simulation
+  return formatFrequency(freq)
 })
-export const outputPeriodState = selector({
-  key: 'outputPeriodState',
-  get: ({ get }) => {
-    const { simulation } = get(simulationState)
-    const { freq } = simulation
-    return formatPeriod(freq)
-  }
+export const outputPeriodState = computed(() => {
+  const { simulation } = simulationState.value
+  const { freq } = simulation
+  return formatPeriod(freq)
 })

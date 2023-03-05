@@ -7,11 +7,11 @@ import {
   Tooltip,
   Whisper
 } from 'rsuite'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { variableDescriptions, valueDescriptions } from '../data/timers'
 import uniq from 'lodash/uniq'
 import difference from 'lodash/difference'
 import map from 'lodash/map'
+import { signal, computed } from '@preact/signals'
 
 import './TimerSetup.css'
 
@@ -19,8 +19,9 @@ import Plot from '../Plot/Plot'
 import Code from './Code'
 import ResizePanel from 'react-resize-panel-ts'
 import { panelModeState, userConfigState } from '../state/state'
-import { variableOptionsState, groupsState } from './state'
+import { variableOptionsState, groupState } from './state'
 import { TTable, PanelModes } from '../helpers/types'
+
 const VariableConfig = ({
   variable,
   humanName
@@ -28,17 +29,19 @@ const VariableConfig = ({
   variable: string
   humanName?: string
 }) => {
-  const setUserConfigValue = useSetRecoilState(userConfigState(variable))
-  const { selectedOption, forcedOption, options } = useRecoilValue(
-    variableOptionsState(variable)
-  )
+  const { selectedOption, forcedOption, options } =
+    variableOptionsState.value[variable].value
+
   const descr = valueDescriptions[variable]
   const descrTitle = descr?.title
   return (
     <CheckboxGroup
       inline
       value={[selectedOption || forcedOption]}
-      onChange={(val: string[]) => setUserConfigValue(val[1])}
+      onChange={(val: string[]) => {
+        userConfigState[variable] ??= signal(undefined) // TODO signal_init
+        userConfigState[variable].value = val[1]
+      }}
     >
       <p>
         {humanName || variable}{' '}
@@ -136,9 +139,9 @@ const getHiddenPane = (groups: TTable[][]): TPanel => {
 }
 
 function TimerSetup() {
-  const groups = useRecoilValue(groupsState)
+  const groups = groupState.value
 
-  const panelMode = useRecoilValue(panelModeState)
+  const panelMode = panelModeState.value
   let panels: TPanel[]
   switch (panelMode) {
     case PanelModes.Normal:

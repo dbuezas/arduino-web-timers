@@ -1,24 +1,17 @@
 import map from 'lodash/map'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'
 
 import './App.css'
 import TimerSetup from './Panes/TimerSetup'
 import { PanelModes, MicroControllers } from './helpers/types'
-import {
-  panelModeState,
-  mcuTimers,
-  userConfigState,
-  userConfigStateBulk
-} from './state/state'
+import { panelModeState, mcuTimers, userConfigState } from './state/state'
+import { batch } from '@preact/signals'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
-  const timerIdx = useRecoilValue(userConfigState('timer'))
-  const mcu = useRecoilValue(userConfigState('mcu'))
-  const setInBulk = useSetRecoilState(userConfigStateBulk)
-  const timers = useRecoilValue(mcuTimers)
-  const [panelMode, setPanelMode] = useRecoilState(panelModeState)
+  const timerIdx = userConfigState.timer.value
+  const mcu = userConfigState.mcu.value
+  const timers = mcuTimers.value
   const isLoading = mcuTimers === undefined || timerIdx === undefined
   return (
     <>
@@ -66,9 +59,14 @@ const App = () => {
                         <Dropdown.Item
                           // active={aChip === mcu}
                           onSelect={(mcu) =>
-                            setInBulk({
-                              mcu,
-                              timer: '0'
+                            batch(() => {
+                              for (const variable of Object.values(
+                                userConfigState
+                              )) {
+                                variable.value = undefined
+                              }
+                              userConfigState.mcu.value = mcu
+                              userConfigState.timer.value = '0'
                             })
                           }
                           eventKey={aChip}
@@ -82,9 +80,12 @@ const App = () => {
                   <Nav
                     activeKey={timerIdx}
                     onSelect={(timer) =>
-                      setInBulk({
-                        mcu,
-                        timer
+                      batch(() => {
+                        for (const variable of Object.values(userConfigState)) {
+                          variable.value = undefined
+                        }
+                        userConfigState.mcu.value = mcu
+                        userConfigState.timer.value = timer
                       })
                     }
                   >
@@ -106,13 +107,13 @@ const App = () => {
                     <Dropdown
                       trigger="click"
                       icon={<Icon icon="cog" />}
-                      title={panelMode}
+                      title={panelModeState.value}
                       placement="bottomEnd"
                     >
                       {map(PanelModes, (mode) => (
                         <Dropdown.Item
                           // active={mode === panelMode}
-                          onSelect={setPanelMode}
+                          onSelect={(v) => (panelModeState.value = v)}
                           eventKey={mode}
                           key={mode}
                         >

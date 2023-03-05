@@ -1,6 +1,4 @@
-import debounce from 'lodash/debounce'
 import map from 'lodash/map'
-import { selector, useRecoilCallback, useRecoilValue } from 'recoil'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import {
   isTruthy,
@@ -18,25 +16,24 @@ import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
-import debounceRender from 'react-debounce-render'
+import { computed, signal } from '@preact/signals'
+import debounce from 'lodash/debounce'
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
 const omitRegisterZeros = true
 
-const codeCommentsState = selector({
-  key: 'codeCommentsState',
-  get: ({ get }) => {
-    const outputFrequency = get(outputFrequencyState)
-    const outputPeriod = get(outputPeriodState)
-    const values = get(suggestedAssignmentState)
-    const { timerMode } = values
-    const IOCR_states = getAllCompareRegTraits(values)
-    const outputs = IOCR_states.filter(
-      ({ isActiveOutput }) => isActiveOutput
-    ).map(({ outputPin, outputMode }) => `${outputPin}: ${outputMode}`)
-    outputs.unshift(outputs.length ? '' : 'none')
-    return `\
+const codeCommentsState = computed(() => {
+  const outputFrequency = outputFrequencyState
+  const outputPeriod = outputPeriodState
+  const values = suggestedAssignmentState.value
+  const { timerMode } = values
+  const IOCR_states = getAllCompareRegTraits(values)
+  const outputs = IOCR_states.filter(
+    ({ isActiveOutput }) => isActiveOutput
+  ).map(({ outputPin, outputMode }) => `${outputPin}: ${outputMode}`)
+  outputs.unshift(outputs.length ? '' : 'none')
+  return `\
 /**
   * URL: ${window.location.href}
   * Mode     : ${timerMode}
@@ -44,21 +41,19 @@ const codeCommentsState = selector({
   * Frequency: ${outputFrequency}
   * Outputs  : ${outputs.join('\n  *  - ')}
   */`
-  }
 })
 
-const allCodeState = selector({
-  key: 'allCodeState',
-  get: ({ get }) => `\
-${get(codeCommentsState)}
+const allCodeState = computed(
+  () => `\
+${codeCommentsState}
 void setup(){
   noInterrupts();
-${get(timerConfigCodeState)}
-${get(compareRegsState)}
+${timerConfigCodeState}
+${compareRegsState}
   interrupts();
 }
-${get(interruptsCodeState)}`
-})
+${interruptsCodeState}`
+)
 
 const DebouncedCode = debounce(
   ({ code }: { code: string }) => {
@@ -76,113 +71,94 @@ const DebouncedCode = debounce(
     )
   },
   100,
-  {
-    trailing: true,
-    leading: true,
-    maxWait: 100
-  }
+  { leading: true, trailing: true, maxWait: 100 }
 )
 export default function Code() {
-  const code = useRecoilValue(allCodeState)
+  const code = allCodeState.value
   return <DebouncedCode code={code} />
 }
-const timerConfigCodeState = selector({
-  key: 'timerConfigCodeState',
-  get: ({ get }) => {
-    const omitZeroValues = true
-    const { registers } = get(timerState)
-    const code = map(registers, (variables, regName) => {
-      const assignments = variables
-        .map((variable) => {
-          const value =
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            get(suggestedVariableAssignmentState(variable)) || '0'
-          if (omitZeroValues && value === '0') return ''
+const timerConfigCodeState = computed(() => {
+  const omitZeroValues = true
+  const { registers } = timerState.value
+  const code = map(registers, (variables, regName) => {
+    const assignments = variables
+      .map((variable) => {
+        suggestedVariableAssignmentState.value[variable] ??= signal(undefined) // TODO signal_init
+        const value =
+          suggestedVariableAssignmentState.value[variable].value || '0'
+        if (omitZeroValues && value === '0') return ''
 
-          // DTR0L/H are special because they are just 4 bytes of a single register
-          if (variable === 'DTR0L') return `${value}`
-          if (variable === 'DTR0H') return `${value} << 4`
-          return `${value} << ${variable}`
-        })
-        .filter(isTruthy)
-      const assignmentsStr = assignments.length
-        ? `\n    ${assignments.join(' |\n    ')}`
-        : '0'
-      if (omitRegisterZeros && assignmentsStr === '0') return ''
-      // register names like PMX0_0 and PMX0_1 are actually all the same register,
-      // but they have to be set in two steps
-      return `  ${regName.split('_')[0]} = ${assignmentsStr};`
-    })
-      .flat()
+        // DTR0L/H are special because they are just 4 bytes of a single register
+        if (variable === 'DTR0L') return `${value}`
+        if (variable === 'DTR0H') return `${value} << 4`
+        return `${value} << ${variable}`
+      })
       .filter(isTruthy)
-    let str = code.join('\n')
-    return str
-  }
+    const assignmentsStr = assignments.length
+      ? `\n    ${assignments.join(' |\n    ')}`
+      : '0'
+    if (omitRegisterZeros && assignmentsStr === '0') return ''
+    // register names like PMX0_0 and PMX0_1 are actually all the same register,
+    // but they have to be set in two steps
+    return `  ${regName.split('_')[0]} = ${assignmentsStr};`
+  })
+    .flat()
+    .filter(isTruthy)
+  let str = code.join('\n')
+  return str
 })
 
-const compareRegsState = selector({
-  key: 'compareRegsState',
-  get: ({ get }) => {
-    const suggestedConfig = get(suggestedAssignmentState)
+const compareRegsState = computed(() => {
+  const suggestedConfig = suggestedAssignmentState.value
 
-    const code = getAllCompareRegTraits(suggestedConfig)
-      .filter(({ isUsed }) => isUsed)
-      // DTR0L/H are special because they are just 4 bytes of a single register
-      .filter(({ name }) => !['DTR0L', 'DTR0H'].includes(name))
-      .map(({ code }) => code)
-    let str = code.join('\n  ')
-    if (str.length) str = '  ' + str
-    return str
-  }
+  const code = getAllCompareRegTraits(suggestedConfig)
+    .filter(({ isUsed }) => isUsed)
+    // DTR0L/H are special because they are just 4 bytes of a single register
+    .filter(({ name }) => !['DTR0L', 'DTR0H'].includes(name))
+    .map(({ code }) => code)
+  let str = code.join('\n  ')
+  if (str.length) str = '  ' + str
+  return str
 })
-const interruptsCodeState = selector({
-  key: 'interruptsCodeState',
-  get: ({ get }) => {
-    const interruptVariables = [
-      'interruptVectorCodeA',
-      'interruptVectorCodeB',
-      'interruptVectorCodeC',
-      'interruptVectorCodeOVF',
-      'interruptVectorCaptureCode'
-    ]
-    const interruptCommonSignature = get(
-      suggestedVariableAssignmentState('InterruptCommonSignature')
-    )
-    let code = interruptVariables
-      .map(
-        (variable) =>
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          get(suggestedVariableAssignmentState(variable)) || '//nocode'
+const interruptsCodeState = computed(() => {
+  const interruptVariables = [
+    'interruptVectorCodeA',
+    'interruptVectorCodeB',
+    'interruptVectorCodeC',
+    'interruptVectorCodeOVF',
+    'interruptVectorCaptureCode'
+  ]
+  suggestedVariableAssignmentState.value['InterruptCommonSignature'] ??=
+    signal(undefined) // TODO signal_init
+
+  const interruptCommonSignature =
+    suggestedVariableAssignmentState.value['InterruptCommonSignature'].value
+
+  let code = interruptVariables
+    .map((variable) => {
+      suggestedVariableAssignmentState.value[variable] ??= signal(undefined) // TODO signal_init
+      return (
+        suggestedVariableAssignmentState.value[variable].value || '//nocode'
       )
-      .filter((value) => value !== '//nocode')
+    })
+    .filter((value) => value !== '//nocode')
 
-    if (code.length && interruptCommonSignature) {
-      code = [
-        interruptCommonSignature + ' {',
-        ...code.map((code) => '  ' + code.split('\n').join('\n  ')),
-        '}'
-      ]
-    }
-    let str = code.join('\n')
-    if (str.length) str += '\n'
-    return str
+  if (code.length && interruptCommonSignature) {
+    code = [
+      interruptCommonSignature + ' {',
+      ...code.map((code) => '  ' + code.split('\n').join('\n  ')),
+      '}'
+    ]
   }
+  let str = code.join('\n')
+  if (str.length) str += '\n'
+  return str
 })
 
 const CopyToClipboard = React.memo(() => {
   // using refs to avoid rerenders
   const [clicked, setClicked] = useState(false)
-  // const allCode = useAllCode()
-  const copyCode = useRecoilCallback(
-    ({ snapshot }) =>
-      async () => {
-        const allCode = await snapshot.getPromise(allCodeState)
-        copy(allCode)
-        setClicked(true)
-        console.log(allCode)
-      },
-    []
-  )
+
   useEffect(() => {
     setTimeout(() => setClicked(false), 600)
   }, [clicked])
@@ -190,7 +166,7 @@ const CopyToClipboard = React.memo(() => {
     <Button
       style={{ right: 15, position: 'absolute' }}
       color={clicked ? 'green' : undefined}
-      onClick={copyCode}
+      onClick={() => copy(allCodeState.peek())}
     >
       {clicked ? 'Copied' : 'Copy'}
     </Button>

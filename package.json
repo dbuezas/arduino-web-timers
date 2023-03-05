@@ -10,6 +10,7 @@
     "url": "https://github.com/dbuezas/arduino-web-timers/"
   },
   "dependencies": {
+    "@preact/signals": "^1.1.3",
     "@react-hook/size": "^2.1.1",
     "@types/d3": "^6.7.0",
     "@types/react": "^17.0.6",
@@ -29,7 +30,6 @@
     "react-resize-panel-ts": "0.0.5",
     "react-scripts": "4.0.3",
     "react-syntax-highlighter": "^15.5.0",
-    "recoil": "^0.7.6",
     "rsuite": "^4.10.1",
     "typescript": "^4.2.4",
     "web-vitals": "^1.1.2"

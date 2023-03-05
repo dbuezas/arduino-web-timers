@@ -13,7 +13,6 @@ import CompareRegisterHandle, {
 import InterruptArrow from './InterruptArrow'
 import { Curve } from './Curve'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { userConfigState } from '../state/state'
 import { simulationState } from '../helpers/helpers'
 
@@ -31,7 +30,7 @@ export default function Plot({ style }: { style: Object }) {
   const height_ouputCompare = 30
   const margin_ouputCompare = 10
   const { simulation, ocrMax, param, counterMax, values } =
-    useRecoilValue(simulationState)
+    simulationState.value
 
   const IOCR_states = getAllCompareRegTraits(values).map((traits, i) => ({
     ...traits,
@@ -47,17 +46,16 @@ export default function Plot({ style }: { style: Object }) {
     let nth = 0
     IOCR_states.forEach((iocr, i) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const setReg = useSetRecoilState(userConfigState(iocr.name))
       const top = param.top || Number.parseInt(values.counterMax)
       if (!iocr.isDeadTime) nth++
       if (Number.isNaN(iocr.value) && iocr.isUsed) {
         const n = iocr.isDeadTime
           ? Math.pow(counterMax, 0.3)
           : (top / (ioCount + 2)) * (nth + 1)
-        setReg('' + Math.round(n))
+        userConfigState[iocr.name].value = '' + Math.round(n)
       }
       if (prev?.[i].isUsed && !iocr.isUsed) {
-        setReg(undefined)
+        userConfigState[iocr.name].value = ''
       }
     })
   }
@@ -205,8 +203,6 @@ export default function Plot({ style }: { style: Object }) {
 
         {IOCR_states.map(({ isUsed, ref, value, name }) => {
           // eslint-disable-next-line react-hooks/rules-of-hooks
-          const setUserConfigValue = useSetRecoilState(userConfigState(name))
-
           // TODO: redo the extent thing with DTRs
           const yExtent2: [number, number] = name.startsWith('DTR')
             ? [0, Math.sqrt(counterMax + 1) - 1]
@@ -226,7 +222,7 @@ export default function Plot({ style }: { style: Object }) {
                   compareRegisterValue: value,
                   setCompareRegisterValue: (val: number) =>
                     // eslint-disable-next-line react-hooks/rules-of-hooks
-                    setUserConfigValue(val + ''),
+                    (userConfigState[name].value = val + ''),
                   name
                 }}
               />
