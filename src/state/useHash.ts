@@ -18,7 +18,7 @@ export const setHashFromObject = debounce(
     lock = false
   },
   100,
-  { leading: false, trailing: true, maxWait: 100 }
+  { leading: true, trailing: true, maxWait: 100 }
 )
 
 export const getHashParams = () => {
