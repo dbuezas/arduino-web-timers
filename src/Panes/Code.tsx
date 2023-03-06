@@ -1,4 +1,4 @@
-import { map } from 'lodash'
+import { map } from 'lodash-es'
 import { selector, useRecoilCallback, useRecoilValue } from 'recoil'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import {

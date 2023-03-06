@@ -1,4 +1,4 @@
-import { map } from 'lodash'
+import { map } from 'lodash-es'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
 import 'rsuite/dist/styles/rsuite-default.css'

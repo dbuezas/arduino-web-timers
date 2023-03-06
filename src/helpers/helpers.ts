@@ -2,7 +2,7 @@ import { TTable } from './types'
 
 import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
-import { remove } from 'lodash'
+import { remove } from 'lodash-es'
 import Fraction from 'fraction.js'
 import { selector } from 'recoil'
 import { suggestedAssignmentState } from '../Panes/state'

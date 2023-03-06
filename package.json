@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-hook/size": "^2.1.1",
     "@types/d3": "^6.7.0",
+    "@types/lodash-es": "^4.17.6",
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
     "@types/react-syntax-highlighter": "^15.5.6",
@@ -20,7 +21,7 @@
     "esbuild-plugin-alias": "^0.2.1",
     "fraction.js": "^4.2.0",
     "http-server": "^14.1.1",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "preact": "^10.13.0",
     "raw.macro": "^0.6.2",
     "react": "^17.0.2",
