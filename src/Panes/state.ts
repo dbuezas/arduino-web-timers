@@ -107,6 +107,16 @@ const fullDomainState = atomFamily((variable: string) =>
 export const variableOptionsState = atomFamily((variable: string) =>
   atom((get) => {
     const groupIdx = get(groupIdxFromVariableState(variable))
+    if (groupIdx === -1) {
+      return {
+        variable,
+        selectedOption: '',
+        suggestedOption: '',
+        forcedOption: '',
+        options: []
+      }
+    }
+
     const userState = get(groupConfigState(groupIdx))
     const fullDomains = get(fullDomainState(variable))
 

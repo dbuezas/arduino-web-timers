@@ -55,8 +55,8 @@ export const userConfigState = atomFamily<string, string | undefined>(
             value === undefined
               ? without(vars_old, variable)
               : uniq([...vars_old, variable])
-          vars_old.length = 0 // Here the hack. Next set will get also the new vars
-          vars_old.push(...vars_new)
+          // vars_old.length = 0 // Here the hack. Next set will get also the new vars
+          // vars_old.push(...vars_new)
           return vars_new // but return a different reference to trigger rerener
         })
       }
