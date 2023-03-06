@@ -1,8 +1,8 @@
 import { map } from 'lodash-es'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
-import 'rsuite/dist/styles/rsuite-default.css'
 
+import './rsuite.less'
 import './App.css'
 import TimerSetup from './Panes/TimerSetup'
 import { PanelModes, MicroControllers } from './helpers/types'

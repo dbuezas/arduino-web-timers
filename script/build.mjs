@@ -1,8 +1,8 @@
 // @ts-check
 import chokidar from 'chokidar'
 import { execSync } from 'child_process'
-import esbuild, { context } from 'esbuild'
-import alias from 'esbuild-plugin-alias'
+import esbuild from 'esbuild'
+import { lessLoader } from 'esbuild-plugin-less'
 
 const date = new Date().toString()
 const isProd = process.env.NODE_ENV === 'production'
@@ -44,7 +44,8 @@ async function build() {
       react: 'preact/compat',
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime'
-    }
+    },
+    plugins: [lessLoader({ javascriptEnabled: true })]
   })
   console.timeEnd('build')
   const result = await ctx.rebuild?.()
