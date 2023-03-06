@@ -12,7 +12,7 @@ export const groupsState = selector({
   key: 'groupsState',
   get: ({ get }) => splitTables(get(timerState).configs)
 })
-export const groupState = selectorFamily({
+const groupState = selectorFamily({
   key: 'groupsState',
   get:
     (groupIdx: number) =>
@@ -26,7 +26,7 @@ const getVariables = (group: TTable[]) => {
   if (group === undefined) debugger
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
-export const suggestedGroupAssignmentState = selectorFamily({
+const suggestedGroupAssignmentState = selectorFamily({
   key: 'suggestedGroupAssignmentState',
   get:
     (groupIdx: number) =>
@@ -68,7 +68,7 @@ export const suggestedAssignmentState = selector<TRow>({
   }
 })
 
-export const groupConfigState = selectorFamily({
+const groupConfigState = selectorFamily({
   key: 'groupConfigState',
   get:
     (groupIdx: number) =>
@@ -84,7 +84,7 @@ export const groupConfigState = selectorFamily({
     }
 })
 
-export const groupIdxFromVariableState = selectorFamily({
+const groupIdxFromVariableState = selectorFamily({
   key: 'groupIdxFromVariableState',
   get:
     (variable: string) =>
@@ -96,17 +96,7 @@ export const groupIdxFromVariableState = selectorFamily({
       return idx
     }
 })
-export const groupFromVariableState = selectorFamily({
-  key: 'groupFromVariableState',
-  get:
-    (variable: string) =>
-    ({ get }) => {
-      const tableSets = get(groupsState)
-      const idx = get(groupIdxFromVariableState(variable))
-      return tableSets[idx]
-    }
-})
-export const constrainedGroupDomainsState = selectorFamily({
+const constrainedGroupDomainsState = selectorFamily({
   key: 'constrainedGroupDomainsState',
   get:
     (groupIdx: number) =>
@@ -116,7 +106,7 @@ export const constrainedGroupDomainsState = selectorFamily({
       return getConstrainedDomains([[userState], ...group])
     }
 })
-export const fullGroupDomainsState = selectorFamily({
+const fullGroupDomainsState = selectorFamily({
   key: 'fullGroupDomainsState',
   get:
     (groupIdx: number) =>
@@ -126,7 +116,7 @@ export const fullGroupDomainsState = selectorFamily({
       return getFullDomains([...group, [userState]])
     }
 })
-export const constrainedDomainState = selectorFamily({
+const constrainedDomainState = selectorFamily({
   key: 'constrainedDomainState',
   get:
     (variable: string) =>
@@ -135,7 +125,7 @@ export const constrainedDomainState = selectorFamily({
       return get(constrainedGroupDomainsState(groupIdx))[variable]
     }
 })
-export const fullDomainState = selectorFamily({
+const fullDomainState = selectorFamily({
   key: 'fullDomainState',
   get:
     (variable: string) =>

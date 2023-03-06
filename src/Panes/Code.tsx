@@ -17,7 +17,7 @@ import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
-import debounceRender from 'react-debounce-render'
+import debounce from 'lodash/debounce'
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
@@ -59,7 +59,7 @@ ${get(compareRegsState)}
 ${get(interruptsCodeState)}`
 })
 
-const DebouncedCode = debounceRender(
+const DebouncedCode = debounce(
   ({ code }: { code: string }) => {
     return (
       <>
