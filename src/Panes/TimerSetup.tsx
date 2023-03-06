@@ -7,7 +7,7 @@ import {
   Tooltip,
   Whisper
 } from 'rsuite'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { variableDescriptions, valueDescriptions } from '../data/timers'
 import { difference, map, uniq } from 'lodash-es'
 import './TimerSetup.css'
@@ -25,8 +25,8 @@ const VariableConfig = ({
   variable: string
   humanName?: string
 }) => {
-  const setUserConfigValue = useSetRecoilState(userConfigState(variable))
-  const { selectedOption, forcedOption, options } = useRecoilValue(
+  const setUserConfigValue = useSetAtom(userConfigState(variable))
+  const { selectedOption, forcedOption, options } = useAtomValue(
     variableOptionsState(variable)
   )
   const descr = valueDescriptions[variable]
@@ -133,9 +133,9 @@ const getHiddenPane = (groups: TTable[][]): TPanel => {
 }
 
 function TimerSetup() {
-  const groups = useRecoilValue(groupsState)
+  const groups = useAtomValue(groupsState)
 
-  const panelMode = useRecoilValue(panelModeState)
+  const panelMode = useAtomValue(panelModeState)
   let panels: TPanel[]
   switch (panelMode) {
     case PanelModes.Normal:
