@@ -14,10 +14,10 @@ import './TimerSetup.css'
 
 import Plot from '../Plot/Plot'
 import Code from './Code'
-import ResizePanel from 'react-resize-panel-ts'
 import { panelModeState, userConfigState } from '../state/state'
 import { variableOptionsState, groupsState } from './state'
 import { TTable, PanelModes } from '../helpers/types'
+import ResizePanel from './ResizePanel'
 const VariableConfig = ({
   variable,
   humanName
@@ -174,14 +174,15 @@ function TimerSetup() {
         </FlexboxGrid.Item>
       </FlexboxGrid>
       <ResizePanel
-        direction="n"
         style={{
           width: '100%',
           bottom: 0,
           flexGrow: 0,
+          flexShrink: 0,
           borderTop: '1px solid lightgrey',
-          height: 200,
-          touchAction: 'none'
+          // minHeight: 300,
+          touchAction: 'none',
+          boxShadow: '0 -2px 2px rgb(0 0 0 / 12%), 0 0 10px rgb(0 0 0 / 6%)'
         }}
       >
         <Plot style={{ minHeight: 300 }} />
