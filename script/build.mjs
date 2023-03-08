@@ -15,12 +15,12 @@ const watchOptn = {
   ignoreInitial: true
 }
 const synchPublic = async () => {
-  execSync('cp public/* dist/')
+  execSync('cp public/* build/')
 }
 
 async function build() {
-  execSync('rm -rf dist/')
-  execSync('mkdir dist')
+  execSync('rm -rf build/')
+  execSync('mkdir build')
   console.time('build')
   await synchPublic()
 
@@ -33,7 +33,7 @@ async function build() {
     treeShaking: true,
 
     sourcemap: isProd ? false : 'inline',
-    outfile: 'dist/bundle.js',
+    outfile: 'build/bundle.js',
     define: {
       NODE_ENV: process.env.NODE_ENV,
       'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
