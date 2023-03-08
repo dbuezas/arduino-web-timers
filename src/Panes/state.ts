@@ -1,10 +1,10 @@
-import { mapValues, uniq } from 'lodash-es'
 import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
+import { mapValues, uniq } from 'lodash-es'
 import {
   getConstrainedDomains,
-  splitTables,
-  getFullDomains
+  getFullDomains,
+  splitTables
 } from '../helpers/helpers'
 import { TRow, TTable } from '../helpers/types'
 import { timerState, userConfigState } from '../state/state'

@@ -37,8 +37,9 @@ async function build() {
     define: {
       NODE_ENV: process.env.NODE_ENV,
       'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
+      'process.env.REACT_APP_BUILD_TIME': `"${date}"`,
       'process.env.RUN_ENV': `undefined`,
-      'process.env.REACT_APP_BUILD_TIME': `"${date}"`
+      'process.env.DRAGGABLE_DEBUG': `undefined`
     },
     alias: {
       react: 'preact/compat',
