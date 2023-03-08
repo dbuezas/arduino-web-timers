@@ -18,7 +18,7 @@ const groupState = atomFamily((groupIdx: number) =>
 )
 
 const getVariables = (group: TTable[]) => {
-  if (group === undefined) debugger
+  // if (group === undefined) debugger
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
 const suggestedGroupAssignmentState = atomFamily((groupIdx: number) =>
@@ -91,18 +91,6 @@ const fullGroupDomainsState = atomFamily((groupIdx: number) =>
     return getFullDomains([...group, [userState]])
   })
 )
-const constrainedDomainState = atomFamily((variable: string) =>
-  atom((get) => {
-    const groupIdx = get(groupIdxFromVariableState(variable))
-    return get(constrainedGroupDomainsState(groupIdx))[variable]
-  })
-)
-const fullDomainState = atomFamily((variable: string) =>
-  atom((get) => {
-    const groupIdx = get(groupIdxFromVariableState(variable))
-    return get(fullGroupDomainsState(groupIdx))[variable]
-  })
-)
 
 export const variableOptionsState = atomFamily((variable: string) =>
   atom((get) => {
@@ -118,10 +106,12 @@ export const variableOptionsState = atomFamily((variable: string) =>
     }
 
     const userState = get(groupConfigState(groupIdx))
-    const fullDomains = get(fullDomainState(variable))
+    const fullDomains = get(fullGroupDomainsState(groupIdx))[variable]
 
     const group = get(groupState(groupIdx))
-    let constrainedDomain = get(constrainedDomainState(variable))
+    let constrainedDomain = get(constrainedGroupDomainsState(groupIdx))[
+      variable
+    ]
     if (userState[variable]) {
       const { [variable]: _discarded, ...selectedWithout } = userState
       constrainedDomain = getConstrainedDomains([[selectedWithout], ...group])[

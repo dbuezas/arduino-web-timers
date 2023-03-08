@@ -41,13 +41,15 @@ const userConfigState_store = atomFamily((variable: string) =>
 export const userConfigState = atomFamily((variable: string) =>
   atom(
     (get) => get(userConfigState_store(variable)),
-    (_get, set, value: string | undefined) => {
+    (get, set, value: string | undefined) => {
       set(userConfigState_store(variable), value)
-      set(userConfigState_vars, (vars_old) =>
-        value === undefined
-          ? without(vars_old, variable)
-          : uniq([...vars_old, variable])
-      )
+      const vars = get(userConfigState_vars)
+      const exists = vars.includes(variable)
+      if (exists && value === undefined) {
+        set(userConfigState_vars, without(vars, variable))
+      } else if (!exists && value != undefined) {
+        set(userConfigState_vars, [...vars, variable])
+      }
     }
   )
 )
@@ -62,11 +64,12 @@ export const userConfigStateBulk = atom(
     ),
   (get, set, value: Record<string, string | undefined>) => {
     const variables = uniq([
-      ...get(userConfigState_vars),
-      ...Object.keys(value)
-    ])
+      ...Object.keys(value),
+      ...get(userConfigState_vars)
+    ]).reverse()
     for (const variable of variables) {
-      set(userConfigState(variable), value[variable])
+      if (get(userConfigState(variable)) !== value[variable])
+        set(userConfigState(variable), value[variable])
     }
   }
 )

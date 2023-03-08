@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/compat'
+import { useEffect, useMemo, useRef } from 'preact/compat'
 import useSize from '@react-hook/size'
 
 import XAxis from './XAxis'
@@ -65,12 +65,22 @@ export default function Plot({ style }: { style: Object }) {
   const activeOCnXs = IOCR_states.filter(({ isActiveOutput }) => isActiveOutput)
   const height_timer =
     height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
-  const xScale = scaleLinear()
-    .domain(extent(simulation.t) as [number, number])
-    .range([margin.left, width - margin.right])
-  const yScale = scaleLinear()
-    .domain([0, ocrMax])
-    .rangeRound([height_timer - margin.bottom, margin.top])
+  const xDomain = extent(simulation.t) as [number, number]
+  const xScale = useMemo(
+    () =>
+      scaleLinear()
+        .domain(xDomain)
+        .range([margin.left, width - margin.right]),
+    [width, margin, xDomain[0], xDomain[1]]
+  )
+
+  const yScale = useMemo(
+    () =>
+      scaleLinear()
+        .domain([0, ocrMax])
+        .rangeRound([height_timer - margin.bottom, margin.top]),
+    [height_timer, margin, ocrMax]
+  )
 
   useEffect(() => {
     const containerEl = containerRef.current
@@ -103,18 +113,14 @@ export default function Plot({ style }: { style: Object }) {
   return (
     <div className="plotContainer" ref={containerRef} style={style}>
       <svg className="plot">
-        <XAxis {...{ xScale, height: height_timer, data: simulation }} />
-        <YAxis {...{ yScale, width }} />
+        <XAxis xScale={xScale} height={height_timer} />
+        <YAxis yScale={yScale} width={width} />
         <Curve
-          {...{
-            xScale,
-            yScale,
-            width,
-            height: height_timer,
-            data: simulation.t.map((t, i) => [t, simulation.TCNT[i]]),
-            idx: 'TCNT',
-            key: 'TCNT'
-          }}
+          xScale={xScale}
+          yScale={yScale}
+          data={simulation.t.map((t, i) => [t, simulation.TCNT[i]])}
+          idx={'TCNT'}
+          key={'TCNT'}
         />
         {activeOCnXs.flatMap(({ isActiveOutput, i }, k) => {
           const yScale = scaleLinear()
@@ -126,27 +132,25 @@ export default function Plot({ style }: { style: Object }) {
           return [
             isActiveOutput && (
               <Curve
-                {...{
-                  key: 'OC' + i,
-                  idx: i,
-                  curve: curveStepAfter,
-                  name: 'OC' + param.timerNr + 'ABC'[i],
-                  xScale,
-                  yScale,
-                  data: simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])
-                }}
+                key={'OC' + i}
+                idx={i}
+                curve={curveStepAfter}
+                name={'OC' + param.timerNr + 'ABC'[i]}
+                xScale={xScale}
+                yScale={yScale}
+                data={simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])}
               />
             ),
             param.deadTimeEnable && i < 2 && (
               <Curve
-                {...{
-                  key: 'DeadTime-' + i,
-                  idx: 'DeadTime-' + i,
-                  curve: curveStepAfter,
-                  name: '',
-                  xScale,
-                  yScale,
-                  data: [
+                key={'DeadTime-' + i}
+                idx={'DeadTime-' + i}
+                curve={curveStepAfter}
+                name=""
+                xScale={xScale}
+                yScale={yScale}
+                data={
+                  [
                     [0, 0],
                     ...simulation.t.map((t, j) => [
                       t,
@@ -154,7 +158,7 @@ export default function Plot({ style }: { style: Object }) {
                     ]),
                     [simulation.t[simulation.t.length - 1], 0]
                   ] as [number, number][]
-                }}
+                }
               />
             )
           ]
@@ -164,42 +168,36 @@ export default function Plot({ style }: { style: Object }) {
           (matches, i) =>
             IOCR_states[i].isInterrupt && (
               <InterruptArrow
-                {...{
-                  key: i + 'interrupt',
-                  flagValues: matches,
-                  TCNT: simulation.TCNT,
-                  t: simulation.t,
-                  xScale,
-                  yScale,
-                  label: 'OCR' + values.timerNr + 'ABC'[i] + ' interrupt'
-                }}
+                key={i + 'interrupt'}
+                flagValues={matches}
+                TCNT={simulation.TCNT}
+                t={simulation.t}
+                xScale={xScale}
+                yScale={yScale}
+                label={'OCR' + values.timerNr + 'ABC'[i] + ' interrupt'}
               />
             )
         )}
         {IOCR_states.find(({ isInput }) => isInput)!.isInterrupt && (
           <InterruptArrow
-            {...{
-              flagValues: simulation.CAPT,
-              TCNT: simulation.TCNT,
-              t: simulation.t,
-              xScale,
-              yScale,
-              label: 'Capture interrupt',
-              key: 'Capture interrupt'
-            }}
+            flagValues={simulation.CAPT}
+            TCNT={simulation.TCNT}
+            t={simulation.t}
+            xScale={xScale}
+            yScale={yScale}
+            label={'Capture interrupt'}
+            key={'Capture interrupt'}
           />
         )}
         {values.InterruptOnTimerOverflow === 'on' && (
           <InterruptArrow
-            {...{
-              flagValues: simulation.OVF,
-              TCNT: simulation.TCNT,
-              t: simulation.t,
-              xScale,
-              yScale,
-              label: 'Overflow interrupt',
-              key: 'Overflow interrupt'
-            }}
+            flagValues={simulation.OVF}
+            TCNT={simulation.TCNT}
+            t={simulation.t}
+            xScale={xScale}
+            yScale={yScale}
+            label={'Overflow interrupt'}
+            key={'Overflow interrupt'}
           />
         )}
 
@@ -217,18 +215,17 @@ export default function Plot({ style }: { style: Object }) {
           return (
             isUsed && (
               <CompareRegisterHandle
-                {...{
-                  key: name,
-                  ref,
-                  width,
-                  yExtent: yExtent2,
-                  yScale,
-                  compareRegisterValue: value,
-                  setCompareRegisterValue: (val: number) =>
-                    // eslint-disable-next-line react-hooks/rules-of-hooks
-                    setUserConfigValue(val + ''),
-                  name
-                }}
+                key={name}
+                ref={ref}
+                width={width}
+                yExtent={yExtent2}
+                yScale={yScale}
+                compareRegisterValue={value}
+                setCompareRegisterValue={(val: number) =>
+                  // eslint-disable-next-line react-hooks/rules-of-hooks
+                  setUserConfigValue(val + '')
+                }
+                name={name}
               />
             )
           )

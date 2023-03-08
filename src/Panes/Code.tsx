@@ -17,7 +17,10 @@ import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
-import debounce from 'lodash/debounce'
+import { options } from 'preact'
+
+// Use requestAnimationFrame by default but allow URL param to disable.
+options.debounceRendering = requestAnimationFrame
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
@@ -55,31 +58,21 @@ ${get(compareRegsState)}
 ${get(interruptsCodeState)}`
 )
 
-const DebouncedCode = debounce(
-  ({ code }: { code: string }) => {
-    return (
-      <>
-        <CopyToClipboard />
-        <SyntaxHighlighter
-          language="cpp"
-          style={arduinoLight}
-          customStyle={{ paddingLeft: '0' }}
-        >
-          {code}
-        </SyntaxHighlighter>
-      </>
-    )
-  },
-  50,
-  {
-    trailing: true,
-    leading: true,
-    maxWait: 100
-  }
-)
+const customStyle = { paddingLeft: '0' }
 export default function Code() {
   const code = useAtomValue(allCodeState)
-  return <DebouncedCode code={code} />
+  return (
+    <>
+      <CopyToClipboard />
+      <SyntaxHighlighter
+        language="cpp"
+        style={arduinoLight}
+        customStyle={customStyle}
+      >
+        {code}
+      </SyntaxHighlighter>
+    </>
+  )
 }
 const timerConfigCodeState = atom((get) => {
   const omitZeroValues = true
@@ -156,9 +149,7 @@ const interruptsCodeState = atom((get) => {
 })
 
 const CopyToClipboard = React.memo(() => {
-  // using refs to avoid rerenders
   const [clicked, setClicked] = useState(false)
-  // const allCode = useAllCode()
   const copyCode = () => {
     const allCode = getDefaultStore().get(allCodeState)
     copy(allCode)

@@ -148,6 +148,7 @@ function TimerSetup() {
       panels = getPanesByGroup(groups)
       break
   }
+  console.log('timersetup')
   const style = { width: 100 / (panels.length + 1) + '%' }
 
   const r = (
