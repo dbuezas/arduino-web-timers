@@ -17,7 +17,7 @@ export const setHashFromObject = debounce(
     await sleep(0)
     lock = false
   },
-  100,
+  0,
   { leading: false, trailing: true, maxWait: 100 }
 )
 

@@ -70,7 +70,7 @@ const DebouncedCode = debounce(
       </>
     )
   },
-  100,
+  0,
   {
     trailing: true,
     leading: true,
