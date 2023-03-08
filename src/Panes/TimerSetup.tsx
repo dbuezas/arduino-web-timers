@@ -182,7 +182,7 @@ function TimerSetup() {
           borderTop: '1px solid lightgrey',
           // minHeight: 300,
           touchAction: 'none',
-          boxShadow: '0 -2px 2px rgb(0 0 0 / 12%), 0 0 10px rgb(0 0 0 / 6%)'
+          boxShadow: '0 -30px 30px rgb(0 0 0 / 12%)'
         }}
       >
         <Plot style={{ minHeight: 300 }} />
