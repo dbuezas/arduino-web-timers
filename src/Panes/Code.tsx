@@ -17,10 +17,6 @@ import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
-import { options } from 'preact'
-
-// Use requestAnimationFrame by default but allow URL param to disable.
-options.debounceRendering = requestAnimationFrame
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
