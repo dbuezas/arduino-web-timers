@@ -12,13 +12,13 @@ const defaultState: Record<string, string> = {
   timer: '0'
 }
 
-export const RegisterHashUpdater = () => {
+export const RegisterHashWatcher = () => {
   const set = useSetAtom(userConfigStateBulk)
   const params = useHashChangedExternally()
   set(params)
   return <></>
 }
-export const RegisterHashWatcher = () => {
+export const RegisterHashUpdater = () => {
   const obj = useAtomValue(userConfigStateBulk)
   setHashFromObject({ ...defaultState, ...obj })
   return <></>
@@ -64,9 +64,9 @@ export const userConfigStateBulk = atom(
     ),
   (get, set, value: Record<string, string | undefined>) => {
     const variables = uniq([
-      ...Object.keys(value),
-      ...get(userConfigState_vars)
-    ]).reverse()
+      ...get(userConfigState_vars),
+      ...Object.keys(value)
+    ])
     for (const variable of variables) {
       if (get(userConfigState(variable)) !== value[variable])
         set(userConfigState(variable), value[variable])
