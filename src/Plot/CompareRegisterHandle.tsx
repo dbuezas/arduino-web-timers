@@ -1,16 +1,15 @@
 import {
   forwardRef,
-  MouseEventHandler,
   useCallback,
   useImperativeHandle,
   useState
-} from 'react'
+} from 'preact/compat'
 import { margin } from './margin'
 import './CompareRegisterHandle.css'
 import { ScaleLinear } from 'd3-scale'
 
 export type CompareRegisterHandleRef = {
-  onMouseUp: MouseEventHandler
+  onMouseUp: (event: MouseEvent | TouchEvent) => void
   onMouseMove: (n: number, e: MouseEvent | TouchEvent) => void
 }
 type Props = {
@@ -52,14 +51,9 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
       }
     }))
     let scaledY = yScale(constrain(compareRegisterValue, ...yExtent))
-    const onMouseDown = useCallback(
-      (e) => {
-        // e.preventDefault()
-        // e.stopPropagation()
-        setDraggingTV(true)
-      },
-      [setDraggingTV]
-    )
+    const onMouseDown = useCallback(() => {
+      setDraggingTV(true)
+    }, [setDraggingTV])
     return (
       <>
         <line

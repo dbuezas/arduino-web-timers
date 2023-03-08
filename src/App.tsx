@@ -1,8 +1,8 @@
-import { map } from 'lodash'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { map } from 'lodash-es'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
-import 'rsuite/dist/styles/rsuite-default.css'
 
+import './rsuite.less'
 import './App.css'
 import TimerSetup from './Panes/TimerSetup'
 import { PanelModes, MicroControllers } from './helpers/types'
@@ -14,11 +14,11 @@ import {
 } from './state/state'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
-  const timerIdx = useRecoilValue(userConfigState('timer'))
-  const mcu = useRecoilValue(userConfigState('mcu'))
-  const setInBulk = useSetRecoilState(userConfigStateBulk)
-  const timers = useRecoilValue(mcuTimers)
-  const [panelMode, setPanelMode] = useRecoilState(panelModeState)
+  const timerIdx = useAtomValue(userConfigState('timer'))
+  const mcu = useAtomValue(userConfigState('mcu'))
+  const setInBulk = useSetAtom(userConfigStateBulk)
+  const timers = useAtomValue(mcuTimers)
+  const [panelMode, setPanelMode] = useAtom(panelModeState)
   const isLoading = mcuTimers === undefined || timerIdx === undefined
   return (
     <>

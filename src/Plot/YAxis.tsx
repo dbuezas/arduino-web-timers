@@ -1,5 +1,5 @@
 import { ScaleLinear, ticks, select, axisLeft } from 'd3'
-import { useRef, useLayoutEffect } from 'react'
+import { useRef, useLayoutEffect } from 'preact/compat'
 
 import { margin } from './margin'
 

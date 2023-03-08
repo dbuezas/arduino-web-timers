@@ -1,12 +1,9 @@
-import raw from 'raw.macro'
+import timer0 from './timer0.txt'
+import timer1 from './timer1.txt'
+import timer2 from './timer2.txt'
 import { tsv, tsvConstraints } from '../timers'
 
-// const timers = [timer0, timer1, timer2, timer3]
-const timers = [
-  tsv(raw('./timer0.tsv')),
-  tsv(raw('./timer1.tsv')),
-  tsv(raw('./timer2.tsv'))
-]
+const timers = [tsv(timer0), tsv(timer1), tsv(timer2)]
 
 timers.forEach((t) =>
   t.configs.push(

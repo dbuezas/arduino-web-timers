@@ -1,5 +1,5 @@
-import { debounce } from 'lodash'
-import { useState, useEffect } from 'react'
+import { debounce } from 'lodash-es'
+import { useState, useEffect } from 'preact/compat'
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -17,7 +17,7 @@ export const setHashFromObject = debounce(
     await sleep(0)
     lock = false
   },
-  100,
+  50,
   { leading: false, trailing: true, maxWait: 100 }
 )
 
