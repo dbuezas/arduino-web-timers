@@ -37,10 +37,13 @@ export default function ResizePanel(props: { children: ReactNode }) {
   }, [isDragging, height, startY])
 
   return (
-    <div className="ResizePanel" style={{ height: height }}>
+    <div
+      className={`ResizePanel ${isDragging ? 'dragging' : ''}`}
+      style={{ height: height }}
+    >
       <div className="notch-container">
         <div
-          className={`notch ${isDragging ? 'active' : ''}`}
+          className="notch"
           onMouseDown={onMouseDown as any}
           onTouchStart={onMouseDown as any}
         >
