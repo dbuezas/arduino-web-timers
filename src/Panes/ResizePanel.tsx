@@ -1,16 +1,12 @@
 import { useState } from 'preact/hooks'
 import { ReactNode, CSSProperties, useEffect } from 'react'
-
-export default function ResizePanel(props: {
-  children: ReactNode
-  style: CSSProperties
-}) {
+import './ResizePanel.css'
+export default function ResizePanel(props: { children: ReactNode }) {
   const [height, setHeight] = useState(300)
   const [startY, setStartY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const onMouseDown = (e: MouseEvent | TouchEvent) => {
     let y = e instanceof MouseEvent ? e.clientY : e.targetTouches[0].clientY
-    console.log('started', y)
     setStartY(y)
     setIsDragging(true)
   }
@@ -18,12 +14,10 @@ export default function ResizePanel(props: {
     if (!isDragging) return
     const onMouseMove = (e: MouseEvent | TouchEvent) => {
       let y = e instanceof MouseEvent ? e.clientY : e.targetTouches[0].clientY
-      console.log('moved', height + startY - y)
       setHeight(height + (startY - y))
       setStartY(y)
     }
     const onMouseEnd = (e: MouseEvent | TouchEvent) => {
-      console.log('ended')
       setIsDragging(false)
     }
     document.addEventListener('mouseup', onMouseEnd)
@@ -43,51 +37,14 @@ export default function ResizePanel(props: {
   }, [isDragging, height, startY])
 
   return (
-    <div style={{ ...props.style, height: height }}>
-      <div
-        onMouseDown={onMouseDown as any}
-        onTouchStart={onMouseDown as any}
-        style={{
-          cursor: ' ns-resize',
-          height: '20px',
-          marginTop: '-10px',
-          marginBottom: '-10px',
-          background: 'transparent',
-          display: 'flex',
-          zIndex: '10',
-          alignItems: 'center',
-          alignContent: 'center',
-          justifyContent: 'center',
-          touchAction: 'none',
-          userSelect: 'none'
-        }}
-      >
+    <div className="ResizePanel" style={{ height: height }}>
+      <div className="notch-container">
         <div
-          style={{
-            cursor: 'ns-resize',
-            width: '50px',
-            height: '12px',
-            borderRadius: '8px',
-            background: 'white',
-            border: '2px solid lightgray',
-            zIndex: '10',
-            overflow: 'hidden',
-            display: 'flex',
-            justifyContent: 'center',
-            touchAction: 'none'
-          }}
+          className={`notch ${isDragging ? 'active' : ''}`}
+          onMouseDown={onMouseDown as any}
+          onTouchStart={onMouseDown as any}
         >
-          <span
-            style={{
-              textAlign: 'center',
-              marginTop: -14,
-              color: 'grey',
-              fontSize: 18,
-              touchAction: 'none'
-            }}
-          >
-            ......
-          </span>
+          <span className="dots">......</span>
         </div>
       </div>
       {props.children}

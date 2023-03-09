@@ -23,7 +23,7 @@
 
 .axis.domain {
   fill: rgba(0, 0, 0, 0.2);
-  stroke: grey;
+  stroke: #8d8d8d;
   stroke-width: 2;
 }
 

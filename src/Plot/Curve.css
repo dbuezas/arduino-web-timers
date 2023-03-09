@@ -1,7 +1,7 @@
 .plotContainer path {
   stroke-width: 1;
   fill: none;
-  stroke: black;
+  stroke: #8d8d8d;
 }
 .plotContainer path.curve-DeadTime-0,
 .plotContainer path.curve-DeadTime-1 {

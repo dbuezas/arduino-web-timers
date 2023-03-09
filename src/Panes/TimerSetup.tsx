@@ -3,6 +3,7 @@ import {
   CheckboxGroup,
   FlexboxGrid,
   Icon,
+  IconButton,
   Panel,
   Tooltip,
   Whisper
@@ -13,7 +14,7 @@ import { difference, map, uniq } from 'lodash-es'
 import './TimerSetup.css'
 
 import Plot from '../Plot/Plot'
-import Code from './Code'
+import Code, { CopyCodeToClipboard } from './Code'
 import { panelModeState, userConfigState } from '../state/state'
 import { variableOptionsState, groupsState } from './state'
 import { TTable, PanelModes } from '../helpers/types'
@@ -148,7 +149,6 @@ function TimerSetup() {
       panels = getPanesByGroup(groups)
       break
   }
-  console.log('timersetup')
   const style = { width: 100 / (panels.length + 1) + '%' }
 
   const r = (
@@ -168,23 +168,23 @@ function TimerSetup() {
           </FlexboxGrid.Item>
         ))}
         <FlexboxGrid.Item key="code" style={style}>
-          <Panel header="Code" bordered shaded defaultExpanded>
+          <Panel
+            style={{ position: 'relative' }}
+            header={
+              <>
+                Code &nbsp;
+                <CopyCodeToClipboard />
+              </>
+            }
+            bordered
+            shaded
+            defaultExpanded
+          >
             <Code />
           </Panel>
         </FlexboxGrid.Item>
       </FlexboxGrid>
-      <ResizePanel
-        style={{
-          width: '100%',
-          bottom: 0,
-          flexGrow: 0,
-          flexShrink: 0,
-          borderTop: '1px solid lightgrey',
-          // minHeight: 300,
-          touchAction: 'none',
-          boxShadow: '0 -30px 30px rgb(0 0 0 / 12%)'
-        }}
-      >
+      <ResizePanel>
         <Plot style={{ minHeight: 300 }} />
       </ResizePanel>
     </div>

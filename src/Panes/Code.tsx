@@ -11,7 +11,7 @@ import {
   suggestedAssignmentState,
   suggestedVariableAssignmentState
 } from './state'
-import { Button } from 'rsuite'
+import { Icon, IconButton, Notification } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
@@ -54,12 +54,11 @@ ${get(compareRegsState)}
 ${get(interruptsCodeState)}`
 )
 
-const customStyle = { paddingLeft: '0' }
+const customStyle = { padding: 0, margin: 0 }
 export default function Code() {
   const code = useAtomValue(allCodeState)
   return (
     <>
-      <CopyToClipboard />
       <SyntaxHighlighter
         language="cpp"
         style={arduinoLight}
@@ -144,7 +143,7 @@ const interruptsCodeState = atom((get) => {
   return str
 })
 
-const CopyToClipboard = React.memo(() => {
+export const CopyCodeToClipboard = React.memo(() => {
   const [clicked, setClicked] = useState(false)
   const copyCode = () => {
     const allCode = getDefaultStore().get(allCodeState)
@@ -156,12 +155,13 @@ const CopyToClipboard = React.memo(() => {
     setTimeout(() => setClicked(false), 600)
   }, [clicked])
   return (
-    <Button
-      style={{ right: 15, position: 'absolute' }}
+    <IconButton
+      style={{ position: 'absolute', top: 2, right: 2 }}
+      icon={<Icon icon={clicked ? 'check' : 'copy-o'} />}
+      circle
+      size="sm"
       color={clicked ? 'green' : undefined}
       onClick={copyCode}
-    >
-      {clicked ? 'Copied' : 'Copy'}
-    </Button>
+    />
   )
 })
