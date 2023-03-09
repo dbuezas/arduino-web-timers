@@ -6,6 +6,7 @@
   border-top: 1px solid lightgrey;
   touch-action: none;
   box-shadow: rgb(0 0 0 / 12%) 0px -20px 20px;
+  z-index: 0; /* otherwise the box shadow is not visible on top of the code for some reason */
 }
 .ResizePanel .notch-container {
   height: 20px;
