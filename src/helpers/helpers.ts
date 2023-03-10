@@ -2,7 +2,7 @@ import { TTable } from './types'
 
 import uniq from 'lodash/uniq'
 import intersection from 'lodash/intersection'
-import { remove } from 'lodash-es'
+import { mapValues, without } from 'lodash-es'
 import Fraction from 'fraction.js'
 import { atom } from 'jotai'
 import { suggestedAssignmentState } from '../Panes/state'
@@ -57,52 +57,94 @@ export const getFullDomains = (tables: TTable[]): Record<string, string[]> => {
   }
   return domains
 }
-export const getConstrainedDomains = (
-  tables: TTable[],
-  domains_?: Record<string, string[]>
-): Record<string, string[]> => {
-  const domains: Record<string, string[]> = domains_
-    ? { ...domains_ }
-    : getFullDomains(tables)
-  let done = false
-  while (!done) {
-    done = true
-    for (const table_ of tables) {
-      // first remove all rows containing a value out of a variable's domain
-      const table = table_.filter((row) => {
-        return Object.entries(row).every(([variable, value]) => {
-          if (value === WILDCARD) return true
-          if (value.startsWith('!')) {
-            const negated = value.slice(1)
-            return domains[variable].some((value) => value !== negated)
-          }
-          return domains[variable].includes(value)
-        })
+
+function constrain(variable: string, value: string, tables: TTable[]) {
+  const negVal = '!' + value
+  const newTables: TTable[] = []
+  for (const table of tables) {
+    let newTable = table
+    if (variable in table[0]) {
+      newTable = table.filter((row) => {
+        const value2 = row[variable]
+        if (value2 === undefined) return true
+        if (value2[0] === '!') return value2 !== negVal
+        if (value2 === WILDCARD) return true
+        if (value2 === value) return true
+        return false
       })
-      // then update the domain of each variable to only the values avalable in the current table
-      for (const variable of Object.keys(table[0] || {})) {
-        // todo handle numerics
-        const values = table.map((row) => row[variable])
-        const hasWildcards = values.includes(WILDCARD)
-        if (hasWildcards) continue
-        const negatedVals = remove(values, (val) => val?.startsWith('!')).map(
-          (val) => val?.slice(1)
-        )
-        const positiveVals = values // there are no wildcards, and negateds were already removed
-        const miniDomain = uniq([
-          ...positiveVals,
-          ...negatedVals.flatMap((negated) =>
-            domains[variable].filter((value) => value !== negated)
-          )
-        ])
-        const sizeBefore = domains[variable].length
-        domains[variable] = intersection(domains[variable], miniDomain)
-        const sizeAfter = domains[variable].length
-        if (sizeBefore !== sizeAfter) done = false
-      }
+    }
+    if (newTable.length === 0) {
+      return null
+    }
+    newTables.push(newTable)
+  }
+  return newTables
+}
+function findSolution(
+  variables: string[],
+  domains: Record<string, string[]>,
+  tables: TTable[],
+  solutionDomainCache: Record<string, Record<string, boolean>>
+): Record<string, string> | false {
+  if (variables.length === 0) return {}
+  const [variable, ...otherVars] = variables
+  const domain = domains[variable]
+  for (const value of domain) {
+    const newTables = constrain(variable, value, tables)
+    if (!newTables) {
+      continue
+    }
+    const solution = findSolution(
+      otherVars,
+      domains,
+      newTables,
+      solutionDomainCache
+    )
+    if (solution) {
+      solutionDomainCache[variable] ??= {}
+      solutionDomainCache[variable][value] = true
+      solution[variable] = value //mutating for perf
+      return solution
+    } else {
     }
   }
-  return domains
+  return false
+}
+
+export function findOneSolution(
+  tables: TTable[]
+): Record<string, string> | false {
+  const domains = getFullDomains(tables)
+  const variables = Object.keys(domains)
+  return findSolution(variables, domains, tables, {})
+}
+
+export function getConstrainedDomains(tables: TTable[]) {
+  const domains = getFullDomains(tables)
+  const variables = Object.keys(domains)
+  /*
+  solutionDomainCache optimization:
+    * when finding solutions, keep track of already found values for each variables
+    * then don't check those when computing domains
+  */
+  const solutionDomainCache: Record<string, Record<string, boolean>> = {}
+  return mapValues(domains, (domain, variable) => {
+    const otherVars = without(variables, variable)
+    return domain.filter((value) => {
+      if (solutionDomainCache[variable]?.[value]) return true
+      const newTables = constrain(variable, value, tables)
+      if (!newTables) {
+        return false
+      }
+      const solution = findSolution(
+        otherVars,
+        domains,
+        newTables,
+        solutionDomainCache
+      )
+      return !!solution
+    })
+  })
 }
 
 export const simulationState = atom((get) => {

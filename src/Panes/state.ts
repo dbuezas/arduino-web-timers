@@ -2,6 +2,7 @@ import { atom } from 'jotai'
 import { atomFamily } from 'jotai/utils'
 import { mapValues, uniq } from 'lodash-es'
 import {
+  findOneSolution,
   getConstrainedDomains,
   getFullDomains,
   splitTables
@@ -18,24 +19,19 @@ const groupState = atomFamily((groupIdx: number) =>
 )
 
 const getVariables = (group: TTable[]) => {
-  // if (group === undefined) debugger
   return uniq(group.flatMap((table: TTable) => Object.keys(table[0])))
 }
 const suggestedGroupAssignmentState = atomFamily((groupIdx: number) =>
   atom((get) => {
     const userState = get(groupConfigState(groupIdx))
     const group = get(groupState(groupIdx))
-    let domains = get(constrainedGroupDomainsState(groupIdx))
-    const instantiations: Record<string, string> = {}
-    for (const variable of Object.keys(domains)) {
-      if (domains[variable].length < 2) continue // if the domain of a var is only one element, there's no need to assign it.
-      instantiations[variable] = domains[variable][0]
-      domains = getConstrainedDomains(
-        [[instantiations], [userState], ...group],
-        domains
-      )
+    const solution = findOneSolution([[userState], ...group])
+    if (!solution) {
+      // console.log('no solutioins found', userState, JSON.stringify(group))
+      // this only happens with the numeric registers when removing them
+      return {}
     }
-    return mapValues(domains, (domain) => domain[0])
+    return solution
   })
 )
 
