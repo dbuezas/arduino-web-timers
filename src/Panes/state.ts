@@ -102,7 +102,7 @@ export const variableOptionsState = atomFamily((variable: string) =>
     }
 
     const userState = get(groupConfigState(groupIdx))
-    const fullDomains = get(fullGroupDomainsState(groupIdx))[variable]
+    const fullDomains = get(fullGroupDomainsState(groupIdx))[variable] || []
 
     const group = get(groupState(groupIdx))
     let constrainedDomain = get(constrainedGroupDomainsState(groupIdx))[
