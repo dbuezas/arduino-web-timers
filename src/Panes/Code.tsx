@@ -1,11 +1,7 @@
 import { map } from 'lodash-es'
 import { atom, getDefaultStore, useAtomValue } from 'jotai'
 import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
-import {
-  isTruthy,
-  outputFrequencyState,
-  outputPeriodState
-} from '../helpers/helpers'
+import { isTruthy, simulationState } from '../helpers/helpers'
 import { timerState } from '../state/state'
 import {
   suggestedAssignmentState,
@@ -17,20 +13,45 @@ import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
+import Fraction from 'fraction.js'
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
 const omitRegisterZeros = true
 
+function formatTime(s: Fraction) {
+  if (s.valueOf() >= 1) return `${s.round(5)} s`
+  const ms = s.mul(1000)
+  if (ms.valueOf() >= 1) return `${ms.round(5)} ms`
+  const us = ms.mul(1000)
+  if (us.valueOf() >= 1) return `${us.round(5)} us`
+  const ns = us.mul(1000)
+  return `${ns.round(5)} ns`
+}
+function formatFrequency(hz: Fraction) {
+  if (hz.valueOf() < 1000) return `${hz.round(5)} Hz`
+  const khz = hz.div(1000)
+  if (khz.valueOf() < 1000) return `${khz.round(5)} kHz`
+  const mhz = khz.div(1000)
+  return `${mhz.round(5)} MHz`
+}
+function formatPeriod(freq: Fraction) {
+  return `${freq.equals(0) ? 0 : formatTime(freq.inverse())}`
+}
+
 const codeCommentsState = atom((get) => {
-  const outputFrequency = get(outputFrequencyState)
-  const outputPeriod = get(outputPeriodState)
+  const { freq, OCnXsDuty } = get(simulationState).simulation
+  const outputFrequency = formatFrequency(freq)
+  const outputPeriod = formatPeriod(freq)
   const values = get(suggestedAssignmentState)
   const { timerMode } = values
   const IOCR_states = getAllCompareRegTraits(values)
   const outputs = IOCR_states.filter(
     ({ isActiveOutput }) => isActiveOutput
-  ).map(({ outputPin, outputMode }) => `${outputPin}: ${outputMode}`)
+  ).map(
+    ({ outputPin, outputMode }, i) =>
+      `${outputPin}: ${(OCnXsDuty[i] * 100).toFixed(5)}%, ${outputMode}`
+  )
   outputs.unshift(outputs.length ? '' : 'none')
   return `\
 /**

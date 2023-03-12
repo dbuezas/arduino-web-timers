@@ -85,6 +85,7 @@ export default function simTimer({
     cpu: [] as number[],
     TCNT: [] as number[],
     OCnXs: OCRnXs.map(() => [] as number[]),
+    OCnXsDuty: OCRnXs.map(() => 0),
     MATCH_Xs: OCRnXs.map(() => [] as number[]),
     OVF: [] as number[],
     CAPT: [] as number[],
@@ -248,6 +249,14 @@ export default function simTimer({
       (b, i) => +(b && !results.deadTimes[1][i])
     )
   }
+  let lastT = results.t[results.t.length - 1]
+  results.OCnXs.forEach((out, n) => {
+    let t0 = 0
+    results.t.forEach((t, i) => {
+      results.OCnXsDuty[n] += (out[i] * (t - t0)) / lastT
+      t0 = t
+    })
+  })
   return results
 }
 

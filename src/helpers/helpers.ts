@@ -196,34 +196,3 @@ export const simulationState = atom((get) => {
     values
   }
 })
-
-function formatTime(s: Fraction) {
-  if (s.valueOf() >= 1) return `${s.round(5)} s`
-  const ms = s.mul(1000)
-  if (ms.valueOf() >= 1) return `${ms.round(5)} ms`
-  const us = ms.mul(1000)
-  if (us.valueOf() >= 1) return `${us.round(5)} us`
-  const ns = us.mul(1000)
-  return `${ns.round(5)} ns`
-}
-export function formatFrequency(hz: Fraction) {
-  if (hz.valueOf() < 1000) return `${hz.round(5)} Hz`
-  const khz = hz.div(1000)
-  if (khz.valueOf() < 1000) return `${khz.round(5)} kHz`
-  const mhz = khz.div(1000)
-  return `${mhz.round(5)} MHz`
-}
-export function formatPeriod(freq: Fraction) {
-  return `${freq.equals(0) ? 0 : formatTime(freq.inverse())}`
-}
-
-export const outputFrequencyState = atom((get) => {
-  const { simulation } = get(simulationState)
-  const { freq } = simulation
-  return formatFrequency(freq)
-})
-export const outputPeriodState = atom((get) => {
-  const { simulation } = get(simulationState)
-  const { freq } = simulation
-  return formatPeriod(freq)
-})
