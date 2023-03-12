@@ -13,23 +13,23 @@ WGM30	CS30	FOC3C	DSX30	-	TOIE3	TOV3	-	RXD5	C2AF6	-	HDR0	DDF7
 timerNr	timerBits	counterMax											
 3	16	65535											
 													
-WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment		setTovMoment				
-0	0	0	0	0	Normal	0xFFFF	Immediately		MAX				
-1	0	0	0	1	PCPWM	0x00FF	TOP		BOTTOM				
-2	0	0	1	0	PCPWM	0x01FF	TOP		BOTTOM				
-3	0	0	1	1	PCPWM	0x03FF	TOP		BOTTOM				
-4	0	1	0	0	CTC	OCR3A	Immediately		MAX				
-5	0	1	0	1	FPWM	0x00FF	BOTTOM		TOP				
-6	0	1	1	0	FPWM	0x01FF	BOTTOM		TOP				
-7	0	1	1	1	FPWM	0x03FF	BOTTOM		TOP				
-8	1	0	0	0	PFCPWM	ICR3	BOTTOM		BOTTOM				
-9	1	0	0	1	PFCPWM	OCR3A	BOTTOM		BOTTOM				
-10	1	0	1	0	PCPWM	ICR3	TOP		BOTTOM				
-11	1	0	1	1	PCPWM	OCR3A	TOP		BOTTOM				
-12	1	1	0	0	CTC	ICR3	Immediately		MAX				
-13	1	1	0	1	-	-	-		-				
-14	1	1	1	0	FPWM	ICR3	TOP		TOP				
-15	1	1	1	1	FPWM	OCR3A	TOP		TOP				
+WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment					
+0	0	0	0	0	Normal	0xFFFF	Immediately	MAX					
+1	0	0	0	1	PCPWM	0x00FF	TOP	BOTTOM					
+2	0	0	1	0	PCPWM	0x01FF	TOP	BOTTOM					
+3	0	0	1	1	PCPWM	0x03FF	TOP	BOTTOM					
+4	0	1	0	0	CTC	OCR3A	Immediately	MAX					
+5	0	1	0	1	FPWM	0x00FF	BOTTOM	TOP					
+6	0	1	1	0	FPWM	0x01FF	BOTTOM	TOP					
+7	0	1	1	1	FPWM	0x03FF	BOTTOM	TOP					
+8	1	0	0	0	PFCPWM	ICR3	BOTTOM	BOTTOM					
+9	1	0	0	1	PFCPWM	OCR3A	BOTTOM	BOTTOM					
+10	1	0	1	0	PCPWM	ICR3	TOP	BOTTOM					
+11	1	0	1	1	PCPWM	OCR3A	TOP	BOTTOM					
+12	1	1	0	0	CTC	ICR3	Immediately	MAX					
+13	1	1	0	1	-	-	-	-					
+14	1	1	1	0	FPWM	ICR3	TOP	TOP					
+15	1	1	1	1	FPWM	OCR3A	TOP	TOP					
 													
 COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3	CompareOutputModeB	CompareOutputModeC						
 0	0	0	Normal	disconnect	*	*	*						

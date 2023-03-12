@@ -14,16 +14,18 @@ export const tsvConstraints = (str: string) => {
   const table = str
     .trim()
     .split('\n')
-    .filter((line) => !line.startsWith('//'))
+    .filter((line) => line.trim() && !line.startsWith('//'))
     .map((line) => line.trim().split('\t'))
   const [header, ...rows] = table
   return rows
     .map((row) =>
       Object.fromEntries(
-        header.map((colName, i) => [
-          colName,
-          row[i].trim().replace(/\\n/g, '\n').replace(/\\t/g, '\t')
-        ])
+        header
+          .map((colName, i) => [
+            colName,
+            row[i].trim().replace(/\\n/g, '\n').replace(/\\t/g, '\t')
+          ])
+          .filter(([variable, value]) => variable != '' && value != '')
       )
     )
     .filter((row) => !Object.values(row).includes('-'))
