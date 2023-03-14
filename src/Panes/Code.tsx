@@ -50,7 +50,7 @@ const codeCommentsState = atom((get) => {
     ({ isActiveOutput }) => isActiveOutput
   ).map(
     ({ outputPin, outputMode }, i) =>
-      `${outputPin}: ${(OCnXsDuty[i] * 100).toFixed(5)}%, ${outputMode}`
+      `${outputPin}: ${(OCnXsDuty[i] * 100).toFixed(2)}%, ${outputMode}`
   )
   outputs.unshift(outputs.length ? '' : 'none')
   return `\

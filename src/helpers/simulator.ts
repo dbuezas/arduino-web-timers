@@ -181,7 +181,9 @@ export default function simTimer({
     ...actionDeadTimeB.map(({ tcnt }) => tcnt),
     top,
     counterMax
-  ].flatMap((n) => [n - 1, n, n + 1])
+  ]
+    .flatMap((n) => [n - 1, n, n + 1])
+    .filter(Number.isFinite)
 
   let prescaledCPU = -1
   tcntEventTimes = uniq(tcntEventTimes)
@@ -190,7 +192,7 @@ export default function simTimer({
     tcnt: -1,
     dir: 1
   }
-  while (prescaledCPU < prescaledCPUEnd) {
+  while (prescaledCPU <= prescaledCPUEnd) {
     const nextEvents = tcntEventTimes
       .map((n) => (n - counter.tcnt) * counter.dir)
       .filter((n) => n > 0)
@@ -251,7 +253,7 @@ export default function simTimer({
   }
   let lastT = results.t[results.t.length - 1]
   results.OCnXs.forEach((out, n) => {
-    let t0 = 0
+    let t0 = results.t[0]
     results.t.forEach((t, i) => {
       results.OCnXsDuty[n] += (out[i] * (t - t0)) / lastT
       t0 = t
