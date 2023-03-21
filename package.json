@@ -37,8 +37,8 @@
     "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "start": "NODE_ENV=development node script/build.mjs & http-server -c-1 build & wait",
-    "start-prod": "NODE_ENV=production node script/build.mjs & http-server -c-1 build & wait",
+    "start": "NODE_ENV=development WATCH=1 node script/build.mjs",
+    "start-prod": "NODE_ENV=production WATCH=1 node script/build.mjs",
     "build": "NODE_ENV=production node script/build.mjs",
     "check-types": "tsc --noEmit",
     "upgrade": "npx npm-check -u",

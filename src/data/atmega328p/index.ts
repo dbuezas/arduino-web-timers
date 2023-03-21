@@ -1,6 +1,9 @@
-import timer0 from './timer0.txt'
-import timer1 from './timer1.txt'
-import timer2 from './timer2.txt'
+// @ts-expect-error
+import timer0 from './timer0.tsv'
+// @ts-expect-error
+import timer1 from './timer1.tsv'
+// @ts-expect-error
+import timer2 from './timer2.tsv'
 import { tsv, tsvConstraints } from '../timers'
 
 const timers = [tsv(timer0), tsv(timer1), tsv(timer2)]

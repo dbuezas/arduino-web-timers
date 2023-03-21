@@ -6,6 +6,7 @@ import { lessLoader } from 'esbuild-plugin-less'
 
 const date = new Date().toString()
 const isProd = process.env.NODE_ENV === 'production'
+const isWatch = !!process.env.WATCH
 
 import { createRequire } from 'module'
 const _require = createRequire(import.meta.url)
@@ -31,9 +32,11 @@ async function build() {
     minify: isProd,
     metafile: true,
     treeShaking: true,
-
     sourcemap: isProd ? false : 'inline',
     outfile: 'build/bundle.js',
+    loader: {
+      '.tsv': 'text'
+    },
     define: {
       NODE_ENV: process.env.NODE_ENV,
       'process.env.NODE_ENV': `"${process.env.NODE_ENV}"`,
@@ -48,23 +51,19 @@ async function build() {
     },
     plugins: [lessLoader({ javascriptEnabled: true })]
   })
-  console.timeEnd('build')
   const result = await ctx.rebuild?.()
   let text = result.metafile && (await esbuild.analyzeMetafile(result.metafile))
   console.log(text)
+  console.timeEnd('build')
 
-  if (!isProd) {
+  if (isWatch) {
     chokidar.watch('public', { ignoreInitial: true }).on('all', () => {
       synchPublic()
     })
-    chokidar.watch('src', watchOptn).on('all', async (...args) => {
-      console.log(args)
-      try {
-        await ctx.rebuild?.()
-      } catch (e) {
-        console.error(e)
-      }
+    let { host, port } = await ctx.serve({
+      servedir: 'build'
     })
+    console.log(`Serving to http://${host}:${port}`)
   } else {
     ctx.dispose()
   }
