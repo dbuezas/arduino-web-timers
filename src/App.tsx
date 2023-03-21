@@ -1,6 +1,6 @@
 import { map } from 'lodash-es'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Container, Content, Header, Icon, Nav, Navbar, Dropdown } from 'rsuite'
+import { Container, Content, Header, Nav, Navbar, Dropdown } from 'rsuite'
 
 import './rsuite.less'
 import './App.css'
@@ -12,6 +12,12 @@ import {
   userConfigState,
   userConfigStateBulk
 } from './state/state'
+import {
+  IconBxHelpCircle,
+  IconChartmogul,
+  IconHardwareChipOutline,
+  IconSettings
+} from './Icons'
 const gh = 'https://github.com/dbuezas/arduino-web-timers'
 const App = () => {
   const timerIdx = useAtomValue(userConfigState('timer'))
@@ -58,7 +64,7 @@ const App = () => {
                   <Nav>
                     <Dropdown
                       trigger="click"
-                      icon={<Icon icon="microchip" />}
+                      icon={<IconHardwareChipOutline />}
                       title={mcu}
                       placement="bottomEnd"
                     >
@@ -92,11 +98,7 @@ const App = () => {
                       <Nav.Item
                         eventKey={'' + i}
                         key={'' + i}
-                        icon={
-                          <>
-                            <Icon icon="line-chart" />
-                          </>
-                        }
+                        icon={<IconChartmogul />}
                       >
                         Timer {i}
                       </Nav.Item>
@@ -105,7 +107,7 @@ const App = () => {
                   <Nav pullRight>
                     <Dropdown
                       trigger="click"
-                      icon={<Icon icon="cog" />}
+                      icon={<IconSettings />}
                       title={panelMode}
                       placement="bottomEnd"
                     >
@@ -122,7 +124,7 @@ const App = () => {
                     </Dropdown>
                     <Dropdown
                       trigger="click"
-                      icon={<Icon icon="help-o" />}
+                      icon={<IconBxHelpCircle />}
                       title="About"
                       placement="bottomEnd"
                     >

@@ -2,8 +2,6 @@ import {
   Checkbox,
   CheckboxGroup,
   FlexboxGrid,
-  Icon,
-  IconButton,
   Panel,
   Tooltip,
   Whisper
@@ -19,6 +17,7 @@ import { panelModeState, userConfigState } from '../state/state'
 import { variableOptionsState, groupsState } from './state'
 import { TTable, PanelModes } from '../helpers/types'
 import ResizePanel from './ResizePanel'
+import { IconInfoCircled } from '../Icons'
 const VariableConfig = ({
   variable,
   humanName
@@ -46,10 +45,7 @@ const VariableConfig = ({
             trigger="hover"
             speaker={<Tooltip>{descrTitle}</Tooltip>}
           >
-            <Icon
-              icon="info-circle"
-              style={{ color: 'lightgrey', fontSize: 12 }}
-            />
+            <IconInfoCircled />
           </Whisper>
         )}
       </p>
@@ -71,10 +67,7 @@ const VariableConfig = ({
                 trigger="hover"
                 speaker={<Tooltip>{valueDescription}</Tooltip>}
               >
-                <Icon
-                  icon="info-circle"
-                  style={{ color: 'lightgrey', fontSize: 12 }}
-                />
+                <IconInfoCircled />
               </Whisper>
             )}
           </span>

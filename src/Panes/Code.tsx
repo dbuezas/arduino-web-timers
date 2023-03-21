@@ -7,13 +7,14 @@ import {
   suggestedAssignmentState,
   suggestedVariableAssignmentState
 } from './state'
-import { Icon, IconButton, Notification } from 'rsuite'
+import { IconButton } from 'rsuite'
 import copy from 'copy-to-clipboard'
 import React, { useEffect, useState } from 'preact/compat'
 import { arduinoLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter'
 import cpp from 'react-syntax-highlighter/dist/esm/languages/hljs/cpp'
 import Fraction from 'fraction.js'
+import { IconCheck, IconCopy } from '../Icons'
 
 SyntaxHighlighter.registerLanguage('cpp', cpp)
 
@@ -178,7 +179,7 @@ export const CopyCodeToClipboard = React.memo(() => {
   return (
     <IconButton
       style={{ position: 'absolute', top: 2, right: 2 }}
-      icon={<Icon icon={clicked ? 'check' : 'copy-o'} />}
+      icon={clicked ? <IconCheck /> : <IconCopy />}
       circle
       size="sm"
       color={clicked ? 'green' : undefined}
