@@ -1,9 +1,6 @@
 import { TTable } from './types'
 
-import uniq from 'lodash/uniq'
-import intersection from 'lodash/intersection'
-import { mapValues, without } from 'lodash-es'
-import Fraction from 'fraction.js'
+import { mapValues, without, uniq, intersection } from 'lodash-es'
 import { atom } from 'jotai'
 import { suggestedAssignmentState } from '../Panes/state'
 import {
