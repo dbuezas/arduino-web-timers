@@ -14,6 +14,7 @@ import {
 } from './state/state'
 import {
   IconBxHelpCircle,
+  IconCaretDown,
   IconChartmogul,
   IconHardwareChipOutline,
   IconSettings
@@ -63,9 +64,14 @@ const App = () => {
                 <Navbar.Body>
                   <Nav>
                     <Dropdown
+                      noCaret
                       trigger="click"
                       icon={<IconHardwareChipOutline />}
-                      title={mcu}
+                      title={
+                        <>
+                          {mcu} <IconCaretDown />
+                        </>
+                      }
                       placement="bottomEnd"
                     >
                       {map(MicroControllers, (aChip) => (
@@ -106,9 +112,14 @@ const App = () => {
                   </Nav>
                   <Nav pullRight>
                     <Dropdown
+                      noCaret
                       trigger="click"
                       icon={<IconSettings />}
-                      title={panelMode}
+                      title={
+                        <>
+                          {panelMode} <IconCaretDown />
+                        </>
+                      }
                       placement="bottomEnd"
                     >
                       {map(PanelModes, (mode) => (
@@ -123,9 +134,14 @@ const App = () => {
                       ))}
                     </Dropdown>
                     <Dropdown
+                      noCaret
                       trigger="click"
                       icon={<IconBxHelpCircle />}
-                      title="About"
+                      title={
+                        <>
+                          About <IconCaretDown />
+                        </>
+                      }
                       placement="bottomEnd"
                     >
                       <Dropdown.Item
