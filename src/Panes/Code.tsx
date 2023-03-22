@@ -47,11 +47,12 @@ const codeCommentsState = atom((get) => {
   const values = get(suggestedAssignmentState)
   const { timerMode } = values
   const IOCR_states = getAllCompareRegTraits(values)
-  const outputs = IOCR_states.filter(
-    ({ isActiveOutput }) => isActiveOutput
-  ).map(
-    ({ outputPin, outputMode }, i) =>
-      `${outputPin}: ${(OCnXsDuty[i] * 100).toFixed(2)}%, ${outputMode}`
+  const outputs = IOCR_states.flatMap(
+    ({ outputPin, outputMode, isActiveOutput }, i) =>
+      (isActiveOutput && [
+        `${outputPin}: ${(OCnXsDuty[i] * 100).toFixed(2)}%, ${outputMode}`
+      ]) ||
+      []
   )
   outputs.unshift(outputs.length ? '' : 'none')
   return `\
