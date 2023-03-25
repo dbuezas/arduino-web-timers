@@ -24,7 +24,7 @@ const getTimerLength = (top: number, timerMode: TimerMode) => {
   return isDoubleSlope ? top * 2 : top
 }
 const cpuToTcnt = (cpu: number, top: number, timerMode: TimerMode) => {
-  while (cpu < 0) cpu += top
+  while (cpu < 0 && top > 0) cpu += top
   const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
   if (!isDoubleSlope) {
     // e.g top = 3
@@ -146,9 +146,13 @@ export default function simTimer({
 
   let actionDeadTimeA = [] as { tcnt: number; dir: number; to: number }[]
   let actionDeadTimeB = [] as { tcnt: number; dir: number; to: number }[]
-
+  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
+  const period = !isDoubleSlope ? top + 1 : top * 2
   if (deadTimeEnable) {
     /* deadtime 
+
+      Output B (index 1) determines duty
+
       setB at setB + deadTimeB
       changeA at setB (to !isAInverted)
       clearB at clearB
@@ -157,17 +161,19 @@ export default function simTimer({
     const bClear = actions[1].at.find(({ to }) => to === 0)!
     const bSet = actions[1].at.find(({ to }) => to === 1)!
     actionDeadTimeA = [{ to: 1, tcnt: bClear.tcnt, dir: bClear.dir }]
-    if (deadTimeA < top)
+    if (deadTimeA < period) {
       actionDeadTimeA.push({
         to: 0,
         ...offsetCounter(bClear, deadTimeA, top, timerMode)
       })
+    }
     actionDeadTimeB = [{ to: 1, tcnt: bSet.tcnt, dir: bSet.dir }]
-    if (deadTimeB < top)
+    if (deadTimeB < period) {
       actionDeadTimeB.push({
         to: 0,
         ...offsetCounter(bSet, deadTimeB, top, timerMode)
       })
+    }
   }
   let tcntEventTimes = [
     // Optimization:
@@ -238,25 +244,26 @@ export default function simTimer({
     }
   }
   if (deadTimeEnable) {
-    if (OCRnXs_behaviour[0] === OCRnXs_behaviour[1]) {
-      results.OCnXs[0] = results.OCnXs[1].map(
-        (b, i) => +(b || results.deadTimes[0][i])
-      )
-    } else {
-      results.OCnXs[0] = results.OCnXs[1].map(
-        (b, i) => +(!b && !results.deadTimes[0][i])
-      )
-    }
+    results.OCnXs[0] = results.OCnXs[1].map((b, i) => {
+      const r = b || results.deadTimes[0][i]
+      return OCRnXs_behaviour[0] === OCRnXs_behaviour[1] ? +r : +!r
+    })
+
     results.OCnXs[1] = results.OCnXs[1].map(
       (b, i) => +(b && !results.deadTimes[1][i])
     )
   }
-  let lastT = results.t[results.t.length - 1]
+
+  // for the duties take the 2 cicles after the first one
+  const counterPeriod = (isDoubleSlope ? top * 2 : top + 1) * prescaler
+  const range = [counterPeriod, counterPeriod * 3]
   results.OCnXs.forEach((out, n) => {
-    let t0 = results.t[0]
-    results.t.forEach((t, i) => {
-      results.OCnXsDuty[n] += (out[i] * (t - t0)) / lastT
-      t0 = t
+    let lastCounter = range[0]
+    results.cpu.forEach((counter, i) => {
+      if (counter < range[0] || counter > range[1]) return
+      results.OCnXsDuty[n] +=
+        (out[i] * (counter - lastCounter)) / counterPeriod / 2
+      lastCounter = counter
     })
   })
   return results
