@@ -16,16 +16,14 @@ const offsetCounter = (
   counter: Counter,
   offset: number,
   top: number,
-  timerMode: TimerMode
-) => cpuToTcnt(tcntToCpu(counter, top) + offset, top, timerMode)
+  isDoubleSlope: boolean
+) => cpuToTcnt(tcntToCpu(counter, top) + offset, top, isDoubleSlope)
 
-const getTimerLength = (top: number, timerMode: TimerMode) => {
-  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
+const getTimerLength = (top: number, isDoubleSlope: boolean) => {
   return isDoubleSlope ? top * 2 : top
 }
-const cpuToTcnt = (cpu: number, top: number, timerMode: TimerMode) => {
+const cpuToTcnt = (cpu: number, top: number, isDoubleSlope: boolean) => {
   while (cpu < 0 && top > 0) cpu += top
-  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
   if (!isDoubleSlope) {
     // e.g top = 3
     // 0 1 2 3 4 -- cpu
@@ -78,8 +76,9 @@ export default function simTimer({
   deadTimeA,
   deadTimeB
 }: Props) {
-  const timerLength = getTimerLength(top, timerMode)
-  const prescaledCPUEnd = timerLength * 4
+  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
+  const timerLength = getTimerLength(top, isDoubleSlope)
+  const prescaledCPUEnd = timerLength * 4 + 2
   const results = {
     t: [] as number[],
     cpu: [] as number[],
@@ -146,7 +145,6 @@ export default function simTimer({
 
   let actionDeadTimeA = [] as { tcnt: number; dir: number; to: number }[]
   let actionDeadTimeB = [] as { tcnt: number; dir: number; to: number }[]
-  const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
   const period = !isDoubleSlope ? top + 1 : top * 2
   if (deadTimeEnable) {
     /* deadtime 
@@ -164,14 +162,14 @@ export default function simTimer({
     if (deadTimeA < period) {
       actionDeadTimeA.push({
         to: 0,
-        ...offsetCounter(bClear, deadTimeA, top, timerMode)
+        ...offsetCounter(bClear, deadTimeA, top, isDoubleSlope)
       })
     }
     actionDeadTimeB = [{ to: 1, tcnt: bSet.tcnt, dir: bSet.dir }]
     if (deadTimeB < period) {
       actionDeadTimeB.push({
         to: 0,
-        ...offsetCounter(bSet, deadTimeB, top, timerMode)
+        ...offsetCounter(bSet, deadTimeB, top, isDoubleSlope)
       })
     }
   }
@@ -190,7 +188,6 @@ export default function simTimer({
   ]
     .flatMap((n) => [n - 1, n, n + 1])
     .filter(Number.isFinite)
-
   let prescaledCPU = -1
   tcntEventTimes = uniq(tcntEventTimes)
 
@@ -198,7 +195,7 @@ export default function simTimer({
     tcnt: -1,
     dir: 1
   }
-  while (prescaledCPU <= prescaledCPUEnd) {
+  while (prescaledCPU < prescaledCPUEnd) {
     const nextEvents = tcntEventTimes
       .map((n) => (n - counter.tcnt) * counter.dir)
       .filter((n) => n > 0)
@@ -207,8 +204,8 @@ export default function simTimer({
     let OVF = 0
     let CAPT = 0
     prescaledCPU += distToNext
-
-    counter = cpuToTcnt(prescaledCPU, top, timerMode)
+    prescaledCPU = Math.min(prescaledCPU, prescaledCPUEnd)
+    counter = cpuToTcnt(prescaledCPU, top, isDoubleSlope)
     if (counter.tcnt === 0 && tovTime === 'BOTTOM') OVF = 1
     if (counter.tcnt === top && tovTime === 'TOP') OVF = 1
     if (counter.tcnt === counterMax && tovTime === 'MAX') OVF = 1
