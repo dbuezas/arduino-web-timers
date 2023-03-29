@@ -57,7 +57,7 @@ const App = () => {
                     >
                       ARDUINO WEB
                       <br />
-                      TIMERS1
+                      TIMERS
                     </span>
                   </span>
                 </Navbar.Header>
