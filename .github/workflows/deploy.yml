@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Install 🔧
-        run: npm i --omit=dev
+        run: npm ci --omit=dev
       - name: Build 🏗️
         run: npm run build
       - name: Deploy to GH Pages 🚀
