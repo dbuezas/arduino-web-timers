@@ -28,8 +28,8 @@ function usePrevious<T>(value: T) {
 export default function Plot({ style }: { style: Object }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [width, height_] = useSize(containerRef)
-  const height_ouputCompare = 30
-  const margin_ouputCompare = 10
+  const height_ouputCompare = height_ / 10
+  const margin_ouputCompare = height_ / 30
   const { simulation, ocrMax, param, counterMax, values } =
     useAtomValue(simulationState)
 

@@ -178,7 +178,7 @@ function TimerSetup() {
         </FlexboxGrid.Item>
       </FlexboxGrid>
       <ResizePanel>
-        <Plot style={{ minHeight: 300 }} />
+        <Plot style={{ minHeight: 100 }} />
       </ResizePanel>
     </div>
   )
