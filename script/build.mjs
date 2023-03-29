@@ -56,14 +56,15 @@ async function build() {
   console.timeEnd('build')
 
   if (isWatch) {
-    const chokidar = require('chokidar')
-    chokidar.watch('public', { ignoreInitial: true }).on('all', () => {
-      synchPublic()
+    import('chokidar').then(async (chokidar) => {
+      chokidar.watch('public', { ignoreInitial: true }).on('all', () => {
+        synchPublic()
+      })
+      let { host, port } = await ctx.serve({
+        servedir: 'build'
+      })
+      console.log(`Serving to http://${host}:${port}`)
     })
-    let { host, port } = await ctx.serve({
-      servedir: 'build'
-    })
-    console.log(`Serving to http://${host}:${port}`)
   } else {
     ctx.dispose()
   }
