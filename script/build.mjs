@@ -1,5 +1,4 @@
 // @ts-check
-import chokidar from 'chokidar'
 import { execSync } from 'child_process'
 import esbuild from 'esbuild'
 import { lessLoader } from 'esbuild-plugin-less'
@@ -57,6 +56,7 @@ async function build() {
   console.timeEnd('build')
 
   if (isWatch) {
+    const chokidar = require('chokidar')
     chokidar.watch('public', { ignoreInitial: true }).on('all', () => {
       synchPublic()
     })

@@ -1,7 +1,7 @@
 # Created by MichaelCurrin
 # https://gist.github.com/MichaelCurrin/a698731096f78240f653faf9a9127cba
 
-name: Build and deploy 
+name: Build and deploy
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Install 🔧
-        run: npm ci
+        run: npm i --omit=dev
       - name: Build 🏗️
         run: npm run build
       - name: Deploy to GH Pages 🚀
