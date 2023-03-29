@@ -1,14 +1,15 @@
-.plotContainer text.OCRText,
-.plotContainer line.OCRHandle {
+.plotContainer .OCRText,
+.plotContainer .OCRHandle {
   cursor: row-resize;
 }
-.plotContainer text.OCRText {
+.plotContainer .OCRText {
   cursor: row-resize;
   /* stroke-width: 0; */
   stroke: white;
+  cursor: row-resize;
 }
 
-.plotContainer line.OCRHandle {
+.plotContainer .OCRHandle {
   stroke-width: 30;
   opacity: 0.03;
 }

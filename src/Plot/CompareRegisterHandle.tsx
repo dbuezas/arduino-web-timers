@@ -54,6 +54,10 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
     const onMouseDown = useCallback(() => {
       setDraggingTV(true)
     }, [setDraggingTV])
+
+    const onChangedInput = (val: string) => {
+      setCompareRegisterValue(constrain(parseFloat(val), ...yExtent))
+    }
     return (
       <>
         <line
@@ -72,18 +76,24 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
           y1={scaledY}
           y2={scaledY}
         ></line>
-        <text
-          className={`OCRText ${name}`}
-          fill="currentColor"
-          onMouseDown={onMouseDown}
-          onTouchStart={onMouseDown}
-          y={scaledY}
-          x={width - margin.right}
-          dy=".32em"
-          dx="10"
+        <g
+          transform={`translate(${width - margin.right + 10},${scaledY - 10})`}
         >
-          {name}={compareRegisterValue}
-        </text>
+          <foreignObject
+            className={`OCRText ${name}`}
+            style={{ width: 100, height: 30 }}
+            onMouseDown={onMouseDown}
+            onTouchStart={onMouseDown}
+          >
+            {name}=
+            <input
+              style={{ width: 50, border: 0 }}
+              contentEditable={true}
+              value={compareRegisterValue}
+              onChange={(e) => onChangedInput(e.target.value)}
+            ></input>
+          </foreignObject>
+        </g>
       </>
     )
   }
