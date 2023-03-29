@@ -20,7 +20,7 @@ const offsetCounter = (
 ) => cpuToTcnt(tcntToCpu(counter, top) + offset, top, isDoubleSlope)
 
 const getTimerLength = (top: number, isDoubleSlope: boolean) => {
-  return isDoubleSlope ? top * 2 : top
+  return isDoubleSlope ? top * 2 : top + 1
 }
 const cpuToTcnt = (cpu: number, top: number, isDoubleSlope: boolean) => {
   while (cpu < 0 && top > 0) cpu += top
@@ -78,7 +78,7 @@ export default function simTimer({
 }: Props) {
   const isDoubleSlope = ['PCPWM', 'PFCPWM'].includes(timerMode)
   const timerLength = getTimerLength(top, isDoubleSlope)
-  const prescaledCPUEnd = timerLength * 4 + 2
+  const prescaledCPUEnd = timerLength * 4
   const results = {
     t: [] as number[],
     cpu: [] as number[],
