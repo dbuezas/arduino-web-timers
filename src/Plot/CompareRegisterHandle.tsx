@@ -56,7 +56,7 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
     }, [setDraggingTV])
 
     const onChangedInput = (val: string) => {
-      setCompareRegisterValue(constrain(parseFloat(val), ...yExtent))
+      setCompareRegisterValue(constrain(parseFloat(val) || 0, ...yExtent))
     }
     return (
       <>
