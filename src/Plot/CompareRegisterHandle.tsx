@@ -87,7 +87,7 @@ const CompareRegisterHandle = forwardRef<CompareRegisterHandleRef, Props>(
           >
             {name}=
             <input
-              style={{ width: 50, border: 0 }}
+              style={{ width: 50, border: 0, background: 'transparent' }}
               contentEditable={true}
               value={compareRegisterValue}
               onChange={(e) => onChangedInput(e.target.value)}
