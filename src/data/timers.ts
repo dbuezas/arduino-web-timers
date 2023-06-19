@@ -92,7 +92,8 @@ export const valueDescriptions: Record<string, Record<string, string>> = {
   },
   topValue: {
     ICR1: 'If ICR1 is not used as top, the input capture pin (ICP1) is PB0.\nIf ICR1 is used as top, ICP1 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.',
-    ICR3: 'If ICR3 is not used as top, the input capture pin (ICP3) is PF4.\nIf ICR3 is used as top, ICP3 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.'
+    ICR3: 'If ICR3 is not used as top, the input capture pin (ICP3) is PF4.\nIf ICR3 is used as top, ICP3 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.',
+    ICR4: 'If ICR4 is not used as top, the input capture pin (ICP4) is PE0.\nIf ICR4 is used as top, ICP4 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.'
   },
   OCnA_OutputPort: {
     'E4+C0': 'Both at the same time',

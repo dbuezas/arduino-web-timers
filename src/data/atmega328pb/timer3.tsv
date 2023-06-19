@@ -1,0 +1,134 @@
+//REGISTERS								
+TCCR3A	TCCR3B	TCCR3C	TIMSK3	DTR3	TIFR3	DDRD		
+COM3A1	ICNC3	FOC3A	-	-	-	DDD0		
+COM3A0	ICES3	FOC3B	-	-	-	DDD1		
+COM3B1	-	-	ICIE3	-	ICF3	DDD2		
+COM3B0	WGM33	-	-	-	-	DDD3		
+-	WGM32	-	-	-	-	DDD4		
+-	CS32	-	OCIE3A	-	OCF3B	DDD5		
+WGM31	CS31	-	OCIE3B	-	OCF3A	DDD6		
+WGM30	CS30	-	TOIE3	-	TOV3	DDD7		
+								
+//CONSTRAINTS								
+timerNr	timerBits	counterMax						
+1	16	65535						
+								
+WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
+0	0	0	0	0	Normal	0xFFFF	immediate	MAX
+1	0	0	0	1	PCPWM	0x00FF	TOP	BOTTOM
+2	0	0	1	0	PCPWM	0x01FF	TOP	BOTTOM
+3	0	0	1	1	PCPWM	0x03FF	TOP	BOTTOM
+4	0	1	0	0	CTC	OCR3A	immediate	MAX
+5	0	1	0	1	FPWM	0x00FF	BOTTOM	TOP
+6	0	1	1	0	FPWM	0x01FF	BOTTOM	TOP
+7	0	1	1	1	FPWM	0x03FF	BOTTOM	TOP
+8	1	0	0	0	PFCPWM	ICR3	BOTTOM	BOTTOM
+9	1	0	0	1	PFCPWM	OCR3A	BOTTOM	BOTTOM
+10	1	0	1	0	PCPWM	ICR3	TOP	BOTTOM
+11	1	0	1	1	PCPWM	OCR3A	TOP	BOTTOM
+12	1	1	0	0	CTC	ICR3	immediate	MAX
+13	1	1	0	1	reserved	-	-	-
+14	1	1	1	0	FPWM	ICR3	TOP	TOP
+15	1	1	1	1	FPWM	OCR3A	TOP	TOP
+								
+COM3A	COM3A1	COM3A0	timerMode	CompareOutputModeA	WGM3	CompareOutputModeB		
+0	0	0	Normal	disconnect	*	*		
+1	0	1	Normal	toggle	*	*		
+2	1	0	Normal	clear	*	*		
+3	1	1	Normal	set	*	*		
+0	0	0	CTC	disconnect	*	*		
+1	0	1	CTC	toggle	*	*		
+2	1	0	CTC	clear	*	*		
+3	1	1	CTC	set	*	*		
+0	0	0	FPWM	disconnect	*	*		
+1	0	1	FPWM	toggle	15	disconnect		
+2	1	0	FPWM	clear-on-match, set-at-max	*	*		
+3	1	1	FPWM	set-on-match, clear-at-max	*	*		
+0	0	0	PCPWM	disconnect	*	*		
+1	0	1	PCPWM	toggle	11	disconnect		
+2	1	0	PCPWM	clear-up, set-down	*	*		
+3	1	1	PCPWM	set-up, clear-down	*	*		
+0	0	0	PFCPWM	disconnect	*	*		
+1	0	1	PFCPWM	toggle	9	disconnect		
+2	1	0	PFCPWM	clear-up, set-down	*	*		
+3	1	1	PFCPWM	set-up, clear-down	*	*		
+								
+COM3B	COM3B1	COM3B0	timerMode	CompareOutputModeB				
+0	0	0	Normal	disconnect				
+1	0	1	Normal	toggle				
+2	1	0	Normal	clear				
+3	1	1	Normal	set				
+0	0	0	CTC	disconnect				
+1	0	1	CTC	toggle				
+2	1	0	CTC	clear				
+3	1	1	CTC	set				
+0	0	0	FPWM	disconnect				
+1	0	1	FPWM	disconnect				
+2	1	0	FPWM	clear-on-match, set-at-max				
+3	1	1	FPWM	set-on-match, clear-at-max				
+0	0	0	PCPWM	disconnect				
+1	0	1	PCPWM	disconnect				
+2	1	0	PCPWM	clear-up, set-down				
+3	1	1	PCPWM	set-up, clear-down				
+0	0	0	PFCPWM	disconnect				
+1	0	1	PFCPWM	disconnect				
+2	1	0	PFCPWM	clear-up, set-down				
+3	1	1	PFCPWM	set-up, clear-down				
+								
+CS3	CS32	CS31	CS30	clockPrescalerOrSource	ExternalClockInput			
+1	0	0	1	1	N/A			
+2	0	1	0	8	N/A			
+3	0	1	1	64	N/A			
+4	1	0	0	256	N/A			
+5	1	0	1	1024	N/A			
+6	1	1	0	external clock falling edge	E3			
+7	1	1	1	external clock rising edge	E3			
+0	0	0	0	disconnect	N/A			
+								
+OCIE3A	interruptA	interruptVectorCodeA						
+0	off	//nocode						
+1	on	ISR(TIMER3_COMPA_vect) {\n    /* on OCR3A match */\n}						
+								
+OCIE3B	interruptB	interruptVectorCodeB						
+0	off	//nocode						
+1	on	ISR(TIMER3_COMPB_vect) {\n    /* on OCR3B match */\n}						
+								
+								
+TOIE3	InterruptOnTimerOverflow	interruptVectorCodeOVF						
+0	off	//nocode						
+1	on	ISR(TIMER3_OVF_vect) {\n    /* on overflow */\n}						
+								
+ICIE3	InterruptOnInputCapture	interruptVectorCaptureCode						
+0	off	//nocode						
+1	on	ISR(TIMER3_CAPT_vect) {\n    /* on input capture */\n}						
+								
+ICNC3	InputCaptureNoiseSupression							
+0	off							
+1	on							
+								
+ICES3	InputCaptureEdgeSelect							
+0	falling							
+1	rising							
+								
+OCnB_OutputPort								
+D2								
+								
+OCnA_OutputPort								
+D0								
+								
+CompareOutputModeA	OCnA_OutputPort	DDD0						
+disconnect	*	0						
+!disconnect	D0	1						
+								
+CompareOutputModeB	OCnB_OutputPort	DDB2						
+disconnect	*	0						
+!disconnect	D2	1						
+								
+ICR3								
+*								
+
+OCR3A								
+*								
+								
+OCR3B								
+*								

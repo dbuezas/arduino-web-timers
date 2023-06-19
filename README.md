@@ -11,6 +11,7 @@ Application to configure and visualise timers. All your changes are stored in th
 ## Supported microcontrollers:
 
 - Atmel atmega328p (e.g Arduino Uno, Nano, Pro-mini)
+- Atmel atmega328pb (newer, some times found in pro-minis)
 - Logic Green lgt8f328p [checkout this core](https://github.com/dbuezas/lgt8fx)
 - If people uses this, I can add more (e.g attiny)
 
@@ -19,7 +20,8 @@ Application to configure and visualise timers. All your changes are stored in th
 - Timer0
 - Timer1
 - Timer2
-- Timer3
+- Timer3 (lgt8f328p and atmega328pb)
+- Timer4 (atmega328pb)
 
 ## Supported modes (all!)
 
@@ -54,7 +56,7 @@ Application to configure and visualise timers. All your changes are stored in th
 - A custom constraint solver finds out what values are possible for each of the other variables and the rest is disabled in the UI (note that tables are interconnected when they share variables)
 - Given the user selection, a suggestion for all other variables is created one by one by:
   - Computing the viable values of a variable
-  - Picking the first viable value for that variable 
+  - Picking the first viable value for that variable
   - Repeating until all variables have only one viable value
 - Finally the values of variables are used to run the simulation (plot) and write the code & comments.
 - The code output is generared by iterating over each regiser and picking the bits that are set to one.
