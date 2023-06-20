@@ -24,7 +24,8 @@
 .plotContainer .OCR0A,
 .plotContainer .OCR1A,
 .plotContainer .OCR2A,
-.plotContainer .OCR3A {
+.plotContainer .OCR3A,
+.plotContainer .OCR4A {
   color: darkred;
   stroke: darkred;
 }
@@ -32,21 +33,24 @@
 .plotContainer .OCR0B,
 .plotContainer .OCR1B,
 .plotContainer .OCR2B,
-.plotContainer .OCR3B {
+.plotContainer .OCR3B,
+.plotContainer .OCR4B {
   color: darkolivegreen;
   stroke: darkolivegreen;
 }
 .plotContainer .OCR0C,
 .plotContainer .OCR1C,
 .plotContainer .OCR2C,
-.plotContainer .OCR3C {
+.plotContainer .OCR3C,
+.plotContainer .OCR4C {
   color: darkslategray;
   stroke: darkslategray;
 }
 .plotContainer .ICR0,
 .plotContainer .ICR1,
 .plotContainer .ICR2,
-.plotContainer .ICR3 {
+.plotContainer .ICR3,
+.plotContainer .ICR4 {
   color: darkorange;
   stroke: darkorange;
 }
@@ -54,7 +58,8 @@
 .plotContainer .DTR0L,
 .plotContainer .DTR1L,
 .plotContainer .DTR2L,
-.plotContainer .DTR3L {
+.plotContainer .DTR3L,
+.plotContainer .DTR4L {
   color: blue;
   stroke: blue;
 }
@@ -62,6 +67,7 @@
 .plotContainer .DTR0H,
 .plotContainer .DTR1H,
 .plotContainer .DTR2H,
+.plotContainer .DTR3H,
 .plotContainer .DTR3H {
   color: blueviolet;
   stroke: blueviolet;

@@ -11,7 +11,7 @@ WGM30	CS30	-	TOIE3	-	TOV3	DDD7
 								
 //CONSTRAINTS								
 timerNr	timerBits	counterMax						
-1	16	65535						
+3	16	65535						
 								
 WGM3	WGM33	WGM32	WGM31	WGM30	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	immediate	MAX

@@ -11,7 +11,7 @@ WGM40	CS40	-	TOIE4	-	TOV4	DDD7
 								
 //CONSTRAINTS								
 timerNr	timerBits	counterMax						
-1	16	65535						
+4	16	65535						
 								
 WGM4	WGM43	WGM42	WGM41	WGM40	timerMode	topValue	updateOcrMoment	setTovMoment
 0	0	0	0	0	Normal	0xFFFF	immediate	MAX
