@@ -120,7 +120,7 @@ CompareOutputModeA	OCnA_OutputPort	DDD0
 disconnect	*	0						
 !disconnect	D1	1						
 								
-CompareOutputModeB	OCnB_OutputPort	DDB2						
+CompareOutputModeB	OCnB_OutputPort	DDD2						
 disconnect	*	0						
 !disconnect	D2	1						
 								
