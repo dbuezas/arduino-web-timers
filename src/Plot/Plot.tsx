@@ -16,6 +16,7 @@ import { getAllCompareRegTraits } from '../helpers/compareRegisterUtil'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { userConfigState } from '../state/state'
 import { simulationState } from '../helpers/helpers'
+import { plotHeightAtom } from '../Panes/ResizePanel'
 
 function usePrevious<T>(value: T) {
   const ref = useRef<T>()
@@ -27,9 +28,10 @@ function usePrevious<T>(value: T) {
 
 export default function Plot({ style }: { style: Object }) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [width, height_] = useSize(containerRef)
-  const height_ouputCompare = height_ / 10
-  const margin_ouputCompare = height_ / 30
+  const [width] = useSize(containerRef)
+  const height = useAtomValue(plotHeightAtom)
+  const height_ouputCompare = height / 10
+  const margin_ouputCompare = height / 30
   const { simulation, ocrMax, param, counterMax, values } =
     useAtomValue(simulationState)
 
@@ -63,8 +65,7 @@ export default function Plot({ style }: { style: Object }) {
   }
   /* --- */
   const activeOCnXs = IOCR_states.filter(({ isActiveOutput }) => isActiveOutput)
-  const height_timer =
-    height_ - height_ouputCompare * (activeOCnXs.length + 0.5)
+  const height_timer = height - height_ouputCompare * (activeOCnXs.length + 0.5)
   const xDomain = extent(simulation.t) as [number, number]
   const xScale = useMemo(
     () =>

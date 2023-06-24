@@ -1,8 +1,11 @@
 import { useState } from 'preact/hooks'
-import { ReactNode, CSSProperties, useEffect } from 'react'
+import { ReactNode, useEffect } from 'react'
 import './ResizePanel.css'
+import { atom, useAtom } from 'jotai'
+
+export const plotHeightAtom = atom(300)
 export default function ResizePanel(props: { children: ReactNode }) {
-  const [height, setHeight] = useState(300)
+  const [height, setHeight] = useAtom(plotHeightAtom)
   const [startY, setStartY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const onMouseDown = (e: MouseEvent | TouchEvent) => {

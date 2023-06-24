@@ -4,7 +4,7 @@ import { setHashFromObject, useHashChangedExternally } from './useHash'
 
 import timers from '../data'
 import { MicroControllers, PanelModes } from '../helpers/types'
-import { uniq, without } from 'lodash-es'
+import { memo } from 'react'
 
 export const panelModeState = atom(PanelModes.Normal)
 const defaultState: Record<string, string> = {
@@ -12,17 +12,19 @@ const defaultState: Record<string, string> = {
   timer: '0'
 }
 
-export const RegisterHashWatcher = () => {
+export const RegisterHashWatcher = memo(() => {
   const set = useSetAtom(userConfigStateBulk)
   const params = useHashChangedExternally()
-  set(params)
+  set({ ...defaultState, ...params })
   return <></>
-}
-export const RegisterHashUpdater = () => {
+})
+
+export const RegisterHashUpdater = memo(() => {
   const obj = useAtomValue(userConfigStateBulk)
   setHashFromObject({ ...defaultState, ...obj })
   return <></>
-}
+})
+
 export const RegisterHashLink = () => {
   return (
     <>
@@ -32,46 +34,21 @@ export const RegisterHashLink = () => {
   )
 }
 
-const userConfigState_vars = atom<string[]>([])
-
-const userConfigState_store = atomFamily((variable: string) =>
-  atom<string | undefined>(defaultState[variable])
-)
+export const userConfigStateBulk = atom(defaultState)
 
 export const userConfigState = atomFamily((variable: string) =>
   atom(
-    (get) => get(userConfigState_store(variable)),
-    (get, set, value: string | undefined) => {
-      set(userConfigState_store(variable), value)
-      const vars = get(userConfigState_vars)
-      const exists = vars.includes(variable)
-      if (exists && value === undefined) {
-        set(userConfigState_vars, without(vars, variable))
-      } else if (!exists && value != undefined) {
-        set(userConfigState_vars, [...vars, variable])
+    (get) => get(userConfigStateBulk)[variable],
+    (get, set, value?: string) => {
+      const was = get(userConfigStateBulk)
+      if (value === undefined) {
+        const { [variable]: _removedValue, ...without } = was
+        set(userConfigStateBulk, without)
+      } else {
+        set(userConfigStateBulk, { ...was, [variable]: value })
       }
     }
   )
-)
-
-export const userConfigStateBulk = atom(
-  (get) =>
-    Object.fromEntries(
-      get(userConfigState_vars).map((variable) => [
-        variable,
-        get(userConfigState(variable))
-      ])
-    ),
-  (get, set, value: Record<string, string | undefined>) => {
-    const variables = uniq([
-      ...get(userConfigState_vars),
-      ...Object.keys(value)
-    ])
-    for (const variable of variables) {
-      if (get(userConfigState(variable)) !== value[variable])
-        set(userConfigState(variable), value[variable])
-    }
-  }
 )
 
 export const mcuTimers = atom((get) => {
