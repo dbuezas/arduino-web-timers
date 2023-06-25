@@ -21,7 +21,7 @@ export const setHashFromObject = debounce(
   { leading: false, trailing: true, maxWait: 100 }
 )
 
-export const getHashParams = () => {
+const getHashParams = () => {
   const hash = window.location.hash.slice(1)
   return new URLSearchParams(hash)
 }

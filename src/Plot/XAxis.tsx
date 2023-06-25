@@ -9,7 +9,7 @@ const toFixed = (float: number, digits = 0) => {
   return Math.round(float * padding) / padding
 }
 
-export function formatTime(s: ohNoItIsAny) {
+function formatTime(s: ohNoItIsAny) {
   s = Number(s)
   if (!Number.isFinite(s)) return '--'
   if (s === 0) return '0'
@@ -30,7 +30,7 @@ export function formatTime(s: ohNoItIsAny) {
   if (m > 5) return toFixed(m, 0) + 'm' + toFixed(s % 60, 1) + 's'
   return toFixed(s, 0) + 's'
 }
-export function formatFreq(hz: ohNoItIsAny) {
+function formatFreq(hz: ohNoItIsAny) {
   hz = Number(hz)
   if (!Number.isFinite(hz)) return '--'
   if (hz === 0) return '0'

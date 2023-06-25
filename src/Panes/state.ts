@@ -137,7 +137,7 @@ export const variableOptionsState = atomFamily((variable: string) =>
   })
 )
 
-export type TCheckboxGroupData = {
+type TCheckboxGroupData = {
   variable: string
   selectedOption: string | undefined
   suggestedOption: string | undefined
@@ -148,7 +148,7 @@ export type TCheckboxGroupData = {
     isDisabled: boolean
   }[]
 }[]
-export type TCheckboxMinimalGroupData = {
+type TCheckboxMinimalGroupData = {
   variable: string
   options: {
     value: string

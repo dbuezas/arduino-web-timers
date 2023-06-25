@@ -31,7 +31,7 @@ export const tsvConstraints = (str: string) => {
     .filter((row) => !Object.values(row).includes('-'))
 }
 
-export const tsvRegisters = (str: string) => {
+const tsvRegisters = (str: string) => {
   const table = str
     .trim()
     .split('\n')

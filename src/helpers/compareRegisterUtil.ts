@@ -1,6 +1,6 @@
 import { TRow } from './types'
 
-export type GenericCompRegName =
+type GenericCompRegName =
   | 'OutputA'
   | 'OutputB'
   | 'OutputC'
@@ -110,7 +110,7 @@ const getIsDeadTime = (genericName: GenericCompRegName) =>
     DeadTimeB: true
   }[genericName])
 
-export const compareRegs: GenericCompRegName[] = [
+const compareRegs: GenericCompRegName[] = [
   'OutputA',
   'OutputB',
   'OutputC',

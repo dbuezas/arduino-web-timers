@@ -39,7 +39,7 @@ export function isTruthy<TValue>(value: TValue | undefined): value is TValue {
   return !!value
 }
 
-export const WILDCARD = '*'
+const WILDCARD = '*'
 export const getFullDomains = (tables: TTable[]): Record<string, string[]> => {
   const domains: Record<string, string[]> = {}
   for (const table of tables) {

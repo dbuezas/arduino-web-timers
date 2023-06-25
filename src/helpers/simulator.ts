@@ -265,5 +265,3 @@ export default function simTimer({
   })
   return results
 }
-
-export type Simulation = ReturnType<typeof simTimer>

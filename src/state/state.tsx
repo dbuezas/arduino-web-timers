@@ -12,14 +12,14 @@ const defaultState: Record<string, string> = {
   timer: '0'
 }
 
-export const RegisterHashWatcher = memo(() => {
+ const RegisterHashWatcher = memo(() => {
   const set = useSetAtom(userConfigStateBulk)
   const params = useHashChangedExternally()
   set({ ...defaultState, ...params })
   return <></>
 })
 
-export const RegisterHashUpdater = memo(() => {
+ const RegisterHashUpdater = memo(() => {
   const obj = useAtomValue(userConfigStateBulk)
   setHashFromObject({ ...defaultState, ...obj })
   return <></>
@@ -41,11 +41,11 @@ export const userConfigState = atomFamily((variable: string) =>
     (get) => get(userConfigStateBulk)[variable],
     (get, set, value?: string) => {
       const was = get(userConfigStateBulk)
-      if (value === undefined) {
+      if (value) {
+        set(userConfigStateBulk, { ...was, [variable]: value })
+      } else {
         const { [variable]: _removedValue, ...without } = was
         set(userConfigStateBulk, without)
-      } else {
-        set(userConfigStateBulk, { ...was, [variable]: value })
       }
     }
   )
