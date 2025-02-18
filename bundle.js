@@ -334,11 +334,11 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 												
 OCIE1A	interruptA	interruptVectorCodeA										
 0	off	//nocode										
-1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}										
+1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR1A match */\\n}										
 												
 OCIE1B	interruptB	interruptVectorCodeB										
 0	off	//nocode										
-1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}										
+1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR1B match */\\n}										
 												
 TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF										
 0	off	//nocode										
@@ -423,7 +423,8 @@ OCR1A
 *												
 												
 OCR1B												
-*												`;var DA=`//REGISTERS									
+*												
+`;var DA=`//REGISTERS									
 TCCR2A	TCCR2B	TIMSK2	TIFR2	PMX0_0	PMX1	HDR	DDRB	DDRD	DDRF
 COM2A1	FOC2A	-	-	WCE	-	-	DDB0	DDD0	DDF0
 COM2A0	FOC2B	-	-	-	-	-	DDB1	DDD1	DDF1
@@ -939,11 +940,11 @@ CS1	CS12	CS11	CS10	clockPrescalerOrSource	ExternalClockInput
 								
 OCIE1A	interruptA	interruptVectorCodeA						
 0	off	//nocode						
-1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR0A match */\\n}						
+1	on	ISR(TIMER1_COMPA_vect) {\\n    /* on OCR1A match */\\n}						
 								
 OCIE1B	interruptB	interruptVectorCodeB						
 0	off	//nocode						
-1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR0B match */\\n}						
+1	on	ISR(TIMER1_COMPB_vect) {\\n    /* on OCR1B match */\\n}						
 								
 								
 TOIE1	InterruptOnTimerOverflow	interruptVectorCodeOVF						
@@ -983,7 +984,8 @@ OCR1A
 *								
 								
 OCR1B								
-*								`;var qu=`//REGISTERS							
+*								
+`;var qu=`//REGISTERS							
 TCCR2A	TCCR2B	TIMSK2	TIFR2	DDRB	DDRD		
 COM2A1	FOC2A	-	-	DDB0	DDD0		
 COM2A0	FOC2B	-	-	DDB1	DDD1		
