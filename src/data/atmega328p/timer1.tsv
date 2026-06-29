@@ -28,8 +28,8 @@ WGM1	WGM13	WGM12	WGM11	WGM10	timerMode	topValue	updateOcrMoment	setTovMoment
 11	1	0	1	1	PCPWM	OCR1A	TOP	BOTTOM
 12	1	1	0	0	CTC	ICR1	immediate	MAX
 13	1	1	0	1	reserved	-	-	-
-14	1	1	1	0	FPWM	ICR1	TOP	TOP
-15	1	1	1	1	FPWM	OCR1A	TOP	TOP
+14	1	1	1	0	FPWM	ICR1	BOTTOM	TOP
+15	1	1	1	1	FPWM	OCR1A	BOTTOM	TOP
 								
 COM1A	COM1A1	COM1A0	timerMode	CompareOutputModeA	WGM1	CompareOutputModeB		
 0	0	0	Normal	disconnect	*	*		
