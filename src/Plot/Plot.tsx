@@ -136,10 +136,25 @@ export default function Plot({ style }: { style: Object }) {
                 key={'OC' + i}
                 idx={i}
                 curve={curveStepAfter}
-                name={'OC' + param.timerNr + 'ABC'[i]}
+                name={'OC' + param.timerNr + 'ABCD'[i]}
                 xScale={xScale}
                 yScale={yScale}
                 data={simulation.t.map((t, j) => [t, simulation.OCnXs[i][j]])}
+              />
+            ),
+            // CH32 complementary output (OCxN): inverse of the main, overlaid
+            isActiveOutput && simulation.complementaryOut[i]?.length > 0 && (
+              <Curve
+                key={'OCN' + i}
+                idx={'OCN' + i}
+                curve={curveStepAfter}
+                name={'OC' + param.timerNr + 'ABCD'[i] + 'N'}
+                xScale={xScale}
+                yScale={yScale}
+                data={simulation.t.map((t, j) => [
+                  t,
+                  simulation.complementaryOut[i][j]
+                ])}
               />
             ),
             param.deadTimeEnable && i < 2 && (
@@ -175,7 +190,7 @@ export default function Plot({ style }: { style: Object }) {
                 t={simulation.t}
                 xScale={xScale}
                 yScale={yScale}
-                label={'OCR' + values.timerNr + 'ABC'[i] + ' interrupt'}
+                label={'OCR' + values.timerNr + 'ABCD'[i] + ' interrupt'}
               />
             )
         )}

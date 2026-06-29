@@ -10,6 +10,23 @@ export const tsv = (str: string) => {
     configs: constraints.map(tsvConstraints)
   }
 }
+// Build a CH32 family's timer list from shared timer-table sources plus a
+// per-chip CPU-clock list (the only thing that varies between CH32 chips that
+// share the same TIM peripheral).
+export const ch32Family = (
+  fcpu: [number, string][],
+  ...rawTimers: string[]
+) => {
+  const fcpuTsv = [
+    `FCPU\tFCPU_UI`,
+    ...fcpu.map(([hz, label]) => `${hz}\t${label}`)
+  ].join('\n')
+  return rawTimers.map((raw) => {
+    const timer = tsv(raw)
+    timer.configs.push(tsvConstraints(fcpuTsv))
+    return timer
+  })
+}
 export const tsvConstraints = (str: string) => {
   const table = str
     .trim()
@@ -50,25 +67,46 @@ export const variableDescriptions: Record<string, Record<string, string>> = {
     clockPrescalerOrSource: 'Clock prescaler or external source',
     clockDoubler: 'Double timer clock speed',
     ExternalClockInput: 'External clock input port',
+    TIM1remap: 'Channel pin remap',
+    TIM2remap: 'Channel pin remap',
     FCPU_UI: 'CPU Clock'
   },
   'Output A': {
     CompareOutputModeA: 'Behaviour',
     interruptA: 'Interrupt on match',
     OCnA_OutputPort: 'Output port',
-    OCnA_OutputCurrent: 'Output current'
+    OCnA_OutputCurrent: 'Output current',
+    OutputPolarityA: 'Output polarity',
+    ComplementaryA: 'Complementary output',
+    OCnA_NOutputPort: 'Complementary port',
+    ComplementaryPolarityA: 'Complementary polarity'
   },
   'Output B': {
     CompareOutputModeB: 'Behaviour',
     interruptB: 'Interrupt on match',
     OCnB_OutputPort: 'Output port',
-    OCnB_OutputCurrent: 'Output current'
+    OCnB_OutputCurrent: 'Output current',
+    OutputPolarityB: 'Output polarity',
+    ComplementaryB: 'Complementary output',
+    OCnB_NOutputPort: 'Complementary port',
+    ComplementaryPolarityB: 'Complementary polarity'
   },
   'Output C': {
     CompareOutputModeC: 'Behaviour',
     interruptC: 'Interrupt on match',
     OCnC_OutputPort: 'Output port',
-    OCnC_OutputCurrent: 'Output current'
+    OCnC_OutputCurrent: 'Output current',
+    OutputPolarityC: 'Output polarity',
+    ComplementaryC: 'Complementary output',
+    OCnC_NOutputPort: 'Complementary port',
+    ComplementaryPolarityC: 'Complementary polarity'
+  },
+  'Output D': {
+    CompareOutputModeD: 'Behaviour',
+    interruptD: 'Interrupt on match',
+    OCnD_OutputPort: 'Output port',
+    OCnD_OutputCurrent: 'Output current',
+    OutputPolarityD: 'Output polarity'
   },
   Extras: {
     updateOcrMoment: 'When are the OCRs updated',
@@ -77,8 +115,34 @@ export const variableDescriptions: Record<string, Record<string, string>> = {
     InputCaptureNoiseSupression: 'Input capture noise supression',
     InterruptOnInputCapture: 'Interrupt on Input Capture',
     InputCaptureEdgeSelect: 'Input Capture Edge Select',
-    DeadTime: 'Insert dead time'
+    DeadTime: 'Insert dead time',
+    OnePulse: 'One-pulse mode',
+    BreakInput: 'Break input',
+    BreakPolarity: 'Break polarity'
   }
+}
+// Shared CH32 tooltip blocks (the same control repeats per channel).
+const ch32PwmModes: Record<string, string> = {
+  'PWM mode 1':
+    'Output active while CNT < CCR. Duty = CCR/(ARR+1); can reach 0% (CCR=0) and 100% (CCR>ARR).',
+  'PWM mode 2':
+    'Inverse of mode 1: output active while CNT ≥ CCR. Duty = (ARR+1−CCR)/(ARR+1).'
+}
+const ch32Polarity: Record<string, string> = {
+  title: 'Polarity of the channel output pin.',
+  'active high': 'Idles low; goes high while the channel is active (default).',
+  'active low': 'Inverts the pin: idles high; goes low while active.'
+}
+const ch32Complementary: Record<string, string> = {
+  title:
+    'Also drive the complementary CHxN pin with the inverse of the main output — for the low side of a half-bridge (advanced timer only).',
+  off: 'Only the main output is driven.',
+  on: 'Drive the complementary (CHxN) output too.'
+}
+const ch32ComplementaryPolarity: Record<string, string> = {
+  title: 'Polarity of the complementary CHxN output.',
+  'active high': 'CHxN idles low; high while active.',
+  'active low': 'CHxN idles high; low while active.'
 }
 export const valueDescriptions: Record<string, Record<string, string>> = {
   timerMode: {
@@ -88,9 +152,17 @@ export const valueDescriptions: Record<string, Record<string, string>> = {
     CTC: 'Clear timer on compare: Counts up to TOP and resets to zero. Duty is always 50%.',
     FPWM: 'Fast PWM: Counts up to TOP and resets to zero. Duty cycle cannot go to 0% (on clear-on-compare-match), or to 100% (on set-on-compare-match).',
     PFCPWM:
-      'Phase frequency correct PWM: idem to PCPWM, but output compare registers are updated at zero, resulting in a constant frequency even when the output compare registers are changed during operation.'
+      'Phase frequency correct PWM: idem to PCPWM, but output compare registers are updated at zero, resulting in a constant frequency even when the output compare registers are changed during operation.',
+    'edge-aligned up':
+      'Counter counts 0 → ARR then resets to 0 (sawtooth up). Standard edge-aligned PWM; period = ARR+1 ticks.',
+    'edge-aligned down':
+      'Counter counts ARR → 0 then reloads to ARR (sawtooth down). Same duty and frequency as up-counting, but the pulse is mirrored in phase.',
+    'center-aligned':
+      'Counter counts up to ARR then back down to 0 (triangle). PWM pulses are centered in the period and the frequency is halved — common for motor control and lower EMI.'
   },
   topValue: {
+    ATRLR:
+      'ATRLR is the auto-reload register: it sets the timer TOP (period). The counter wraps at ARR, so the period is ARR+1 timer ticks.',
     ICR1: 'If ICR1 is not used as top, the input capture pin (ICP1) is PB0.\nIf ICR1 is used as top, ICP1 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.',
     ICR3: 'If ICR3 is not used as top, the input capture pin (ICP3) is PF4.\nIf ICR3 is used as top, ICP3 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.',
     ICR4: 'If ICR4 is not used as top, the input capture pin (ICP4) is PE0.\nIf ICR4 is used as top, ICP4 is disconnected. The input compare register is not double-buffered so it will be updated immediatly (and not on TOP or BOTTOM like OCRs). This may make the timer lose a match if changed near it.'
@@ -141,7 +213,50 @@ export const valueDescriptions: Record<string, Record<string, string>> = {
     title: `When the ICRn is used as TOP value, the ICPn is disconnected and consequently the input capture function is disabled.`
   },
   DeadTime: {
+    title:
+      'Inserts a short delay so the main and complementary outputs are never active at the same time (prevents half-bridge shoot-through). On CH32 the value (in timer ticks) is written to BDTR.DTG.',
     on: `dead time enable control
     Setting DTENn to logic one, inserting dead time is enable. Base on waveform generated in B channel compare output, both OCnA and OCnB can insert dead time, whose interval is decided by corresponding counter time of DTRn register. Waveform polarity output by OCnA is decided by relationship between CnMn and COMnB, for details referring to list for waveform polarity after inserting dead time.`
+  },
+  CompareOutputModeA: ch32PwmModes,
+  CompareOutputModeB: ch32PwmModes,
+  CompareOutputModeC: ch32PwmModes,
+  CompareOutputModeD: ch32PwmModes,
+  OutputPolarityA: ch32Polarity,
+  OutputPolarityB: ch32Polarity,
+  OutputPolarityC: ch32Polarity,
+  OutputPolarityD: ch32Polarity,
+  ComplementaryA: ch32Complementary,
+  ComplementaryB: ch32Complementary,
+  ComplementaryC: ch32Complementary,
+  ComplementaryPolarityA: ch32ComplementaryPolarity,
+  ComplementaryPolarityB: ch32ComplementaryPolarity,
+  ComplementaryPolarityC: ch32ComplementaryPolarity,
+  OnePulse: {
+    title:
+      'One-pulse mode: the timer runs a single cycle then stops automatically, instead of running continuously.',
+    off: 'Free-running (continuous).',
+    on: 'Generate one pulse, then stop.'
+  },
+  BreakInput: {
+    title:
+      'Break input: an external fault signal immediately forces all outputs to their inactive state (emergency shutdown for motor drives). Outputs only re-enable when MOE is set again.',
+    off: 'Break input disabled.',
+    on: 'A fault on the break pin disables the outputs.'
+  },
+  BreakPolarity: {
+    title: 'Active level of the break input pin.',
+    'active low': 'Break triggers when the pin is low.',
+    'active high': 'Break triggers when the pin is high.'
+  },
+  // The actual pins differ per CH32 family, so the remap tooltips stay generic
+  // and the chosen pins are shown (per family) in each channel's "Output port".
+  TIM2remap: {
+    title:
+      'AFIO pin remap: selects which physical pins this timer’s channels use. The resulting pins are shown in each channel’s "Output port".'
+  },
+  TIM1remap: {
+    title:
+      'AFIO pin remap: selects which pins the channels (and complementary CHxN) use. The resulting pins are shown in each channel’s port fields.'
   }
 }

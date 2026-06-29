@@ -164,12 +164,33 @@ export const simulationState = atom((get) => {
     OCRnXs_behaviour: [
       values.CompareOutputModeA as any,
       values.CompareOutputModeB as any,
-      values.CompareOutputModeC as any
+      values.CompareOutputModeC as any,
+      values.CompareOutputModeD as any
     ],
     ICRn: 0,
     deadTimeEnable: values.DeadTime === 'on',
     deadTimeA: getCompareRegTraits('DeadTimeA', values).value,
-    deadTimeB: getCompareRegTraits('DeadTimeB', values).value
+    deadTimeB: getCompareRegTraits('DeadTimeB', values).value,
+    // CH32 per-channel polarity / complementary / one-pulse (absent => all off)
+    outputInvert: [
+      values.OutputPolarityA,
+      values.OutputPolarityB,
+      values.OutputPolarityC,
+      values.OutputPolarityD
+    ].map((p) => p === 'active low'),
+    complementaryEnable: [
+      values.ComplementaryA,
+      values.ComplementaryB,
+      values.ComplementaryC,
+      undefined
+    ].map((c) => c === 'on'),
+    complementaryInvert: [
+      values.ComplementaryPolarityA,
+      values.ComplementaryPolarityB,
+      values.ComplementaryPolarityC,
+      undefined
+    ].map((p) => p === 'active low'),
+    onePulse: values.OnePulse === 'on'
   }
 
   const IOCR_states = getAllCompareRegTraits(values)
@@ -182,6 +203,18 @@ export const simulationState = atom((get) => {
 
   param.top =
     IOCR_states.find(({ isTop }) => isTop)?.value ?? parseInt(values.topValue)
+
+  if (values.family === 'ch32') {
+    // CH32: divider = PSC+1, period = ATRLR+1, no input capture.
+    param.prescaler = parseInt(values.PSC || '0') + 1
+    param.top = parseInt(values.ATRLR)
+    param.ICRn = NaN
+  }
+
+  // Y-axis max for the plot / compare-line drag range. When TOP is a register
+  // (ICRn, OCRnA, or CH32's ATRLR) topValue isn't numeric, so fall back to the
+  // counter's full range — this keeps the top line draggable instead of pinning
+  // the axis to its own value.
   const ocrMax = parseInt(values.topValue) || counterMax
 
   return {
