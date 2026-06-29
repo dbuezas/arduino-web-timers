@@ -1,5 +1,5 @@
 //REGISTERS								
-TCCR4A	TCCR4B	TCCR4C	TIMSK3	DTR3	TIFR3	DDRD		
+TCCR4A	TCCR4B	TCCR4C	TIMSK4	DTR4	TIFR4	DDRD		
 COM4A1	ICNC4	FOC4A	-	-	-	DDD0		
 COM4A0	ICES4	FOC4B	-	-	-	DDD1		
 COM4B1	-	-	ICIE4	-	ICF4	DDD2		
@@ -28,8 +28,8 @@ WGM4	WGM43	WGM42	WGM41	WGM40	timerMode	topValue	updateOcrMoment	setTovMoment
 11	1	0	1	1	PCPWM	OCR4A	TOP	BOTTOM
 12	1	1	0	0	CTC	ICR4	immediate	MAX
 13	1	1	0	1	reserved	-	-	-
-14	1	1	1	0	FPWM	ICR4	TOP	TOP
-15	1	1	1	1	FPWM	OCR4A	TOP	TOP
+14	1	1	1	0	FPWM	ICR4	BOTTOM	TOP
+15	1	1	1	1	FPWM	OCR4A	BOTTOM	TOP
 								
 COM4A	COM4A1	COM4A0	timerMode	CompareOutputModeA	WGM4	CompareOutputModeB		
 0	0	0	Normal	disconnect	*	*		
@@ -116,7 +116,7 @@ D2
 OCnA_OutputPort								
 D1								
 								
-CompareOutputModeA	OCnA_OutputPort	DDD0						
+CompareOutputModeA	OCnA_OutputPort	DDD1						
 disconnect	*	0						
 !disconnect	D1	1						
 								
