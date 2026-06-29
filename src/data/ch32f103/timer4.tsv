@@ -1,0 +1,119 @@
+//REGISTERS (CH32 TIM4, general-purpose). Cells are FIELD=ch32fun-macro.
+//CEN emitted last by scaffold; AFIO->PCFR1 remap by scaffold.
+TIM4->CTLR1	TIM4->DMAINTENR	TIM4->CHCTLR1	TIM4->CHCTLR2	TIM4->CCER	TIM4->PSC	TIM4->ATRLR	TIM4->CH1CVR	TIM4->CH2CVR	TIM4->CH3CVR	TIM4->CH4CVR
+ARPE=TIM_ARPE	CC1IE=TIM_CC1IE	OC1M=TIM_OC1M_	OC3M=TIM_OC3M_	CC1E=TIM_CC1E	PSC=	ATRLR=	CH1CVR=	CH2CVR=	CH3CVR=	CH4CVR=
+CMS=TIM_CMS_	CC2IE=TIM_CC2IE	OC1PE=TIM_OC1PE	OC3PE=TIM_OC3PE	CC1P=TIM_CC1P	-	-	-	-	-	-
+DIR=TIM_DIR	CC3IE=TIM_CC3IE	CC1S=TIM_CC1S_	CC3S=TIM_CC3S_	CC2E=TIM_CC2E	-	-	-	-	-	-
+OPM=TIM_OPM	CC4IE=TIM_CC4IE	OC2M=TIM_OC2M_	OC4M=TIM_OC4M_	CC2P=TIM_CC2P	-	-	-	-	-	-
+-	-	OC2PE=TIM_OC2PE	OC4PE=TIM_OC4PE	CC3E=TIM_CC3E	-	-	-	-	-	-
+-	-	CC2S=TIM_CC2S_	CC4S=TIM_CC4S_	CC3P=TIM_CC3P	-	-	-	-	-	-
+-	-	-	-	CC4E=TIM_CC4E	-	-	-	-	-	-
+-	-	-	-	CC4P=TIM_CC4P	-	-	-	-	-	-
+
+//CONSTRAINTS
+family
+ch32
+
+timerNr	timerBits	counterMax
+4	16	65535
+
+nvicIRQ
+TIM4_IRQn
+
+timerMode	CMS	DIR	ARPE	topValue	updateOcrMoment	setTovMoment
+edge-aligned up	0	0	1	ATRLR	TOP	TOP
+edge-aligned down	0	1	1	ATRLR	TOP	BOTTOM
+center-aligned	1	0	1	ATRLR	TOP	BOTTOM
+
+TIM4remap	OCnA_OutputPort	OCnB_OutputPort	OCnC_OutputPort	OCnD_OutputPort	PCFR1
+no remap	B6	B7	B8	B9	none
+remap	D12	D13	D14	D15	AFIO_PCFR1_TIM4_REMAP
+
+CompareOutputModeA	OC1M	OC1PE	CC1S	CC1E
+disconnect	0	0	0	0
+PWM mode 1	6	1	0	1
+PWM mode 2	7	1	0	1
+toggle	3	0	0	1
+set	5	0	0	1
+clear	4	0	0	1
+
+CompareOutputModeB	OC2M	OC2PE	CC2S	CC2E
+disconnect	0	0	0	0
+PWM mode 1	6	1	0	1
+PWM mode 2	7	1	0	1
+toggle	3	0	0	1
+set	5	0	0	1
+clear	4	0	0	1
+
+CompareOutputModeC	OC3M	OC3PE	CC3S	CC3E
+disconnect	0	0	0	0
+PWM mode 1	6	1	0	1
+PWM mode 2	7	1	0	1
+toggle	3	0	0	1
+set	5	0	0	1
+clear	4	0	0	1
+
+CompareOutputModeD	OC4M	OC4PE	CC4S	CC4E
+disconnect	0	0	0	0
+PWM mode 1	6	1	0	1
+PWM mode 2	7	1	0	1
+toggle	3	0	0	1
+set	5	0	0	1
+clear	4	0	0	1
+
+OutputPolarityA	CC1P
+active high	0
+active low	1
+
+OutputPolarityB	CC2P
+active high	0
+active low	1
+
+OutputPolarityC	CC3P
+active high	0
+active low	1
+
+OutputPolarityD	CC4P
+active high	0
+active low	1
+
+OnePulse	OPM
+off	0
+on	1
+
+InterruptCommonSignature
+void TIM4_IRQHandler(void) __attribute__((interrupt))
+
+interruptA	CC1IE	interruptVectorCodeA
+off	0	//nocode
+on	1	if (TIM4->INTFR & TIM_CC1IF) {\n  TIM4->INTFR &= ~TIM_CC1IF;\n  /* on CH1 compare match */\n}
+
+interruptB	CC2IE	interruptVectorCodeB
+off	0	//nocode
+on	1	if (TIM4->INTFR & TIM_CC2IF) {\n  TIM4->INTFR &= ~TIM_CC2IF;\n  /* on CH2 compare match */\n}
+
+interruptC	CC3IE	interruptVectorCodeC
+off	0	//nocode
+on	1	if (TIM4->INTFR & TIM_CC3IF) {\n  TIM4->INTFR &= ~TIM_CC3IF;\n  /* on CH3 compare match */\n}
+
+interruptD	CC4IE	interruptVectorCodeD
+off	0	//nocode
+on	1	if (TIM4->INTFR & TIM_CC4IF) {\n  TIM4->INTFR &= ~TIM_CC4IF;\n  /* on CH4 compare match */\n}
+
+PSC
+*
+
+ATRLR
+*
+
+CH1CVR
+*
+
+CH2CVR
+*
+
+CH3CVR
+*
+
+CH4CVR
+*

@@ -100,15 +100,23 @@ const App = () => {
                       })
                     }
                   >
-                    {timers.map((_: any, i) => (
-                      <Nav.Item
-                        eventKey={'' + i}
-                        key={'' + i}
-                        icon={<IconChartmogul />}
-                      >
-                        Timer {i}
-                      </Nav.Item>
-                    ))}
+                    {timers.map((t: any, i) => {
+                      // label by the timer's real number (e.g. CH32 TIM1/TIM2),
+                      // falling back to the array index for older data
+                      const nr =
+                        t.configs
+                          .flat()
+                          .find((r: any) => r.timerNr)?.timerNr ?? i
+                      return (
+                        <Nav.Item
+                          eventKey={'' + i}
+                          key={'' + i}
+                          icon={<IconChartmogul />}
+                        >
+                          Timer {nr}
+                        </Nav.Item>
+                      )
+                    })}
                   </Nav>
                   <Nav pullRight>
                     <Dropdown

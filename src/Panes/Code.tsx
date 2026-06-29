@@ -65,8 +65,10 @@ const codeCommentsState = atom((get) => {
   */`
 })
 
-const allCodeState = atom(
-  (get) => `\
+const allCodeState = atom((get) => {
+  // ch32fun (WCH RISC-V) uses a bare-metal main() scaffold instead of Arduino.
+  if (get(suggestedAssignmentState).family === 'ch32') return get(ch32CodeState)
+  return `\
 ${get(codeCommentsState)}
 void setup(){
   noInterrupts();
@@ -75,7 +77,105 @@ ${get(compareRegsState)}
   interrupts();
 }
 ${get(interruptsCodeState)}`
-)
+})
+
+// Surrounding setup for CH32: peripheral clocks, GPIO alternate-function pins
+// for each active channel, optional AFIO pin remap, the SWEVGR update event to
+// latch PSC/ATRLR, optional MOE (advanced timer) and NVIC, and CEN last.
+const ch32CodeState = atom((get) => {
+  const values = get(suggestedAssignmentState)
+  const timerNr = values.timerNr
+  const apb = timerNr === '1' ? 'APB2' : 'APB1' // TIM1 (advanced) is on APB2
+  const isAdvanced = timerNr === '1'
+
+  // Every pin needing alternate-function setup: the main pin of each active
+  // channel, plus the complementary (CHxN) pin when that channel's complementary
+  // output is enabled (advanced timer only).
+  const pinSet = new Set<string>()
+  const defs = [
+    {
+      mode: values.CompareOutputModeA,
+      pin: values.OCnA_OutputPort,
+      comp: values.ComplementaryA,
+      npin: values.OCnA_NOutputPort
+    },
+    {
+      mode: values.CompareOutputModeB,
+      pin: values.OCnB_OutputPort,
+      comp: values.ComplementaryB,
+      npin: values.OCnB_NOutputPort
+    },
+    {
+      mode: values.CompareOutputModeC,
+      pin: values.OCnC_OutputPort,
+      comp: values.ComplementaryC,
+      npin: values.OCnC_NOutputPort
+    },
+    { mode: values.CompareOutputModeD, pin: values.OCnD_OutputPort }
+  ]
+  for (const d of defs) {
+    if (!d.pin || !d.mode || d.mode === 'disconnect') continue
+    pinSet.add(d.pin)
+    if (d.comp === 'on' && d.npin) pinSet.add(d.npin)
+  }
+  const pins = [...pinSet]
+
+  const remap = values.PCFR1 && values.PCFR1 !== 'none' ? values.PCFR1 : ''
+  const anyIrq = ['interruptA', 'interruptB', 'interruptC', 'interruptD'].some(
+    (k) => values[k] === 'on'
+  )
+
+  // peripheral clock enables (deduped), then optional remap, then GPIO pins
+  const clocks = new Set<string>()
+  clocks.add(`  RCC->${apb}PCENR |= RCC_${apb}Periph_TIM${timerNr};`)
+  for (const pin of pins)
+    clocks.add(`  RCC->APB2PCENR |= RCC_APB2Periph_GPIO${pin[0]};`)
+  if (remap) clocks.add(`  RCC->APB2PCENR |= RCC_APB2Periph_AFIO;`)
+
+  const gpio = pins.map((pin) => {
+    const port = pin[0]
+    const n = parseInt(pin.slice(1))
+    // pins 0-7 live in CFGLR, pins 8-15 in CFGHR (4 config bits each)
+    const reg = n < 8 ? 'CFGLR' : 'CFGHR'
+    const sh = `(4 * ${n % 8})`
+    return (
+      `  GPIO${port}->${reg} &= ~(0xf << ${sh});\n` +
+      `  GPIO${port}->${reg} |= GPIO_CFGLR_OUT_50Mhz_AF_PP << ${sh};`
+    )
+  })
+
+  const setup = [
+    ...clocks,
+    remap ? `  AFIO->PCFR1 |= ${remap};` : '',
+    ...gpio
+  ]
+    .filter(isTruthy)
+    .join('\n')
+
+  const finalize = [
+    `  TIM${timerNr}->SWEVGR |= TIM_UG;`,
+    isAdvanced ? `  TIM${timerNr}->BDTR |= TIM_MOE;` : '',
+    anyIrq
+      ? `  NVIC_EnableIRQ(${values.nvicIRQ || `TIM${timerNr}_IRQn`});`
+      : '',
+    `  TIM${timerNr}->CTLR1 |= TIM_CEN;`
+  ]
+    .filter(isTruthy)
+    .join('\n')
+
+  return `\
+${get(codeCommentsState)}
+#include "ch32fun.h"
+
+int main() {
+  SystemInit();
+${setup}
+${get(timerConfigCodeState)}
+${finalize}
+  while (1);
+}
+${get(interruptsCodeState)}`
+})
 
 const customStyle = { padding: 0, margin: 0 }
 export default function Code() {
@@ -97,12 +197,32 @@ const timerConfigCodeState = atom((get) => {
   const { registers } = get(timerState)
   const code = map(registers, (variables, regName) => {
     const assignments = variables
-      .map((variable) => {
+      .map((cell) => {
+        // Two cell encodings:
+        //  - AVR: a bare bit-macro name the compiler shifts ("COM0A1") -> "1 << COM0A1"
+        //  - CH32: "VAR=MACRO" using ch32fun's named bit macros, where
+        //      "VAR=TIM_ARPE"  -> flag, emits TIM_ARPE when set
+        //      "VAR=TIM_OC1M_" -> multi-bit field, emits TIM_OC1M_<i> for each set bit
+        //      "VAR="          -> plain value register (PSC/ATRLR/CHnCVR/DTG), emits the number
+        const eq = cell.indexOf('=')
+        if (eq !== -1) {
+          const variable = cell.slice(0, eq)
+          const macro = cell.slice(eq + 1)
+          // eslint-disable-next-line react-hooks/rules-of-hooks
+          const value = get(suggestedVariableAssignmentState(variable)) || '0'
+          if (omitZeroValues && value === '0') return ''
+          if (macro === '') return `${value}` // plain value register
+          if (!macro.endsWith('_')) return macro // single-bit flag
+          const v = parseInt(value) // multi-bit field -> OR the set bits' macros
+          const parts: string[] = []
+          for (let i = 0; v >> i; i++) if ((v >> i) & 1) parts.push(`${macro}${i}`)
+          return parts.join(' | ')
+        }
+        const variable = cell
         const value =
           // eslint-disable-next-line react-hooks/rules-of-hooks
           get(suggestedVariableAssignmentState(variable)) || '0'
         if (omitZeroValues && value === '0') return ''
-
         // DTR0L/H are special because they are just 4 bytes of a single register
         if (variable === 'DTR0L') return `${value}`
         if (variable === 'DTR0H') return `${value} << 4`
@@ -125,6 +245,9 @@ const timerConfigCodeState = atom((get) => {
 
 const compareRegsState = atom((get) => {
   const suggestedConfig = get(suggestedAssignmentState)
+  // CH32 value registers (CHnCVR/ATRLR/PSC) are emitted by the register grid,
+  // not the AVR-style compare-register path.
+  if (suggestedConfig.family === 'ch32') return ''
 
   const code = getAllCompareRegTraits(suggestedConfig)
     .filter(({ isUsed }) => isUsed)
@@ -140,6 +263,7 @@ const interruptsCodeState = atom((get) => {
     'interruptVectorCodeA',
     'interruptVectorCodeB',
     'interruptVectorCodeC',
+    'interruptVectorCodeD',
     'interruptVectorCodeOVF',
     'interruptVectorCaptureCode'
   ]
